@@ -56,6 +56,29 @@ export const sendRideMessage = createServerFn({ method: "POST" })
       .select("id, ride_id, sender_id, sender_role, text, read_at, created_at")
       .single();
     if (error) return { ok: false, error: error.message };
+
+    // Push para o outro lado da conversa
+    try {
+      const recipientId =
+        role === "passenger" ? ride.driver_id : ride.passenger_id;
+      if (recipientId) {
+        const { data: sender } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", userId)
+          .maybeSingle();
+        const { sendPushToUser } = await import("./push.server");
+        await sendPushToUser(recipientId, {
+          title: `LegoTaxi · ${sender?.full_name ?? "Nova mensagem"}`,
+          body: data.text.slice(0, 140),
+          url: role === "passenger" ? "/painel-motorista" : "/pedir",
+          tag: `chat-${data.ride_id}`,
+        });
+      }
+    } catch (e) {
+      console.error("sendRideMessage push error:", e);
+    }
+
     return { ok: true, message: msg };
   });
 
