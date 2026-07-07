@@ -163,6 +163,31 @@ export const requestRide = createServerFn({ method: "POST" })
       console.error("requestRide error:", error);
       return { ride: null, error: error.message };
     }
+
+    // Broadcast push aos motoristas online
+    try {
+      const { data: onlineDrivers } = await supabase
+        .from("drivers")
+        .select("id")
+        .eq("is_online", true)
+        .eq("status", "approved");
+      if (onlineDrivers && onlineDrivers.length > 0) {
+        const { sendPushToUser } = await import("./push.server");
+        await Promise.all(
+          onlineDrivers.map((d) =>
+            sendPushToUser(d.id, {
+              title: "LegoTaxi · Nova corrida",
+              body: `${data.pickup_address} → ${data.dropoff_address} · ${fare} Kz`,
+              url: "/painel-motorista",
+              tag: `new-ride-${ride?.id}`,
+            }),
+          ),
+        );
+      }
+    } catch (e) {
+      console.error("requestRide broadcast push error:", e);
+    }
+
     return { ride, error: null };
   });
 

@@ -142,9 +142,9 @@ export function RideChat({
       .toLowerCase();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
+    <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center sm:p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#f2f2f2] shadow-2xl sm:h-[680px] sm:max-w-md sm:rounded-[28px]">
+      <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-[#f2f2f2] shadow-2xl sm:h-[680px] sm:max-h-[90vh] sm:max-w-md sm:rounded-[28px]">
         {/* Header */}
         <header className="flex items-center gap-3 bg-white px-4 py-3 shadow-sm">
           <button

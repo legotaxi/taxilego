@@ -117,25 +117,33 @@ export const updateRideStatus = createServerFn({ method: "POST" })
       .eq("driver_id", userId);
     if (error) return { ok: false, error: error.message };
 
-    // Notificar o passageiro quando o motorista está a chegar
-    if (data.status === "arriving" || data.status === "in_progress") {
+    // Notificar o passageiro em cada mudança relevante
+    if (
+      data.status === "arriving" ||
+      data.status === "in_progress" ||
+      data.status === "completed"
+    ) {
       try {
         const { data: ride } = await supabase
           .from("rides")
-          .select("passenger_id")
+          .select("passenger_id, fare_kz")
           .eq("id", data.id)
           .maybeSingle();
         if (ride?.passenger_id) {
+          const titleMap = {
+            arriving: "LegoTaxi · Motorista a chegar",
+            in_progress: "LegoTaxi · Viagem iniciada",
+            completed: "LegoTaxi · Viagem terminada",
+          } as const;
+          const bodyMap = {
+            arriving: "O seu motorista está quase no ponto de recolha.",
+            in_progress: "Boa viagem! A caminho do destino.",
+            completed: `Chegou ao destino. Total: ${ride.fare_kz ?? ""} Kz`,
+          } as const;
           const { sendPushToUser } = await import("./push.server");
           await sendPushToUser(ride.passenger_id, {
-            title:
-              data.status === "arriving"
-                ? "LegoTaxi · Motorista a chegar"
-                : "LegoTaxi · Viagem iniciada",
-            body:
-              data.status === "arriving"
-                ? "O seu motorista está quase no ponto de recolha."
-                : "Boa viagem! A caminho do destino.",
+            title: titleMap[data.status as keyof typeof titleMap],
+            body: bodyMap[data.status as keyof typeof bodyMap],
             url: "/pedir",
             tag: `ride-${data.id}`,
           });
