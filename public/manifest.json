@@ -1,0 +1,84 @@
+{
+  "name": "Lego Taxi · Mobilidade Premium",
+  "short_name": "Lego Taxi",
+  "description": "A plataforma de mobilidade nº1 de Angola. MotoTáxi, Carro, XL e Entregas.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "categories": ["transportation", "travel"],
+  "screenshots": [
+    {
+      "src": "https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/icons/car.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/icons/car.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "icons": [
+    {
+      "src": "https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/icons/car.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/icons/car.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/icons/car.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Pedir Corrida",
+      "short_name": "Pedir",
+      "description": "Peça uma corrida agora",
+      "url": "/pedir",
+      "icons": [
+        {
+          "src": "https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/icons/car.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Minhas Corridas",
+      "short_name": "Atividade",
+      "description": "Ver histórico de corridas",
+      "url": "/minhas-corridas",
+      "icons": [
+        {
+          "src": "https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/icons/history.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

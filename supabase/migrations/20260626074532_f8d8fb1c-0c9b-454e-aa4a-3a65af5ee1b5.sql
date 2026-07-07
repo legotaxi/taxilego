@@ -1,0 +1,7 @@
+DO $$
+BEGIN
+  BEGIN ALTER TABLE public.transactions REPLICA IDENTITY FULL; EXCEPTION WHEN others THEN NULL; END;
+  BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE public.transactions; EXCEPTION WHEN duplicate_object THEN NULL; END;
+  BEGIN ALTER TABLE public.profiles REPLICA IDENTITY FULL; EXCEPTION WHEN others THEN NULL; END;
+  BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles; EXCEPTION WHEN duplicate_object THEN NULL; END;
+END $$;
