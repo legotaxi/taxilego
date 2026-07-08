@@ -22,6 +22,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { requestRide, estimateFare } from "@/lib/rides.functions";
 import { computeRoute } from "@/lib/maps-route.functions";
+import { getNearbyDrivers } from "@/lib/nearby-drivers.functions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +49,8 @@ export function PassengerApp() {
   const requestRideFn = useServerFn(requestRide);
   const estimateFareFn = useServerFn(estimateFare);
   const computeRouteFn = useServerFn(computeRoute);
+  const getNearbyDriversFn = useServerFn(getNearbyDrivers);
+  const [nearbyDrivers, setNearbyDrivers] = useState<Array<[number, number]>>([]);
 
   const [selected, setSelected] = useState("car");
   const [pickup, setPickup] = useState<{ coords: [number, number]; address: string } | null>(null);
@@ -71,6 +74,25 @@ export function PassengerApp() {
     if (!first) return "";
     return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
   }, [user?.user_metadata]);
+
+  // Motoristas online próximos — polling a cada 10s
+  useEffect(() => {
+    let cancelled = false;
+    const fetchDrivers = async () => {
+      try {
+        const res = await getNearbyDriversFn();
+        if (!cancelled && res.drivers) setNearbyDrivers(res.drivers);
+      } catch (e) {
+        console.error("nearby drivers error:", e);
+      }
+    };
+    fetchDrivers();
+    const id = setInterval(fetchDrivers, 10000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [getNearbyDriversFn]);
 
   // Rota real
   useEffect(() => {
@@ -179,6 +201,7 @@ export function PassengerApp() {
           onDestinationLocationSelect={(coords, address) => setDestination({ coords, address: address || "" })}
           pickupLocation={pickup?.coords}
           destinationLocation={destination?.coords}
+          nearbyDrivers={nearbyDrivers}
         />
       </div>
 
