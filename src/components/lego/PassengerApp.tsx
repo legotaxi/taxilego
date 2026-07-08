@@ -184,16 +184,10 @@ export function PassengerApp() {
       <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between px-5 pt-[max(env(safe-area-inset-top),1rem)]">
         <button
           onClick={() => navigate({ to: "/minhas-corridas" })}
-          className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-white text-primary shadow-[0_8px_24px_rgba(0,0,0,0.15)] active:scale-95 transition-transform"
+          className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-primary shadow-[0_8px_24px_rgba(0,0,0,0.15)] active:scale-95 transition-transform"
           aria-label="Menu"
         >
-          <Menu className="h-6 w-6" strokeWidth={3} />
-        </button>
-        <button
-          className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-white text-primary shadow-[0_8px_24px_rgba(0,0,0,0.15)] active:scale-95 transition-transform"
-          aria-label="Promoções"
-        >
-          <Candy className="h-6 w-6" strokeWidth={2.5} />
+          <Menu className="h-5 w-5" strokeWidth={2.5} />
         </button>
       </div>
 
