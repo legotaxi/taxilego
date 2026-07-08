@@ -1,8 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Mail, Phone, Calendar } from "lucide-react";
+import { Loader2, Phone, Calendar } from "lucide-react";
 
 export default function AdminPassengers() {
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    const ch = supabase
+      .channel("admin-passengers-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
+        qc.invalidateQueries({ queryKey: ["admin-passengers"] });
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+  }, [qc]);
   const { data: passengers, isLoading } = useQuery({
     queryKey: ["admin-passengers"],
     queryFn: async () => {
@@ -44,15 +58,11 @@ export default function AdminPassengers() {
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center font-bold text-primary-foreground">
-                  {(passenger.full_name || passenger.email || "?").charAt(0).toUpperCase()}
+                  {(passenger.full_name || passenger.phone || "?").charAt(0).toUpperCase()}
                 </div>
               </div>
               <h3 className="font-bold text-lg">{passenger.full_name || "Sem nome"}</h3>
               <div className="space-y-2 mt-4 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Mail className="h-4 w-4" />
-                  <span className="truncate">{passenger.email}</span>
-                </div>
                 {passenger.phone && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Phone className="h-4 w-4" />
