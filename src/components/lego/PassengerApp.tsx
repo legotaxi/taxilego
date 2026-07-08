@@ -191,6 +191,17 @@ export function PassengerApp() {
         >
           <Menu className="h-5 w-5" strokeWidth={2.5} />
         </button>
+        <button
+          onClick={() => setPromoOpen(true)}
+          className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-primary shadow-[0_8px_24px_rgba(0,0,0,0.15)] active:scale-95 transition-transform relative"
+          aria-label="Promoções"
+        >
+          <Gift className="h-5 w-5" strokeWidth={2} />
+          <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-300" />
+          </span>
+        </button>
       </div>
 
       {/* FAB RECENTRAR (acima do sheet) */}
