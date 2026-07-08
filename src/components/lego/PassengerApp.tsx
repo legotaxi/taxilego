@@ -259,6 +259,8 @@ export function PassengerApp() {
       </div>
 
       <SOSButton variant="floating" />
+
+      <CashbackPromotionSheet open={promoOpen} onOpenChange={setPromoOpen} />
     </div>
   );
 }
