@@ -97,7 +97,7 @@ function WalletPage() {
       }
 
       // Realtime: saldo (profiles) + histórico (transactions) sem refresh
-      const userId = data.user.id;
+      const userId = authUser.id;
       channel = supabase
         .channel(`wallet-${userId}`)
         .on(
