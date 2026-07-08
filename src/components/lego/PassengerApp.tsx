@@ -11,10 +11,12 @@ import {
   ChevronUp,
   MapPin,
   Circle,
+  Gift,
 } from "lucide-react";
 import { PassengerMapView } from "./PassengerMapView";
 import { NotificationPrompt } from "./NotificationPrompt";
 import { SOSButton } from "./SOSButton";
+import { CashbackPromotionSheet } from "./CashbackPromotionSheet";
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
