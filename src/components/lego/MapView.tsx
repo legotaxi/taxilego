@@ -210,7 +210,7 @@ export function MapView({
       markersRef.current.pickup = new google.maps.Marker({
         position: pos,
         map,
-        icon: { url: PICKUP_ICON, scaledSize: new google.maps.Size(36, 44), anchor: new google.maps.Point(18, 44) },
+        icon: { url: PICKUP_ICON, scaledSize: new google.maps.Size(40, 52), anchor: new google.maps.Point(20, 52) },
         title: "Ponto de recolha",
       });
     }
