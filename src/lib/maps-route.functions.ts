@@ -38,7 +38,9 @@ export const computeRoute = createServerFn({ method: "POST" })
           origin: { location: { latLng: data.origin } },
           destination: { location: { latLng: data.destination } },
           travelMode: data.travelMode ?? "DRIVE",
-          routingPreference: "TRAFFIC_AWARE",
+          // Lubango não tem trânsito relevante: usamos rota sem trânsito
+          // para tempo/distância consistentes e preço previsível.
+          routingPreference: "TRAFFIC_UNAWARE",
         }),
       });
       if (!res.ok) {
