@@ -64,10 +64,11 @@ export function PassengerApp() {
   const hasRoute = pickup && destination && distanceKm > 0;
 
   const firstName = useMemo(() => {
-    const raw = user?.email?.split("@")[0] ?? "";
-    if (!raw) return "";
-    return raw.charAt(0).toUpperCase() + raw.slice(1);
-  }, [user?.email]);
+    const fullName = ((user?.user_metadata as { full_name?: string } | undefined)?.full_name ?? "").trim();
+    const first = fullName.split(/\s+/)[0] ?? "";
+    if (!first) return "";
+    return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
+  }, [user?.user_metadata]);
 
   // Rota real
   useEffect(() => {
