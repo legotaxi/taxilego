@@ -49,6 +49,8 @@ export function PassengerApp() {
   const requestRideFn = useServerFn(requestRide);
   const estimateFareFn = useServerFn(estimateFare);
   const computeRouteFn = useServerFn(computeRoute);
+  const getNearbyDriversFn = useServerFn(getNearbyDrivers);
+  const [nearbyDrivers, setNearbyDrivers] = useState<Array<[number, number]>>([]);
 
   const [selected, setSelected] = useState("car");
   const [pickup, setPickup] = useState<{ coords: [number, number]; address: string } | null>(null);
