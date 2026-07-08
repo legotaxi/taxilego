@@ -111,9 +111,8 @@ export function usePhoneAuth() {
 
       // Admin phones are reserved (blocked above); no role assignment needed here.
 
-      // If driver, only assign the driver role.
-      // The driver record itself is created later, after the candidate
-      // submits the required documents in /motoristas-registo.
+      // If driver, assign driver role AND create driver row (status pending)
+      // so admin sees the candidacy immediately in the panel.
       if (userType === "driver") {
         await supabase
           .from("user_roles")
@@ -121,6 +120,12 @@ export function usePhoneAuth() {
             user_id: data.user.id,
             role: "driver",
           });
+        await supabase
+          .from("drivers")
+          .upsert(
+            { id: data.user.id, status: "pending" },
+            { onConflict: "id" },
+          );
       }
 
       // Automatically sign in the user (NO EMAIL CONFIRMATION NEEDED)
