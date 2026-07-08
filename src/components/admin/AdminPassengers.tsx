@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Phone, Calendar, Wallet } from "lucide-react";
+import { Loader2, Phone, Calendar } from "lucide-react";
 
 export default function AdminPassengers() {
   const qc = useQueryClient();
