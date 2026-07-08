@@ -5,7 +5,6 @@ import {
   Truck,
   Package,
   Menu,
-  Candy,
   Search,
   Loader2,
   Navigation,
