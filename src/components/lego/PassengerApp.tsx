@@ -59,6 +59,7 @@ export function PassengerApp() {
     durationMin: 0,
     computing: false,
   });
+  const [promoOpen, setPromoOpen] = useState(false);
 
   const active = services.find((s) => s.id === selected)!;
   const { distanceKm, durationMin } = route;
