@@ -201,6 +201,7 @@ export function PassengerApp() {
           onDestinationLocationSelect={(coords, address) => setDestination({ coords, address: address || "" })}
           pickupLocation={pickup?.coords}
           destinationLocation={destination?.coords}
+          nearbyDrivers={nearbyDrivers}
         />
       </div>
 
