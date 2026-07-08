@@ -14,17 +14,18 @@ export const Route = createFileRoute("/motoristas-registo")({
       },
     ],
   }),
+  ssr: false,
   beforeLoad: async () => {
     // Must be logged in to submit documents.
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) throw redirect({ to: "/motorista-auth" });
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) throw redirect({ to: "/motorista-auth" });
 
     // If documents were already submitted, skip the form and go to the panel
     // (the DriverStatusGuard will show pending/approved/rejected states).
     const { data: driver } = await supabase
       .from("drivers")
       .select("id")
-      .eq("id", data.user.id)
+      .eq("id", data.session.user.id)
       .maybeSingle();
     if (driver) throw redirect({ to: "/painel-motorista" });
   },

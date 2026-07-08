@@ -33,15 +33,16 @@ export const Route = createFileRoute("/admin-console")({
       { name: "description", content: "Painel de administração Lego Taxi." },
     ],
   }),
+  ssr: false,
   beforeLoad: async () => {
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) throw redirect({ to: "/login" });
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) throw redirect({ to: "/login" });
 
     // Verificar se é admin
     const { data: roles } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("user_id", data.user.id);
+      .eq("user_id", data.session.user.id);
 
     const isAdmin = (roles || []).some((r: { role: string }) => r.role === "admin");
     if (!isAdmin) throw redirect({ to: "/minhas-corridas" });

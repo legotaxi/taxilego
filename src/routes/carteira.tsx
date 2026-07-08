@@ -84,11 +84,12 @@ function WalletPage() {
     let active = true;
     let channel: ReturnType<typeof supabase.channel> | null = null;
     (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
         navigate({ to: "/login", search: { redirect: "/carteira" } as never });
         return;
       }
+      const authUser = data.session.user;
       try {
         await load();
       } finally {
@@ -96,7 +97,7 @@ function WalletPage() {
       }
 
       // Realtime: saldo (profiles) + histórico (transactions) sem refresh
-      const userId = data.user.id;
+      const userId = authUser.id;
       channel = supabase
         .channel(`wallet-${userId}`)
         .on(

@@ -37,9 +37,10 @@ export const Route = createFileRoute("/minhas-corridas")({
       { name: "description", content: "Histórico das suas corridas Lego Taxi em Angola." },
     ],
   }),
+  ssr: false,
   beforeLoad: async () => {
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) throw redirect({ to: "/login" });
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) throw redirect({ to: "/login" });
   },
   component: MyRidesPage,
 });
