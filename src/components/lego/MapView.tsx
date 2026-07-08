@@ -31,9 +31,19 @@ function svgIcon(svg: string): string {
 }
 
 const PICKUP_ICON = svgIcon(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="44" viewBox="0 0 36 44">
-    <path d="M18 0C8 0 0 8 0 18c0 13 18 26 18 26s18-13 18-26C36 8 28 0 18 0z" fill="#2563eb"/>
-    <circle cx="18" cy="18" r="7" fill="white"/>
+  `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="52" viewBox="0 0 40 52">
+    <defs>
+      <linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1e40af"/>
+        <stop offset="100%" stop-color="#0c1e5c"/>
+      </linearGradient>
+      <filter id="ps" x="-20%" y="-10%" width="140%" height="130%">
+        <feDropShadow dx="0" dy="2" stdDeviation="1.8" flood-color="#0b1f4d" flood-opacity="0.35"/>
+      </filter>
+    </defs>
+    <path d="M20 1C10.6 1 3 8.6 3 18c0 12.7 17 32 17 32s17-19.3 17-32C37 8.6 29.4 1 20 1z" fill="url(#pg)" stroke="white" stroke-width="2" filter="url(#ps)"/>
+    <circle cx="20" cy="18" r="6" fill="white"/>
+    <circle cx="20" cy="18" r="2.6" fill="#1e40af"/>
   </svg>`,
 );
 
@@ -54,10 +64,26 @@ const CAR_ICON = svgIcon(
 );
 
 const PERSON_ICON = svgIcon(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
-    <circle cx="22" cy="22" r="20" fill="white" stroke="#2563eb" stroke-width="3"/>
-    <circle cx="22" cy="17" r="4" fill="#2563eb"/>
-    <path d="M14 30c0-4 4-7 8-7s8 3 8 7v1H14v-1z" fill="#2563eb"/>
+  `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+    <defs>
+      <radialGradient id="ph" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.25"/>
+        <stop offset="70%" stop-color="#3b82f6" stop-opacity="0.06"/>
+        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="pgc" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1e40af"/>
+        <stop offset="100%" stop-color="#0c1e5c"/>
+      </linearGradient>
+      <filter id="psh" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="2" stdDeviation="1.6" flood-color="#0b1f4d" flood-opacity="0.35"/>
+      </filter>
+    </defs>
+    <circle cx="24" cy="24" r="22" fill="url(#ph)"/>
+    <circle cx="24" cy="24" r="13" fill="white" filter="url(#psh)"/>
+    <circle cx="24" cy="24" r="13" fill="none" stroke="url(#pgc)" stroke-width="2.5"/>
+    <circle cx="24" cy="20.5" r="3.4" fill="url(#pgc)"/>
+    <path d="M16.5 31c0-3.4 3.4-5.8 7.5-5.8s7.5 2.4 7.5 5.8v.5h-15V31z" fill="url(#pgc)"/>
   </svg>`,
 );
 
@@ -184,7 +210,7 @@ export function MapView({
       markersRef.current.pickup = new google.maps.Marker({
         position: pos,
         map,
-        icon: { url: PICKUP_ICON, scaledSize: new google.maps.Size(36, 44), anchor: new google.maps.Point(18, 44) },
+        icon: { url: PICKUP_ICON, scaledSize: new google.maps.Size(40, 52), anchor: new google.maps.Point(20, 52) },
         title: "Ponto de recolha",
       });
     }
@@ -215,18 +241,20 @@ export function MapView({
     if (!ready || !google || !map || !driverLocation) return;
     const pos = { lat: driverLocation[0], lng: driverLocation[1] };
     const iconUrl = userIconType === "passenger" ? PERSON_ICON : CAR_ICON;
+    const size = userIconType === "passenger" ? 48 : 44;
+    const anchor = size / 2;
     if (markersRef.current.user) {
       markersRef.current.user.setPosition(pos);
       markersRef.current.user.setIcon({
         url: iconUrl,
-        scaledSize: new google.maps.Size(44, 44),
-        anchor: new google.maps.Point(22, 22),
+        scaledSize: new google.maps.Size(size, size),
+        anchor: new google.maps.Point(anchor, anchor),
       });
     } else {
       markersRef.current.user = new google.maps.Marker({
         position: pos,
         map,
-        icon: { url: iconUrl, scaledSize: new google.maps.Size(44, 44), anchor: new google.maps.Point(22, 22) },
+        icon: { url: iconUrl, scaledSize: new google.maps.Size(size, size), anchor: new google.maps.Point(anchor, anchor) },
         title: userIconType === "passenger" ? "Você (passageiro)" : "Motorista",
         zIndex: 999,
       });

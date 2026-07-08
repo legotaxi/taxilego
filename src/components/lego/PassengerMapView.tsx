@@ -181,11 +181,16 @@ export function PassengerMapView({
         </div>
       )}
 
-      {/* Tracking status indicator */}
+      {/* Tracking status indicator — pill centrada, abaixo do topo, sem sobrepor o menu */}
       {isTracking && !loading && (
-        <div className="absolute top-4 left-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg text-sm z-20 flex items-center gap-2 max-w-xs">
-          <Navigation2 className="h-4 w-4 animate-pulse" />
-          <span className="font-medium">Rastreamento activo</span>
+        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-[calc(max(env(safe-area-inset-top),1rem)+0.75rem)] z-20">
+          <div className="flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md border border-emerald-200 px-3 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inset-0 rounded-full bg-emerald-400 opacity-70 animate-ping" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            <span className="text-[11px] font-semibold tracking-wide text-emerald-700">Rastreamento activo</span>
+          </div>
         </div>
       )}
 
