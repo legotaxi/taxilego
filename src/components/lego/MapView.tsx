@@ -241,18 +241,20 @@ export function MapView({
     if (!ready || !google || !map || !driverLocation) return;
     const pos = { lat: driverLocation[0], lng: driverLocation[1] };
     const iconUrl = userIconType === "passenger" ? PERSON_ICON : CAR_ICON;
+    const size = userIconType === "passenger" ? 48 : 44;
+    const anchor = size / 2;
     if (markersRef.current.user) {
       markersRef.current.user.setPosition(pos);
       markersRef.current.user.setIcon({
         url: iconUrl,
-        scaledSize: new google.maps.Size(44, 44),
-        anchor: new google.maps.Point(22, 22),
+        scaledSize: new google.maps.Size(size, size),
+        anchor: new google.maps.Point(anchor, anchor),
       });
     } else {
       markersRef.current.user = new google.maps.Marker({
         position: pos,
         map,
-        icon: { url: iconUrl, scaledSize: new google.maps.Size(44, 44), anchor: new google.maps.Point(22, 22) },
+        icon: { url: iconUrl, scaledSize: new google.maps.Size(size, size), anchor: new google.maps.Point(anchor, anchor) },
         title: userIconType === "passenger" ? "Você (passageiro)" : "Motorista",
         zIndex: 999,
       });
