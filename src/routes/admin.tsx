@@ -234,6 +234,39 @@ function AdminPage() {
       })
       .catch(() => setAuthorized(false))
       .finally(() => setLoading(false));
+
+    // Realtime: refresh admin data as new users/drivers/rides register
+    let cancelled = false;
+    let channel: any;
+    (async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      channel = supabase
+        .channel("admin-live")
+        .on("postgres_changes", { event: "*", schema: "public", table: "drivers" }, () => {
+          if (!cancelled) {
+            fetchDrivers().then((r) => r.authorized && setDrivers((r.drivers ?? []) as DriverApp[]));
+            fetchStats().then((s) => s.authorized && s.stats && setLive(s.stats));
+          }
+        })
+        .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
+          if (!cancelled) fetchStats().then((s) => s.authorized && s.stats && setLive(s.stats));
+        })
+        .on("postgres_changes", { event: "*", schema: "public", table: "rides" }, () => {
+          if (!cancelled) fetchStats().then((s) => {
+            if (s.authorized && s.stats) {
+              setLive(s.stats);
+              setRecent((s.recentRides ?? []) as RecentRide[]);
+            }
+          });
+        })
+        .subscribe();
+    })();
+    return () => {
+      cancelled = true;
+      if (channel) {
+        import("@/integrations/supabase/client").then(({ supabase }) => supabase.removeChannel(channel));
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
