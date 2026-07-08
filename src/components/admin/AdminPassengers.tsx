@@ -1,8 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Mail, Phone, Calendar } from "lucide-react";
+import { Loader2, Phone, Calendar, Wallet } from "lucide-react";
 
 export default function AdminPassengers() {
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    const ch = supabase
+      .channel("admin-passengers-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
+        qc.invalidateQueries({ queryKey: ["admin-passengers"] });
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+  }, [qc]);
   const { data: passengers, isLoading } = useQuery({
     queryKey: ["admin-passengers"],
     queryFn: async () => {
