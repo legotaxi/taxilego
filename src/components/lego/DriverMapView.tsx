@@ -54,21 +54,34 @@ export function DriverMapView({
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showSteps, setShowSteps] = useState(false);
 
-  const driverLocation: [number, number] = coordinates
-    ? [coordinates.latitude, coordinates.longitude]
-    : [LUBANGO_CENTER.lat, LUBANGO_CENTER.lng];
+  const driverLocation: [number, number] = useMemo(() => {
+    const coords: any = coordinates
+      ? [coordinates.latitude, coordinates.longitude]
+      : [LUBANGO_CENTER.lat, LUBANGO_CENTER.lng];
+    if (coordinates) {
+      coords.accuracy = coordinates.accuracy;
+      coords.heading = coordinates.heading;
+      coords.speed = coordinates.speed;
+    }
+    return coords;
+  }, [coordinates]);
 
   // Sync location to backend
   useEffect(() => {
     if (coordinates && isOnline) {
       const now = Date.now();
-      if (now - lastUpdateTime >= 1000) {
+      // Aumentar a frequência de atualização para 500ms se estiver em movimento ou mudando direção
+      // Isso melhora a percepção de tempo real para o passageiro
+      const updateInterval = (coordinates.speed && coordinates.speed > 1) ? 500 : 2000;
+      
+      if (now - lastUpdateTime >= updateInterval) {
         updateLocationFn({
           data: {
             lat: coordinates.latitude,
             lng: coordinates.longitude,
             accuracy: coordinates.accuracy,
             speed: coordinates.speed,
+            heading: coordinates.heading,
           },
         })
           .then(() => {

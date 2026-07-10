@@ -54,6 +54,8 @@ const DESTINATION_ICON = svgIcon(
   </svg>`,
 );
 
+// Path SVG para o carro (virado para o Norte) para permitir rotação nativa do Google Maps
+const CAR_PATH = "M22 2C10.95 2 2 10.95 2 22s8.95 20 20 20 20-8.95 20-20S33.05 2 22 2zm0 36c-8.82 0-16-7.18-16-16S13.18 6 22 6s16 7.18 16 16-7.18 16-16 16zm-5.5-14l1.5-5c.31-1.03 1.25-1.75 2.32-1.75h3.36c1.07 0 2.01.72 2.32 1.75l1.5 5v4c0 .55-.45 1-1 1h-1c-.55 0-1-.45-1-1v-1h-6v1c0 .55-.45 1-1 1h-1c-.55 0-1-.45-1-1v-4zm3-1.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm5 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z";
 const CAR_ICON = svgIcon(
   `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
     <circle cx="22" cy="22" r="20" fill="white" stroke="#16a34a" stroke-width="3"/>
@@ -243,23 +245,51 @@ export function MapView({
     const iconUrl = userIconType === "passenger" ? PERSON_ICON : CAR_ICON;
     const size = userIconType === "passenger" ? 48 : 44;
     const anchor = size / 2;
-    if (markersRef.current.user) {
-      markersRef.current.user.setPosition(pos);
-      markersRef.current.user.setIcon({
+    
+    // Se for motorista, podemos usar o heading para rotacionar o ícone
+    // Nota: O ícone SVG original deve estar virado para o Norte (0 graus)
+    const heading = (driverLocation as any).heading;
+    
+    let iconOptions: any;
+    if (userIconType === "driver" && heading != null) {
+      // Usar símbolo vetorial para permitir rotação
+      iconOptions = {
+        path: CAR_PATH,
+        fillColor: "#16a34a",
+        fillOpacity: 1,
+        strokeColor: "#FFFFFF",
+        strokeWeight: 2,
+        scale: size / 44,
+        anchor: new google.maps.Point(22, 22),
+        rotation: heading,
+      };
+    } else {
+      iconOptions = {
         url: iconUrl,
         scaledSize: new google.maps.Size(size, size),
         anchor: new google.maps.Point(anchor, anchor),
-      });
+      };
+    }
+
+    if (markersRef.current.user) {
+      markersRef.current.user.setPosition(pos);
+      markersRef.current.user.setIcon(iconOptions);
     } else {
       markersRef.current.user = new google.maps.Marker({
         position: pos,
         map,
-        icon: { url: iconUrl, scaledSize: new google.maps.Size(size, size), anchor: new google.maps.Point(anchor, anchor) },
+        icon: iconOptions,
         title: userIconType === "passenger" ? "Você (passageiro)" : "Motorista",
         zIndex: 999,
       });
     }
-    if (autoCenter) map.panTo(pos);
+    
+    // Suave animação de movimento se o mapa já estiver pronto
+    if (autoCenter) {
+      if (map.getCenter().lat() !== pos.lat || map.getCenter().lng() !== pos.lng) {
+        map.panTo(pos);
+      }
+    }
   }, [driverLocation, ready, userIconType, autoCenter]);
 
   // Accuracy circle
@@ -272,15 +302,18 @@ export function MapView({
       accuracyCircleRef.current = null;
     }
     if (showAccuracy && driverLocation) {
+      // Usar a precisão real se disponível, caso contrário default 50m
+      const radius = (driverLocation as any).accuracy || 50;
       accuracyCircleRef.current = new google.maps.Circle({
         map,
         center: { lat: driverLocation[0], lng: driverLocation[1] },
-        radius: 50,
+        radius: radius,
         strokeColor: "#2563eb",
-        strokeOpacity: 0.6,
-        strokeWeight: 2,
+        strokeOpacity: 0.4,
+        strokeWeight: 1,
         fillColor: "#2563eb",
-        fillOpacity: 0.12,
+        fillOpacity: 0.1,
+        clickable: false,
       });
     }
   }, [showAccuracy, driverLocation, ready]);

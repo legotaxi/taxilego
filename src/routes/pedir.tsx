@@ -162,7 +162,11 @@ function PedirPage() {
             });
           }
           if (d.driver?.current_lat != null && d.driver?.current_lng != null) {
-            setDriverLocation([d.driver.current_lat as number, d.driver.current_lng as number]);
+            const newLoc: any = [d.driver.current_lat as number, d.driver.current_lng as number];
+            newLoc.accuracy = d.driver.last_accuracy;
+            newLoc.heading = d.driver.last_heading;
+            newLoc.speed = d.driver.last_speed;
+            setDriverLocation(newLoc);
           }
         }
         if (["accepted", "arriving", "in_progress"].includes(res.ride.status)) setStep("arriving");
@@ -174,7 +178,7 @@ function PedirPage() {
       } catch {}
     };
     tick();
-    const iv = setInterval(tick, 4000);
+    const iv = setInterval(tick, 2000);
     return () => {
       cancelled = true;
       clearInterval(iv);

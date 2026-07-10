@@ -163,6 +163,9 @@ export const updateDriverLocation = createServerFn({ method: "POST" })
       .object({
         lat: z.number(),
         lng: z.number(),
+        accuracy: z.number().optional(),
+        speed: z.number().nullable().optional(),
+        heading: z.number().nullable().optional(),
       })
       .parse(input),
   )
@@ -173,6 +176,10 @@ export const updateDriverLocation = createServerFn({ method: "POST" })
       .update({
         current_lat: data.lat,
         current_lng: data.lng,
+        last_accuracy: data.accuracy,
+        last_speed: data.speed,
+        last_heading: data.heading,
+        last_location_update: new Date().toISOString(),
       })
       .eq("id", userId);
 

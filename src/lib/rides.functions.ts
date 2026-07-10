@@ -43,7 +43,7 @@ export const getDriverInfo = createServerFn({ method: "POST" })
     const { supabase } = context;
     const { data: driver, error: driverError } = await supabase
       .from("drivers")
-      .select("id, current_lat, current_lng, rating, total_rides, vehicle_id")
+      .select("id, current_lat, current_lng, last_accuracy, last_speed, last_heading, last_location_update, rating, total_rides, vehicle_id")
       .eq("id", data.driver_id)
       .maybeSingle();
 

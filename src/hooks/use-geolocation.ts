@@ -188,14 +188,31 @@ export function useGeolocationWatch(
           newCoordinates.latitude,
           newCoordinates.longitude,
         );
-        if (distance > 0.005) {
+        
+        // Filtro de ruído: ignorar movimentos menores que 2 metros se a precisão for baixa
+        // ou se o movimento for insignificante para evitar o "jitter" do GPS parado
+        const minMovementThreshold = newCoordinates.accuracy > 20 ? 0.005 : 0.002;
+        
+        if (distance > minMovementThreshold) {
           setDistanceTraveled((prev) => prev + distance);
           previousCoordinatesRef.current = newCoordinates;
+          setState({ loading: false, error: null, coordinates: newCoordinates });
+        } else if (newCoordinates.heading !== previousCoordinatesRef.current.heading) {
+          // Se apenas o heading mudou (ex: girou o telemóvel), atualizamos para manter a orientação precisa
+          setState((prev) => ({
+            ...prev,
+            coordinates: {
+              ...newCoordinates,
+              // Mantemos a lat/lng anterior para evitar saltos visuais se o movimento for ruído
+              latitude: previousCoordinatesRef.current?.latitude ?? newCoordinates.latitude,
+              longitude: previousCoordinatesRef.current?.longitude ?? newCoordinates.longitude,
+            }
+          }));
         }
       } else {
         previousCoordinatesRef.current = newCoordinates;
+        setState({ loading: false, error: null, coordinates: newCoordinates });
       }
-      setState({ loading: false, error: null, coordinates: newCoordinates });
     };
 
     const onError = (error: GeolocationPositionError) => {
