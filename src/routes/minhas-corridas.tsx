@@ -17,6 +17,7 @@ import {
   ChevronRight,
   MapIcon,
   MessageCircle,
+  Star,
   Navigation2 as Nav2,
 } from "lucide-react";
 import { SOSButton } from "@/components/lego/SOSButton";
@@ -29,6 +30,7 @@ import { RideChat } from "@/components/lego/RideChat";
 import { RideCompletionDialog } from "@/components/lego/RideCompletionDialog";
 import { useEffect, useState } from "react";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/minhas-corridas")({
   head: () => ({
@@ -202,10 +204,19 @@ function MyRidesPage() {
       )
       .subscribe();
 
+    // Polling de fallback mais agressivo para garantir tempo real mesmo se o WebSocket falhar
+    const pollInterval = setInterval(() => {
+      const hasActive = (rides || []).some(r => ["requested", "accepted", "arriving", "in_progress"].includes(r.status));
+      if (hasActive) {
+        ridesQuery.refetch();
+      }
+    }, 3000);
+
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(pollInterval);
     };
-  }, [user?.id, ridesQuery.refetch, ridesQuery]);
+  }, [user?.id, ridesQuery.refetch, ridesQuery, rides]);
 
   // Carregar info inicial do motorista (perfil/veículo) para corridas activas
   useEffect(() => {
@@ -339,21 +350,24 @@ function MyRidesPage() {
 
   return (
     <AppShell role="passenger">
-      <div className="flex h-full flex-col bg-background overflow-hidden">
-        {/* Header Fixo */}
-        <header className="z-10 shrink-0 border-b border-border/50 bg-background/80 px-5 py-4 backdrop-blur-xl shadow-soft">
+      <div className="fixed inset-0 flex flex-col bg-background overflow-hidden">
+        {/* Header Fixo Premium */}
+        <header className="z-20 shrink-0 border-b border-border/10 bg-background/95 px-6 py-5 backdrop-blur-2xl shadow-sm">
           <div className="flex items-center justify-between">
-            <h1 className="font-display text-xl font-bold tracking-tight">Atividade</h1>
+            <div>
+              <h1 className="font-display text-2xl font-black tracking-tighter">Atividade</h1>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50">Suas Corridas</p>
+            </div>
           </div>
         </header>
 
-        {/* Conteúdo com Scroll Interno */}
-        <div className="flex-1 overflow-y-auto scrollbar-hide">
-          <div className="px-5 py-4 space-y-4">
+        {/* Conteúdo com Scroll Interno Otimizado */}
+        <div className="flex-1 overflow-y-auto scroll-smooth pb-32">
+          <div className="px-6 py-6 space-y-6">
             {/* Corridas Ativas */}
             {activeRides.length > 0 && (
-                  <section className="space-y-3 animate-fade-in">
-                <h2 className="px-1 font-display text-sm font-bold uppercase tracking-widest text-muted-foreground/70">
+              <section className="space-y-4 animate-fade-in">
+                <h2 className="px-1 font-display text-sm font-black uppercase tracking-widest text-muted-foreground/40">
                   Em curso
                 </h2>
                 {activeRides.map((r) => {
@@ -364,169 +378,195 @@ function MyRidesPage() {
                   return (
                     <div
                       key={r.id}
-                      className="rounded-2xl border border-border/50 bg-card p-4 shadow-soft hover:shadow-elevated transition-all duration-200 animate-slide-up"
+                      className="group relative overflow-hidden rounded-[2.5rem] border border-border/40 bg-card shadow-lg transition-all duration-300 hover:shadow-xl animate-slide-up"
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                          <Icon className="h-5 w-5" />
+                      {/* Status Header - Uber Style */}
+                      <div className={cn(
+                        "flex items-center justify-between px-6 py-3",
+                        r.status === "requested" ? "bg-yellow-500/10" : 
+                        r.status === "accepted" || r.status === "arriving" ? "bg-blue-500/10" : 
+                        "bg-emerald-500/10"
+                      )}>
+                        <div className="flex items-center gap-2">
+                          <div className={cn(
+                            "h-2 w-2 rounded-full animate-pulse",
+                            r.status === "requested" ? "bg-yellow-500" : 
+                            r.status === "accepted" || r.status === "arriving" ? "bg-blue-500" : 
+                            "bg-emerald-500"
+                          )} />
+                          <span className="font-display text-[10px] font-black uppercase tracking-[0.15em] opacity-80">
+                            {statusLabel[r.status] ?? r.status}
+                          </span>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-display text-sm font-bold">
-                              {categoryLabel[r.category as keyof typeof categoryLabel]}
-                            </span>
-                            <span
-                              className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${statusBadge[r.status] ?? "bg-muted"}`}
-                            >
-                              {statusLabel[r.status] ?? r.status}
-                            </span>
-                          </div>
-                          <p className="mt-1 text-xs font-medium text-muted-foreground">
-                            {statusDescription[r.status]}
-                          </p>
+                        <div className="font-display text-[10px] font-bold text-muted-foreground/60">
+                          #{r.id.slice(0, 5).toUpperCase()}
+                        </div>
+                      </div>
 
-                          {/* Driver Info Card - Premium */}
-                          {["accepted", "arriving", "in_progress"].includes(r.status) && (
-                            <div className="mt-3 rounded-2xl bg-muted/40 p-4 border border-border/50 shadow-soft">
-                              {isLoadingDriver ? (
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                  <Loader2 className="h-3 w-3 animate-spin" />A carregar…
-                                </div>
-                              ) : driverInfo?.profile ? (
-                                <div className="flex items-start gap-3">
+                      <div className="p-6">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-display text-2xl font-black leading-none tracking-tighter">
+                              {categoryLabel[r.category as keyof typeof categoryLabel]}
+                            </h3>
+                            <p className="mt-2 text-sm font-bold text-muted-foreground leading-snug">
+                              {statusDescription[r.status]}
+                            </p>
+                          </div>
+                          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-muted/50 text-foreground shadow-inner">
+                            <Icon className="h-9 w-9" />
+                          </div>
+                        </div>
+
+                        {/* Driver Info Card - Uber Premium Style */}
+                        {["accepted", "arriving", "in_progress"].includes(r.status) && (
+                          <div className="mt-6 rounded-3xl bg-neutral-900 p-5 text-white shadow-2xl">
+                            {isLoadingDriver ? (
+                              <div className="flex items-center justify-center py-2 gap-3 text-xs font-bold text-white/60">
+                                <Loader2 className="h-4 w-4 animate-spin" /> Localizando motorista…
+                              </div>
+                            ) : driverInfo?.profile ? (
+                              <div className="flex items-center gap-4">
+                                <div className="relative">
                                   {driverInfo.profile.avatar_url ? (
                                     <img
                                       src={driverInfo.profile.avatar_url}
                                       alt={driverInfo.profile.full_name || "Motorista"}
-                                      className="h-12 w-12 rounded-full object-cover border border-border"
+                                      className="h-16 w-16 rounded-2xl object-cover border-2 border-white/10"
                                     />
                                   ) : (
-                                    <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-                                      {(driverInfo.profile.full_name || "M").charAt(0)}
+                                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary text-white font-display text-2xl font-black">
+                                      {driverInfo.profile.full_name?.charAt(0) || "M"}
                                     </div>
                                   )}
-                                  <div className="flex-1 min-w-0 space-y-0.5">
-                                    <div className="font-semibold text-sm truncate">
-                                      {driverInfo.profile.full_name || "Motorista"}
-                                    </div>
-                                    {driverInfo.driver && (
-                                      <div className="text-[11px] text-muted-foreground">
-                                        ⭐ {driverInfo.driver.rating?.toFixed(1) || "—"}
-                                      </div>
-                                    )}
-                                    {driverInfo.vehicle ? (
-                                      <div className="flex items-center gap-2 text-[11px] pt-1">
-                                        <Car className="h-3 w-3 text-muted-foreground" />
-                                        <span className="text-muted-foreground truncate">
-                                          {driverInfo.vehicle.brand} {driverInfo.vehicle.model}
-                                        </span>
-                                        <span className="ml-auto rounded bg-foreground text-background px-1.5 py-0.5 font-mono font-bold tracking-wider">
-                                          {driverInfo.vehicle.plate}
-                                        </span>
-                                      </div>
-                                    ) : (
-                                      <div className="text-[11px] text-muted-foreground italic">
-                                        Veículo a ser atribuído
-                                      </div>
-                                    )}
+                                  <div className="absolute -bottom-1 -right-1 flex items-center gap-0.5 rounded-lg bg-white px-2 py-0.5 text-[10px] font-black text-black shadow-lg">
+                                    <Star className="h-3 w-3 fill-black text-black" />
+                                    {driverInfo.driver?.rating?.toFixed(1) || "5.0"}
                                   </div>
                                 </div>
-                              ) : (
-                                <div className="text-xs text-muted-foreground">
-                                  Dados do motorista não disponíveis
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-display text-lg font-bold truncate">
+                                    {driverInfo.profile.full_name}
+                                  </div>
+                                  <p className="text-[11px] font-bold text-white/60 uppercase tracking-wider truncate">
+                                    {driverInfo.vehicle
+                                      ? `${driverInfo.vehicle.color || ""} ${driverInfo.vehicle.brand} ${driverInfo.vehicle.model}`
+                                      : "Veículo em aproximação"}
+                                  </p>
+                                  <div className="mt-2 inline-flex items-center rounded-md bg-primary px-2.5 py-1 text-[11px] font-black text-white tracking-tight">
+                                    {driverInfo.vehicle?.plate || "EM TRÂNSITO"}
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2 py-1 text-xs font-bold text-white/50">
+                                <AlertCircle className="h-4 w-4" />
+                                Aguardando dados do servidor...
+                              </div>
+                            )}
+
+                            {/* Rastreio em tempo real: distância motorista→passageiro */}
+                            {driverInfo?.driver?.current_lat != null &&
+                              driverInfo?.driver?.current_lng != null &&
+                              ["accepted", "arriving"].includes(r.status) && (
+                                <div className="mt-4 border-t border-white/10 pt-4">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-500/20 text-blue-400">
+                                        <Navigation2Icon />
+                                      </div>
+                                      <span className="text-[11px] font-black uppercase tracking-widest text-blue-400">
+                                        Motorista a caminho
+                                      </span>
+                                    </div>
+                                    <div className="flex items-baseline gap-1">
+                                      <span className="text-lg font-black">
+                                        {haversineKm(
+                                          driverInfo.driver.current_lat,
+                                          driverInfo.driver.current_lng,
+                                          r.pickup_lat,
+                                          r.pickup_lng,
+                                        ).toFixed(1)}
+                                      </span>
+                                      <span className="text-[10px] font-black text-white/40">KM</span>
+                                    </div>
+                                  </div>
                                 </div>
                               )}
+                          </div>
+                        )}
 
-                              {/* Rastreio em tempo real: distância motorista→passageiro */}
-                              {driverInfo?.driver?.current_lat != null &&
-                                driverInfo?.driver?.current_lng != null &&
-                                r.pickup_lat != null &&
-                                r.pickup_lng != null && (
-                                  <div className="mt-2 flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-[11px] font-semibold text-primary border border-primary/20">
-                                    <Navigation2Icon />
-                                    <span>
-                                      Motorista a{" "}
-                                      {haversineKm(
-                                        driverInfo.driver.current_lat,
-                                        driverInfo.driver.current_lng,
-                                        r.pickup_lat,
-                                        r.pickup_lng,
-                                      ).toFixed(2)}{" "}
-                                      km · actualizado agora
-                                    </span>
-                                  </div>
-                                )}
+                        {/* Route Info */}
+                        <div className="mt-8 relative">
+                          <div className="absolute left-2.5 top-2.5 bottom-2.5 w-0.5 bg-border/30" />
+                          <div className="space-y-6 pl-9">
+                            <div className="relative">
+                              <div className="absolute -left-9 top-1.5 h-5 w-5 rounded-full border-[5px] border-background bg-blue-500 shadow-sm" />
+                              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/50 leading-none mb-1.5">Recolha</p>
+                              <p className="truncate text-sm font-bold text-foreground/90">{r.pickup_address}</p>
                             </div>
-                          )}
-
-                          <div className="mt-3 space-y-2 border-t border-border/50 pt-3">
-                            <div className="flex items-start gap-2 text-[11px]">
-                              <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0 mt-1" />
-                              <span className="text-muted-foreground">{r.pickup_address}</span>
-                            </div>
-                            <div className="flex items-start gap-2 text-[11px]">
-                              <div className="h-1.5 w-1.5 bg-foreground shrink-0 mt-1" />
-                              <span className="text-muted-foreground">{r.dropoff_address}</span>
+                            <div className="relative">
+                              <div className="absolute -left-9 top-1.5 h-5 w-5 rounded-full border-[5px] border-background bg-foreground shadow-sm" />
+                              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/50 leading-none mb-1.5">Destino</p>
+                              <p className="truncate text-sm font-bold text-foreground/90">{r.dropoff_address}</p>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="mt-4 flex items-center justify-between border-t border-border/50 pt-3">
-                        <div className="font-display font-black">
-                          Kz {Number(r.fare_kz).toLocaleString("pt-PT")}
-                        </div>
-                        <div className="flex gap-2 flex-wrap justify-end">
-                          {r.status === "requested" && (
-                            <button
-                              onClick={() => handleCancelRide(r.id)}
-                              className="rounded-full bg-red-50 px-4 py-1.5 text-xs font-bold text-red-600 active:scale-95 transition-all duration-200 tap-highlight-none"
-                            >
-                              Cancelar
-                            </button>
-                          )}
-                          {["accepted", "arriving", "in_progress"].includes(r.status) && (
-                            <>
+
+                        {/* Actions Footer */}
+                        <div className="mt-8 flex items-center justify-between pt-6 border-t border-border/40">
+                          <div>
+                            <div className="font-display text-3xl font-black tracking-tighter leading-none">
+                              Kz {r.fare_kz.toLocaleString()}
+                            </div>
+                            <div className="mt-1.5 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                              <Wallet className="h-3 w-3" />
+                              {r.payment_method === "cash" ? "Dinheiro" : "Multicaixa"}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            {r.status === "requested" ? (
                               <button
-                                onClick={() => setChatRideId(r.id)}
-                                className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary active:scale-95 transition-transform hover:bg-primary/15"
-                                title="Chat com motorista"
+                                onClick={() => handleCancelRide(r.id)}
+                                className="rounded-2xl bg-red-500 px-6 py-3 text-xs font-black text-white shadow-lg shadow-red-500/20 active:scale-95 transition-all"
                               >
-                                <MessageCircle className="h-3.5 w-3.5" /> Chat
+                                CANCELAR
                               </button>
-                              {driverInfo?.profile?.phone && (
-                                <>
-                                  <a
-                                    href={`sms:${driverInfo.profile.phone}`}
-                                    className="flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-bold text-foreground active:scale-95 transition-transform hover:bg-muted/80"
-                                    title="Enviar SMS"
-                                  >
-                                    <MessageCircle className="h-3.5 w-3.5" /> SMS
-                                  </a>
-                                  <button
-                                    onClick={() =>
-                                      handleCallDriver(
-                                        driverInfo.profile?.phone,
-                                        driverInfo.profile?.full_name,
-                                      )
-                                    }
-                                    className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground active:scale-95 transition-transform hover:opacity-90"
-                                  >
-                                    <Phone className="h-3.5 w-3.5" /> Chamar
-                                  </button>
-                                </>
-                              )}
-                              <SOSButton phoneNumber="111" />
-                            </>
-                          )}
-                          {r.status === "completed" && !r.paid_at && (
-                            <button
-                              onClick={() => setCompletionRideId(r.id)}
-                              className="rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground active:scale-95 transition-transform"
-                            >
-                              Pagar agora
-                            </button>
-                          )}
+                            ) : (
+                              <div className="flex gap-3">
+                                <button
+                                  onClick={() => setChatRideId(r.id)}
+                                  className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm hover:bg-muted/80 active:scale-95 transition-all"
+                                >
+                                  <MessageCircle className="h-7 w-7" />
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleCallDriver(
+                                      driverInfo?.profile?.phone,
+                                      driverInfo?.profile?.full_name,
+                                    )
+                                  }
+                                  className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all"
+                                >
+                                  <Phone className="h-7 w-7" />
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
+
+                        {/* SOS Section - Professional Style */}
+                        {["accepted", "arriving", "in_progress"].includes(r.status) && (
+                          <div className="mt-5 pt-5 border-t border-border/20">
+                            <div className="flex items-center justify-between mb-4">
+                              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500/80">Segurança LegoTaxi</span>
+                              <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                            </div>
+                            <SOSButton variant="inline" className="w-full gap-4" />
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -535,90 +575,85 @@ function MyRidesPage() {
             )}
 
             {/* Histórico */}
-            <section className="space-y-3 pb-6">
-              <h2 className="px-1 font-display text-sm font-bold uppercase tracking-widest text-muted-foreground">
+            <section className="space-y-4">
+              <h2 className="px-1 font-display text-sm font-black uppercase tracking-widest text-muted-foreground/40">
                 Histórico
               </h2>
-              <div className="rounded-2xl border border-border bg-card shadow-sm divide-y divide-border overflow-hidden">
-                {ridesQuery.isLoading ? (
-                  <div className="py-12 text-center text-xs text-muted-foreground">
-                    <Loader2 className="inline h-4 w-4 animate-spin mr-2" /> A carregar…
-                  </div>
-                ) : completedRides.length === 0 ? (
-                  <div className="py-12 text-center px-6">
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Ainda não tens corridas concluídas.
-                    </p>
-                  </div>
-                ) : (
-                  completedRides.map((r) => {
+              {completedRides.length > 0 ? (
+                <div className="space-y-4">
+                  {completedRides.map((r) => {
                     const Icon = categoryIcon[r.category as keyof typeof categoryIcon] ?? Car;
                     return (
-                      <div key={r.id} className="px-4 py-3 flex items-center justify-between hover:bg-muted/30 transition">
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                            <Icon className="h-4 w-4" />
+                      <div
+                        key={r.id}
+                        onClick={() => navigate({ to: `/corridas/${r.id}` })}
+                        className="group flex items-center gap-4 rounded-3xl border border-border/40 bg-card/50 p-4 transition-all hover:bg-card hover:shadow-md active:scale-[0.98]"
+                      >
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                          <Icon className="h-6 w-6" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span className="font-display text-sm font-bold truncate">
+                              {r.dropoff_address.split(",")[0]}
+                            </span>
+                            <span className="font-display text-xs font-black">
+                              Kz {r.fare_kz.toLocaleString()}
+                            </span>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs font-semibold">
-                              {categoryLabel[r.category as keyof typeof categoryLabel]}
-                            </div>
-                            <div className="text-[10px] text-muted-foreground">
-                              {new Date(r.created_at).toLocaleDateString("pt-PT")}
-                            </div>
+                          <div className="mt-1 flex items-center gap-2 text-[10px] font-bold text-muted-foreground/60">
+                            <Clock className="h-3 w-3" />
+                            {new Date(r.created_at).toLocaleDateString("pt-AO", {
+                              day: "2-digit",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                            <span className="h-1 w-1 rounded-full bg-border" />
+                            <span className={cn(
+                              "uppercase tracking-widest",
+                              r.status === "completed" ? "text-emerald-500" : "text-red-500"
+                            )}>
+                              {statusLabel[r.status]}
+                            </span>
                           </div>
                         </div>
-                        <div className="font-display font-bold text-sm">
-                          Kz {Number(r.fare_kz).toLocaleString("pt-PT")}
-                        </div>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
                       </div>
                     );
-                  })
-                )}
-              </div>
+                  })}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted/30">
+                    <Clock className="h-8 w-8 text-muted-foreground/20" />
+                  </div>
+                  <p className="text-sm font-bold text-muted-foreground/50">Sem viagens anteriores</p>
+                </div>
+              )}
             </section>
           </div>
         </div>
+
+        {/* SOS Button Floating - Backup */}
+        {activeRides.length === 0 && <SOSButton variant="floating" className="bottom-28" />}
       </div>
 
-      {chatRideId && user && (() => {
-        const r = (rides ?? []).find((x) => x.id === chatRideId);
-        const drv = r?.driver_id ? driverInfoMap[r.driver_id] : null;
-        return (
-          <RideChat
-            rideId={chatRideId}
-            myUserId={user.id}
-            myRole="passenger"
-            counterpartName={drv?.profile?.full_name || "Motorista"}
-            counterpartAvatarUrl={drv?.profile?.avatar_url ?? null}
-            onClose={() => setChatRideId(null)}
-          />
-        );
-      })()}
-
-      {completionRideId && (() => {
-        const r = (rides ?? []).find((x) => x.id === completionRideId);
-        if (!r) return null;
-        const drv = r.driver_id ? driverInfoMap[r.driver_id] : null;
-        return (
-          <RideCompletionDialog
-            rideId={r.id}
-            fareKz={Number(r.fare_kz)}
-            paymentMethod={r.payment_method ?? "cash"}
-            role="passenger"
-            driverName={drv?.profile?.full_name ?? undefined}
-            initiallyPaid={!!r.paid_at}
-            initialCashbackKz={Number(r.cashback_kz ?? 0)}
-            initialRating={r.driver_rating ?? null}
-            onClose={() => {
-              setDismissedCompletion((s) => new Set([...s, completionRideId!]));
-              setCompletionRideId(null);
-              ridesQuery.refetch();
-              profileQuery.refetch();
-            }}
-          />
-        );
-      })()}
+      {/* Modals */}
+      {chatRideId && (
+        <RideChat rideId={chatRideId} onClose={() => setChatRideId(null)} />
+      )}
+      {completionRideId && (
+        <RideCompletionDialog
+          rideId={completionRideId}
+          onClose={() => {
+            setDismissedCompletion((prev) => new Set([...prev, completionRideId]));
+            setCompletionRideId(null);
+          }}
+        />
+      )}
     </AppShell>
   );
 }
+
+export default MyRidesPage;
