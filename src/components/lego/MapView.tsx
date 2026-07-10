@@ -388,21 +388,33 @@ export function MapView({
     const google = googleRef.current;
     const map = mapRef.current;
     if (!ready || !google || !map || !drawDirections) return;
-    if (!destinationLocation) return;
+    
+    // Se não tiver destino, limpa as direções
+    if (!destinationLocation) {
+      if (directionsRendererRef.current) {
+        directionsRendererRef.current.setDirections({ routes: [] });
+      }
+      return;
+    }
+
     // Prefere pickup escolhido; só usa a posição live se não houver pickup
     const origin = pickupLocation ?? driverLocation;
     if (!origin) return;
 
     const ds = new google.maps.DirectionsService();
-    const renderer =
-      directionsRendererRef.current ??
-      new google.maps.DirectionsRenderer({
+    if (!directionsRendererRef.current) {
+      directionsRendererRef.current = new google.maps.DirectionsRenderer({
         map,
         suppressMarkers: true,
-        preserveViewport: true,
-        polylineOptions: { strokeColor: "#0f172a", strokeOpacity: 0.9, strokeWeight: 5 },
+        preserveViewport: false, // Permitir que o mapa se ajuste à rota
+        polylineOptions: { 
+          strokeColor: "#10b981", // Verde estilo Uber/Lego para a rota principal
+          strokeOpacity: 0.8, 
+          strokeWeight: 6 
+        },
       });
-    directionsRendererRef.current = renderer;
+    }
+    const renderer = directionsRendererRef.current;
 
     ds.route(
       {
@@ -411,10 +423,17 @@ export function MapView({
         travelMode: google.maps.TravelMode.DRIVING,
       },
       (result: any, status: any) => {
-        if (status === "OK" && result) renderer.setDirections(result);
+        if (status === "OK" && result) {
+          renderer.setDirections(result);
+          // Ajustar o zoom para mostrar toda a rota se não for autoCenter (que foca no user)
+          if (!autoCenter) {
+            const bounds = result.routes[0].bounds;
+            map.fitBounds(bounds, 80);
+          }
+        }
       },
     );
-  }, [pickupLocation, destinationLocation, driverLocation, drawDirections, ready]);
+  }, [pickupLocation, destinationLocation, driverLocation, drawDirections, ready, autoCenter]);
 
   // Nearby drivers markers (only lat/lng — no identity)
   useEffect(() => {

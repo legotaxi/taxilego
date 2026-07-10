@@ -2,10 +2,11 @@ import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { MapView } from "./MapView";
 import { useGeolocationWatch } from "../../hooks/use-geolocation";
 import { useServerFn } from "@tanstack/react-start";
-import { updateDriverLocation } from "../../lib/driver.functions";
+import { updateDriverLocation, toggleOnlineStatus } from "../../lib/driver.functions";
 import { LUBANGO_CENTER } from "@/lib/google-maps-loader";
 import { calculateRoute, formatDistance, formatDuration, type RouteStep } from "@/lib/directions.functions";
 import { AlertCircle, Navigation2, MapPin, X, ExternalLink, Clock } from "lucide-react";
+import { toast } from "sonner";
 
 interface DriverMapViewProps {
   pickupLocation?: [number, number];
@@ -34,6 +35,7 @@ export function DriverMapView({
   initialOnlineStatus = false,
 }: DriverMapViewProps) {
   const updateLocationFn = useServerFn(updateDriverLocation);
+  const toggleOnlineFn = useServerFn(toggleOnlineStatus);
   const { coordinates, error, loading, isTracking, distanceTraveled, stopTracking } =
     useGeolocationWatch({
       enableHighAccuracy: true,
@@ -172,19 +174,31 @@ export function DriverMapView({
 
 
   // Gerenciar status online
-  const handleToggleOnlineStatus = useCallback(() => {
+  const handleToggleOnlineStatus = useCallback(async () => {
     const newStatus = !isOnline;
-    setIsOnline(newStatus);
-    onOnlineStatusChange?.(newStatus);
+    
+    try {
+      const res = await toggleOnlineFn({ data: { is_online: newStatus } });
+      if (res.ok) {
+        setIsOnline(newStatus);
+        onOnlineStatusChange?.(newStatus);
 
-    if (newStatus) {
-      setSessionStartTime(Date.now());
-      setSessionDistance(0);
-    } else {
-      stopTracking();
-      setSessionStartTime(null);
+        if (newStatus) {
+          setSessionStartTime(Date.now());
+          setSessionDistance(0);
+        } else {
+          stopTracking();
+          setSessionStartTime(null);
+        }
+        toast.success(newStatus ? "Estás agora ONLINE" : "Estás agora OFFLINE");
+      } else {
+        toast.error("Erro ao mudar status: " + res.error);
+      }
+    } catch (err) {
+      console.error("Erro ao mudar status online:", err);
+      toast.error("Erro ao mudar status online");
     }
-  }, [isOnline, onOnlineStatusChange, stopTracking]);
+  }, [isOnline, onOnlineStatusChange, stopTracking, toggleOnlineFn]);
 
   // Calcular tempo de sessão
   const getSessionDuration = useCallback((): string => {

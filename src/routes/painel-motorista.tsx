@@ -121,17 +121,18 @@ function DriverPanelContent() {
   const [completionRide, setCompletionRide] = useState<Ride | null>(null);
   const [passengerNames, setPassengerNames] = useState<Record<string, string>>({});
   const [driverCategories, setDriverCategories] = useState<string[]>([]);
+  const [isOnline, setIsOnline] = useState(false);
 
-  // Carregar a(s) categoria(s) que este motorista pode operar (com base no veículo)
+  // Carregar a(s) categoria(s) e o status online do motorista
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data: v } = await supabaseClient
-        .from("vehicles")
-        .select("category")
-        .eq("owner_id", user.id)
-        .maybeSingle();
-      if (v?.category) setDriverCategories([v.category]);
+      const [vRes, dRes] = await Promise.all([
+        supabaseClient.from("vehicles").select("category").eq("owner_id", user.id).maybeSingle(),
+        supabaseClient.from("drivers").select("is_online").eq("id", user.id).maybeSingle(),
+      ]);
+      if (vRes.data?.category) setDriverCategories([vRes.data.category]);
+      if (dRes.data) setIsOnline(dRes.data.is_online);
     })();
   }, [user]);
 
@@ -541,6 +542,8 @@ function DriverPanelContent() {
                 pickupAddress={active?.pickup_address}
                 destinationAddress={active?.dropoff_address}
                 rideStatus={active?.status}
+                initialOnlineStatus={isOnline}
+                onOnlineStatusChange={setIsOnline}
               />
             );
           })()}
@@ -549,14 +552,28 @@ function DriverPanelContent() {
 
         {/* Floating Top Header */}
         <div className="absolute inset-x-3 top-3 z-10 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5 rounded-2xl bg-background/90 px-3 py-2 shadow-xl backdrop-blur-md ring-1 ring-black/5">
+          <div className={cn(
+            "flex items-center gap-2.5 rounded-2xl px-3 py-2 shadow-xl backdrop-blur-md ring-1 ring-black/5 transition-all duration-500",
+            isOnline ? "bg-background/90" : "bg-neutral-900/90 text-white"
+          )}>
             <div className="relative flex h-2.5 w-2.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span>
+              <span className={cn(
+                "absolute inline-flex h-full w-full rounded-full opacity-75",
+                isOnline ? "animate-ping bg-green-400" : "bg-gray-500"
+              )}></span>
+              <span className={cn(
+                "relative inline-flex h-2.5 w-2.5 rounded-full",
+                isOnline ? "bg-green-500" : "bg-gray-400"
+              )}></span>
             </div>
             <div className="leading-tight">
-              <div className="text-xs font-bold tracking-tight">Lego Taxi · Online</div>
-              <div className="text-[9px] uppercase tracking-wider text-muted-foreground">
+              <div className="text-xs font-bold tracking-tight">
+                Lego Taxi · {isOnline ? "Online" : "Offline"}
+              </div>
+              <div className={cn(
+                "text-[9px] uppercase tracking-wider",
+                isOnline ? "text-muted-foreground" : "text-white/50"
+              )}>
                 by Repair Lubatec
               </div>
             </div>

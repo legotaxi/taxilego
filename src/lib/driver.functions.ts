@@ -186,3 +186,20 @@ export const updateDriverLocation = createServerFn({ method: "POST" })
     if (error) return { ok: false, error: error.message };
     return { ok: true, error: null };
   });
+
+export const toggleOnlineStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ is_online: z.boolean() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { error } = await supabase
+      .from("drivers")
+      .update({
+        is_online: data.is_online,
+        last_location_update: new Date().toISOString(),
+      })
+      .eq("id", userId);
+
+    if (error) return { ok: false, error: error.message };
+    return { ok: true, error: null };
+  });

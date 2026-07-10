@@ -133,7 +133,8 @@ function PedirPage() {
       } catch {}
     };
     load();
-    const iv = setInterval(load, 8000);
+    // Aumentado para 4s para melhor percepção de tempo real dos carros no mapa
+    const iv = setInterval(load, 4000);
     return () => {
       cancelled = true;
       clearInterval(iv);
