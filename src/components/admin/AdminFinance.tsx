@@ -75,11 +75,11 @@ export default function AdminFinance() {
   }
 
   const typeMeta: Record<string, { label: string; icon: typeof Gift; color: string }> = {
-    ride_payment: { label: "Pagamento", icon: ArrowDownLeft, color: "text-red-600 bg-red-50" },
-    ride_earning: { label: "Ganho", icon: ArrowUpRight, color: "text-emerald-600 bg-emerald-50" },
-    bonus: { label: "Cashback 10%", icon: Gift, color: "text-purple-600 bg-purple-50" },
-    topup: { label: "Recarga", icon: ArrowUpRight, color: "text-blue-600 bg-blue-50" },
-    withdrawal: { label: "Levantamento", icon: ArrowDownLeft, color: "text-orange-600 bg-orange-50" },
+    ride_payment: { label: "Pagamento", icon: ArrowDownLeft, color: "text-yellow-600 bg-yellow-50" },
+    ride_earning: { label: "Ganho", icon: ArrowUpRight, color: "text-yellow-600 bg-yellow-50" },
+    bonus: { label: "Cashback 10%", icon: Gift, color: "text-yellow-600 bg-yellow-50" },
+    topup: { label: "Recarga", icon: ArrowUpRight, color: "text-yellow-600 bg-yellow-50" },
+    withdrawal: { label: "Levantamento", icon: ArrowDownLeft, color: "text-yellow-600 bg-yellow-50" },
   };
 
   return (
@@ -99,7 +99,7 @@ export default function AdminFinance() {
                 Kz {(financials?.totalRevenue || 0).toLocaleString("pt-PT")}
               </p>
             </div>
-            <div className="p-2.5 rounded-lg bg-emerald-100 text-emerald-600">
+            <div className="p-2.5 rounded-lg bg-yellow-100 text-yellow-600">
               <DollarSign className="h-5 w-5" />
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function AdminFinance() {
                 Kz {(financials?.totalCashback || 0).toLocaleString("pt-PT")}
               </p>
             </div>
-            <div className="p-2.5 rounded-lg bg-purple-100 text-purple-600">
+            <div className="p-2.5 rounded-lg bg-yellow-100 text-yellow-600">
               <Gift className="h-5 w-5" />
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function AdminFinance() {
                 {financials?.paidRides || 0} / {financials?.totalRides || 0}
               </p>
             </div>
-            <div className="p-2.5 rounded-lg bg-blue-100 text-blue-600">
+            <div className="p-2.5 rounded-lg bg-yellow-100 text-yellow-600">
               <TrendingUp className="h-5 w-5" />
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function AdminFinance() {
                 ).toLocaleString("pt-PT", { maximumFractionDigits: 0 })}
               </p>
             </div>
-            <div className="p-2.5 rounded-lg bg-amber-100 text-amber-600">
+            <div className="p-2.5 rounded-lg bg-yellow-100 text-yellow-600">
               <Wallet className="h-5 w-5" />
             </div>
           </div>
@@ -224,7 +224,7 @@ export default function AdminFinance() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className={`text-sm font-bold ${positive ? "text-emerald-600" : "text-red-600"}`}>
+                    <div className={`text-sm font-bold ${positive ? "text-yellow-600" : "text-yellow-600"}`}>
                       {positive ? "+" : ""}
                       Kz {Number(t.amount_kz).toLocaleString("pt-PT")}
                     </div>

@@ -402,9 +402,9 @@ export function DriverMapView({
       {/* Geolocation/Sync Errors - Premium Alerts */}
       {(error || updateError) && (
         <div className="absolute top-4 left-4 right-4 z-50 pointer-events-none">
-          <div className="bg-white border-l-4 border-red-500 p-4 rounded-2xl shadow-2xl max-w-sm mx-auto pointer-events-auto flex items-start gap-4">
-            <div className="bg-red-50 p-2 rounded-xl">
-              <AlertCircle className="h-5 w-5 text-red-600" />
+          <div className="bg-white border-l-4 border-yellow-500 p-4 rounded-2xl shadow-2xl max-w-sm mx-auto pointer-events-auto flex items-start gap-4">
+            <div className="bg-yellow-50 p-2 rounded-xl">
+              <AlertCircle className="h-5 w-5 text-yellow-600" />
             </div>
             <div>
               <p className="text-xs font-black text-gray-900 uppercase tracking-tight">Problema de Conexão</p>

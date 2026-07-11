@@ -131,21 +131,21 @@ export function PassengerMapView({
           <div className="bg-white rounded-2xl p-6 text-center shadow-2xl max-w-sm mx-4 pointer-events-auto">
             {isGeocoding ? (
               <>
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-3 text-blue-600" />
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-3 text-yellow-600" />
                 <p className="font-semibold text-gray-800">Processando localização...</p>
                 <p className="text-xs text-gray-600 mt-2">Por favor aguarde</p>
               </>
             ) : (
               <>
-                <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
                   <p className="font-semibold text-gray-800 text-sm flex items-center gap-2 justify-center">
-                    <MapPin className="h-4 w-4 text-blue-600" />
+                    <MapPin className="h-4 w-4 text-yellow-600" />
                     Clique no mapa para selecionar{" "}
                     {selectionMode === "pickup" ? "ponto de recolha" : "destino"}
                   </p>
                 </div>
                 {geocodingError && (
-                  <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                  <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
                     {geocodingError}
                   </div>
                 )}
@@ -164,7 +164,7 @@ export function PassengerMapView({
 
       {/* Error message if geolocation fails */}
       {error && (
-        <div className="absolute top-4 left-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm z-20 flex items-start gap-2 max-w-xs">
+        <div className="absolute top-4 left-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg text-sm z-20 flex items-start gap-2 max-w-xs">
           <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold">Erro de localização</p>
@@ -176,7 +176,7 @@ export function PassengerMapView({
       {/* Loading indicator */}
       {loading && !selectionMode && (
         <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm border border-gray-200 px-4 py-2 rounded-lg text-sm z-20 flex items-center gap-2 max-w-xs">
-          <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+          <Loader2 className="h-4 w-4 animate-spin text-yellow-600" />
           <span className="text-gray-700">Obtendo localização...</span>
         </div>
       )}
@@ -184,12 +184,12 @@ export function PassengerMapView({
       {/* Tracking status indicator — pill centrada, abaixo do topo, sem sobrepor o menu */}
       {isTracking && !loading && (
         <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-[calc(max(env(safe-area-inset-top),1rem)+0.75rem)] z-20">
-          <div className="flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md border border-emerald-200 px-3 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+          <div className="flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md border border-yellow-200 px-3 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inset-0 rounded-full bg-emerald-400 opacity-70 animate-ping" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              <span className="absolute inset-0 rounded-full bg-yellow-400 opacity-70 animate-ping" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-yellow-500" />
             </span>
-            <span className="text-[11px] font-semibold tracking-wide text-emerald-700">Rastreamento activo</span>
+            <span className="text-[11px] font-semibold tracking-wide text-yellow-700">Rastreamento activo</span>
           </div>
         </div>
       )}
@@ -198,7 +198,7 @@ export function PassengerMapView({
       {distanceTraveled > 0 && (
         <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg px-3 py-2 z-20">
           <p className="text-[10px] uppercase tracking-wider text-gray-600 font-semibold">Percorrido</p>
-          <p className="text-sm font-bold text-blue-600">{distanceTraveled.toFixed(2)} km</p>
+          <p className="text-sm font-bold text-yellow-600">{distanceTraveled.toFixed(2)} km</p>
         </div>
       )}
 
@@ -206,7 +206,7 @@ export function PassengerMapView({
       {isTracking && (
         <button
           onClick={handleToggleTracking}
-          className="absolute bottom-4 right-4 px-3 py-2 bg-red-600 text-white text-xs font-semibold rounded-lg hover:bg-red-700 transition shadow-lg z-20"
+          className="absolute bottom-4 right-4 px-3 py-2 bg-yellow-600 text-white text-xs font-semibold rounded-lg hover:bg-yellow-700 transition shadow-lg z-20"
           title="Parar rastreamento"
         >
           Parar Rastreamento

@@ -653,7 +653,7 @@ function PedirPage() {
                   <div className="text-[10px] text-neutral-600 uppercase">min</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-base font-bold text-green-600">
+                  <div className="text-base font-bold text-yellow-600">
                     {currentFare.toLocaleString("pt-PT")}
                   </div>
                   <div className="text-[10px] text-neutral-600 uppercase">Kz</div>

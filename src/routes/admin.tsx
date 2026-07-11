@@ -402,11 +402,11 @@ function AdminPage() {
                     label: "Receita total",
                     value: `Kz ${live.totalRevenueKz.toLocaleString("pt-AO")}`,
                     icon: DollarSign,
-                    color: "text-emerald-600",
+                    color: "text-yellow-600",
                   },
-                  { label: "Corridas activas", value: String(live.activeRides), icon: Zap, color: "text-blue-600" },
-                  { label: "Motoristas aprovados", value: String(live.onlineDrivers), icon: Users, color: "text-purple-600" },
-                  { label: "Passageiros", value: String(live.totalUsers), icon: Activity, color: "text-orange-600" },
+                  { label: "Corridas activas", value: String(live.activeRides), icon: Zap, color: "text-yellow-600" },
+                  { label: "Motoristas aprovados", value: String(live.onlineDrivers), icon: Users, color: "text-yellow-600" },
+                  { label: "Passageiros", value: String(live.totalUsers), icon: Activity, color: "text-yellow-600" },
                 ].map((k) => (
                   <div
                     key={k.label}

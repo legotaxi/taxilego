@@ -220,9 +220,9 @@ export function PassengerApp() {
           aria-label="Promoções"
         >
           <Gift className="h-5 w-5" strokeWidth={2} />
-          <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-300" />
+          <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-yellow-500">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-yellow-400 opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-yellow-300" />
           </span>
         </button>
       </div>

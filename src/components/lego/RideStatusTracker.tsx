@@ -72,11 +72,11 @@ export function RideStatusTracker({ ride, onCancel, onContact }: RideStatusTrack
   const getStatusColor = (status: string): string => {
     const colors: Record<string, string> = {
       requested: "bg-yellow-100 text-yellow-800",
-      accepted: "bg-blue-100 text-blue-800",
-      arriving: "bg-purple-100 text-purple-800",
-      in_progress: "bg-green-100 text-green-800",
-      completed: "bg-emerald-100 text-emerald-800",
-      cancelled: "bg-red-100 text-red-800",
+      accepted: "bg-yellow-100 text-yellow-800",
+      arriving: "bg-yellow-100 text-yellow-800",
+      in_progress: "bg-yellow-100 text-yellow-800",
+      completed: "bg-yellow-100 text-yellow-800",
+      cancelled: "bg-yellow-100 text-yellow-800",
     };
     return colors[status] || "bg-gray-100 text-gray-800";
   };
@@ -111,10 +111,10 @@ export function RideStatusTracker({ ride, onCancel, onContact }: RideStatusTrack
           {/* Status Header */}
           <div className={`p-4 rounded-xl text-white text-center ${
             ride.status === "completed"
-              ? "bg-gradient-to-r from-green-500 to-green-600"
+              ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
               : ride.status === "cancelled"
-                ? "bg-gradient-to-r from-red-500 to-red-600"
-                : "bg-gradient-to-r from-blue-500 to-blue-600"
+                ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
+                : "bg-gradient-to-r from-yellow-500 to-yellow-600"
           }`}>
             <p className="text-sm font-semibold opacity-90">Status da Corrida</p>
             <p className="text-2xl font-bold">{getStatusLabel(ride.status)}</p>
@@ -132,9 +132,9 @@ export function RideStatusTracker({ ride, onCancel, onContact }: RideStatusTrack
                   <div
                     className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
                       isActive
-                        ? "bg-blue-600 text-white"
+                        ? "bg-yellow-600 text-white"
                         : "bg-gray-200 text-gray-600"
-                    } ${isCurrent ? "ring-2 ring-blue-400" : ""}`}
+                    } ${isCurrent ? "ring-2 ring-yellow-400" : ""}`}
                   >
                     {step.icon}
                   </div>
@@ -162,7 +162,7 @@ export function RideStatusTracker({ ride, onCancel, onContact }: RideStatusTrack
                     className="w-12 h-12 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                  <div className="w-12 h-12 rounded-full bg-yellow-600 flex items-center justify-center text-white font-bold">
                     {ride.driver.name.charAt(0)}
                   </div>
                 )}
@@ -186,14 +186,14 @@ export function RideStatusTracker({ ride, onCancel, onContact }: RideStatusTrack
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={onContact}
-                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-white border-2 border-blue-600 text-blue-600 font-semibold hover:bg-blue-50 transition"
+                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-white border-2 border-yellow-600 text-yellow-600 font-semibold hover:bg-yellow-50 transition"
                 >
                   <Phone className="h-4 w-4" />
                   Ligar
                 </button>
                 <button
                   onClick={onContact}
-                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-yellow-600 text-white font-semibold hover:bg-yellow-700 transition"
                 >
                   <MessageCircle className="h-4 w-4" />
                   Mensagem
@@ -206,7 +206,7 @@ export function RideStatusTracker({ ride, onCancel, onContact }: RideStatusTrack
           <div className="space-y-3">
             {/* Recolha */}
             <div className="flex gap-3">
-              <MapPin className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <MapPin className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-gray-600 uppercase">Recolha</p>
                 <p className="text-sm text-gray-800">{ride.pickupAddress}</p>
@@ -215,7 +215,7 @@ export function RideStatusTracker({ ride, onCancel, onContact }: RideStatusTrack
 
             {/* Destino */}
             <div className="flex gap-3">
-              <MapPin className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <MapPin className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-gray-600 uppercase">Destino</p>
                 <p className="text-sm text-gray-800">{ride.dropoffAddress}</p>
@@ -226,15 +226,15 @@ export function RideStatusTracker({ ride, onCancel, onContact }: RideStatusTrack
           {/* Detalhes */}
           <div className="grid grid-cols-3 gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
             <div className="text-center">
-              <div className="text-lg font-bold text-blue-600">{ride.distance.toFixed(1)}</div>
+              <div className="text-lg font-bold text-yellow-600">{ride.distance.toFixed(1)}</div>
               <p className="text-xs text-gray-600">km</p>
             </div>
             <div className="text-center">
-              <div className="text-lg font-bold text-orange-600">{ride.eta || ride.duration}</div>
+              <div className="text-lg font-bold text-yellow-600">{ride.eta || ride.duration}</div>
               <p className="text-xs text-gray-600">min</p>
             </div>
             <div className="text-center">
-              <div className="text-lg font-bold text-green-600">{ride.fare}</div>
+              <div className="text-lg font-bold text-yellow-600">{ride.fare}</div>
               <p className="text-xs text-gray-600">Kz</p>
             </div>
           </div>
@@ -243,7 +243,7 @@ export function RideStatusTracker({ ride, onCancel, onContact }: RideStatusTrack
           {["requested", "accepted", "arriving"].includes(ride.status) && (
             <button
               onClick={onCancel}
-              className="w-full py-3 rounded-lg font-semibold text-red-600 bg-red-50 border-2 border-red-200 hover:bg-red-100 transition"
+              className="w-full py-3 rounded-lg font-semibold text-yellow-600 bg-yellow-50 border-2 border-yellow-200 hover:bg-yellow-100 transition"
             >
               Cancelar Corrida
             </button>
@@ -251,7 +251,7 @@ export function RideStatusTracker({ ride, onCancel, onContact }: RideStatusTrack
 
           {/* Avaliação (se concluída) */}
           {ride.status === "completed" && (
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
+            <div className="bg-gradient-to-r from-yellow-50 to-yellow-50 p-4 rounded-xl border border-yellow-200">
               <h3 className="font-semibold text-gray-800 mb-2">Avalie a Corrida</h3>
               <div className="flex justify-center gap-2 mb-3">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -263,7 +263,7 @@ export function RideStatusTracker({ ride, onCancel, onContact }: RideStatusTrack
                   </button>
                 ))}
               </div>
-              <button className="w-full py-2 rounded-lg font-semibold text-white bg-green-600 hover:bg-green-700 transition">
+              <button className="w-full py-2 rounded-lg font-semibold text-white bg-yellow-600 hover:bg-yellow-700 transition">
                 Enviar Avaliação
               </button>
             </div>

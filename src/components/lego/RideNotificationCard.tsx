@@ -50,12 +50,12 @@ export function RideNotificationCard({
 
   const getCategoryColor = (category: string): string => {
     const colors: Record<string, string> = {
-      moto: "from-orange-500 to-orange-600",
-      normal: "from-blue-500 to-blue-600",
-      xl: "from-purple-500 to-purple-600",
+      moto: "from-yellow-500 to-yellow-600",
+      normal: "from-yellow-500 to-yellow-600",
+      xl: "from-yellow-500 to-yellow-600",
       premium: "from-yellow-500 to-yellow-600",
-      shared: "from-green-500 to-green-600",
-      delivery: "from-red-500 to-red-600",
+      shared: "from-yellow-500 to-yellow-600",
+      delivery: "from-yellow-500 to-yellow-600",
     };
     return colors[category] || "from-gray-500 to-gray-600";
   };
@@ -97,7 +97,7 @@ export function RideNotificationCard({
             {/* Recolha */}
             <div className="flex gap-3">
               <div className="flex-shrink-0 pt-1">
-                <MapPin className="h-5 w-5 text-blue-600" />
+                <MapPin className="h-5 w-5 text-yellow-600" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Recolha</p>
@@ -118,7 +118,7 @@ export function RideNotificationCard({
             {/* Destino */}
             <div className="flex gap-3">
               <div className="flex-shrink-0 pt-1">
-                <MapPin className="h-5 w-5 text-red-600" />
+                <MapPin className="h-5 w-5 text-yellow-600" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Destino</p>
@@ -133,7 +133,7 @@ export function RideNotificationCard({
           <div className="grid grid-cols-3 gap-3 pt-2 border-t border-gray-200">
             {/* Distância */}
             <div className="text-center">
-              <div className="text-lg font-bold text-blue-600">
+              <div className="text-lg font-bold text-yellow-600">
                 {ride.distance_km ? `${ride.distance_km.toFixed(1)}` : "?"}
               </div>
               <p className="text-xs text-gray-600">km</p>
@@ -142,8 +142,8 @@ export function RideNotificationCard({
             {/* Tempo */}
             <div className="text-center">
               <div className="flex items-center justify-center gap-1">
-                <Clock className="h-4 w-4 text-orange-600" />
-                <span className="text-lg font-bold text-orange-600">
+                <Clock className="h-4 w-4 text-yellow-600" />
+                <span className="text-lg font-bold text-yellow-600">
                   {ride.duration_min || "?"}
                 </span>
               </div>
@@ -152,7 +152,7 @@ export function RideNotificationCard({
 
             {/* Tarifa */}
             <div className="text-center">
-              <div className="text-lg font-bold text-green-600">{ride.fare_kz}</div>
+              <div className="text-lg font-bold text-yellow-600">{ride.fare_kz}</div>
               <p className="text-xs text-gray-600">Kz</p>
             </div>
           </div>
@@ -164,7 +164,7 @@ export function RideNotificationCard({
               {ride.passenger_phone && (
                 <a
                   href={`tel:${ride.passenger_phone}`}
-                  className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  className="flex items-center gap-2 text-sm text-yellow-600 hover:text-yellow-700 font-medium"
                 >
                   <Phone className="h-4 w-4" />
                   {ride.passenger_phone}
@@ -194,7 +194,7 @@ export function RideNotificationCard({
           <button
             onClick={handleAccept}
             disabled={isAccepting || isLoading}
-            className="px-4 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="px-4 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isAccepting ? (
               <>

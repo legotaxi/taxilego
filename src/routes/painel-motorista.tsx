@@ -97,11 +97,11 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   requested: "bg-yellow-100 text-yellow-800",
-  accepted: "bg-blue-100 text-blue-800",
-  arriving: "bg-purple-100 text-purple-800",
-  in_progress: "bg-green-100 text-green-800",
-  completed: "bg-emerald-100 text-emerald-800",
-  cancelled: "bg-red-100 text-red-800",
+  accepted: "bg-yellow-100 text-yellow-800",
+  arriving: "bg-yellow-100 text-yellow-800",
+  in_progress: "bg-yellow-100 text-yellow-800",
+  completed: "bg-yellow-100 text-yellow-800",
+  cancelled: "bg-yellow-100 text-yellow-800",
 };
 
 function DriverPanelContent() {
@@ -364,7 +364,7 @@ function DriverPanelContent() {
               <button
                 onClick={() => handleArriving(ride.id)}
                 disabled={busy === ride.id}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-purple-50 py-2 text-xs font-medium text-purple-700 hover:bg-purple-100 disabled:opacity-50 min-w-[120px]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
               >
                 {busy === ride.id ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -376,7 +376,7 @@ function DriverPanelContent() {
               <button
                 onClick={() => handleStartRide(ride.id)}
                 disabled={busy === ride.id}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-blue-50 py-2 text-xs font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50 min-w-[120px]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
               >
                 {busy === ride.id ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -388,7 +388,7 @@ function DriverPanelContent() {
               <button
                 onClick={() => handleCancelRide(ride.id)}
                 disabled={busy === ride.id}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-red-50 py-2 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50 min-w-[120px]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
               >
                 <XCircle className="h-3.5 w-3.5" />
                 Cancelar
@@ -400,7 +400,7 @@ function DriverPanelContent() {
               <button
                 onClick={() => handleStartRide(ride.id)}
                 disabled={busy === ride.id}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-blue-50 py-2 text-xs font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50 min-w-[120px]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
               >
                 {busy === ride.id ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -412,7 +412,7 @@ function DriverPanelContent() {
               <button
                 onClick={() => handleCancelRide(ride.id)}
                 disabled={busy === ride.id}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-red-50 py-2 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50 min-w-[120px]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
               >
                 <XCircle className="h-3.5 w-3.5" />
                 Cancelar
@@ -423,7 +423,7 @@ function DriverPanelContent() {
             <button
               onClick={() => handleCompleteRide(ride.id)}
               disabled={busy === ride.id}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-green-50 py-2 text-xs font-medium text-green-700 hover:bg-green-100 disabled:opacity-50 min-w-[120px]"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
             >
               {busy === ride.id ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -560,11 +560,11 @@ function DriverPanelContent() {
             <div className="relative flex h-2.5 w-2.5">
               <span className={cn(
                 "absolute inline-flex h-full w-full rounded-full opacity-75",
-                isOnline ? "animate-ping bg-green-400" : "bg-gray-500"
+                isOnline ? "animate-ping bg-yellow-400" : "bg-gray-500"
               )}></span>
               <span className={cn(
                 "relative inline-flex h-2.5 w-2.5 rounded-full",
-                isOnline ? "bg-green-500" : "bg-gray-400"
+                isOnline ? "bg-yellow-500" : "bg-gray-400"
               )}></span>
             </div>
             <div className="leading-tight">

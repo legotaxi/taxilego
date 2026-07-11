@@ -30,10 +30,10 @@ interface RideRequestPanelProps {
 }
 
 const PAYMENT_METHODS = [
-  { id: "cash", icon: CashIcon, label: "Cash", color: "from-green-500 to-green-600" },
-  { id: "mcx_express", icon: Smartphone, label: "Multicaixa Express", color: "from-blue-500 to-blue-600" },
-  { id: "card", icon: CreditCard, label: "Cartão", color: "from-purple-500 to-purple-600" },
-  { id: "wallet", icon: CreditCard, label: "Carteira", color: "from-orange-500 to-orange-600" },
+  { id: "cash", icon: CashIcon, label: "Cash", color: "from-yellow-500 to-yellow-600" },
+  { id: "mcx_express", icon: Smartphone, label: "Multicaixa Express", color: "from-yellow-500 to-yellow-600" },
+  { id: "card", icon: CreditCard, label: "Cartão", color: "from-yellow-500 to-yellow-600" },
+  { id: "wallet", icon: CreditCard, label: "Carteira", color: "from-yellow-500 to-yellow-600" },
 ];
 
 /**
@@ -62,12 +62,12 @@ export function RideRequestPanel({
 
   const getCategoryColor = (cat: string): string => {
     const colors: Record<string, string> = {
-      moto: "from-orange-500 to-orange-600",
-      normal: "from-blue-500 to-blue-600",
-      xl: "from-purple-500 to-purple-600",
+      moto: "from-yellow-500 to-yellow-600",
+      normal: "from-yellow-500 to-yellow-600",
+      xl: "from-yellow-500 to-yellow-600",
       premium: "from-yellow-500 to-yellow-600",
-      shared: "from-green-500 to-green-600",
-      delivery: "from-red-500 to-red-600",
+      shared: "from-yellow-500 to-yellow-600",
+      delivery: "from-yellow-500 to-yellow-600",
     };
     return colors[cat] || "from-gray-500 to-gray-600";
   };
@@ -116,8 +116,8 @@ export function RideRequestPanel({
           {/* Recolha */}
           <div className="flex gap-3">
             <div className="flex-shrink-0 pt-1">
-              <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                <MapPin className="h-4 w-4 text-blue-600" />
+              <div className="h-8 w-8 rounded-lg bg-yellow-100 flex items-center justify-center">
+                <MapPin className="h-4 w-4 text-yellow-600" />
               </div>
             </div>
             <div className="flex-1 min-w-0">
@@ -129,7 +129,7 @@ export function RideRequestPanel({
           {/* Linha divisória com ícone */}
           <div className="flex gap-3 py-2">
             <div className="flex-shrink-0 flex justify-center">
-              <div className="w-0.5 h-8 bg-gradient-to-b from-blue-400 to-red-400" />
+              <div className="w-0.5 h-8 bg-gradient-to-b from-yellow-400 to-yellow-400" />
             </div>
             <div className="flex-1" />
           </div>
@@ -137,8 +137,8 @@ export function RideRequestPanel({
           {/* Destino */}
           <div className="flex gap-3">
             <div className="flex-shrink-0 pt-1">
-              <div className="h-8 w-8 rounded-lg bg-red-100 flex items-center justify-center">
-                <MapPin className="h-4 w-4 text-red-600" />
+              <div className="h-8 w-8 rounded-lg bg-yellow-100 flex items-center justify-center">
+                <MapPin className="h-4 w-4 text-yellow-600" />
               </div>
             </div>
             <div className="flex-1 min-w-0">
@@ -159,27 +159,27 @@ export function RideRequestPanel({
           {/* Tempo */}
           <div className="p-3 bg-card rounded-2xl border border-border/50 text-center hover:shadow-soft transition-all">
             <div className="flex items-center justify-center gap-1">
-              <Clock className="h-4 w-4 text-orange-600" />
-              <span className="text-lg font-bold text-orange-600">{duration}</span>
+              <Clock className="h-4 w-4 text-yellow-600" />
+              <span className="text-lg font-bold text-yellow-600">{duration}</span>
             </div>
             <p className="text-xs text-muted-foreground font-medium">min</p>
           </div>
 
           {/* Tarifa */}
           <div className="p-3 bg-card rounded-2xl border border-border/50 text-center hover:shadow-soft transition-all">
-            <div className="text-lg font-bold text-green-600">{fare}</div>
+            <div className="text-lg font-bold text-yellow-600">{fare}</div>
             <p className="text-xs text-muted-foreground font-medium">Kz</p>
           </div>
         </div>
 
         {/* Cashback Info Banner */}
-        <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-100 rounded-2xl flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
             <Wallet className="h-5 w-5" />
           </div>
           <div className="flex-1">
-            <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Cashback Lego 🔥</p>
-            <p className="text-sm font-medium text-emerald-700">Ganhe <span className="font-bold">Kz {Math.round(fare * 0.1)}</span> de volta nesta viagem!</p>
+            <p className="text-xs font-bold text-yellow-800 uppercase tracking-wider">Cashback Lego 🔥</p>
+            <p className="text-sm font-medium text-yellow-700">Ganhe <span className="font-bold">Kz {Math.round(fare * 0.1)}</span> de volta nesta viagem!</p>
           </div>
         </div>
 

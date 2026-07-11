@@ -40,9 +40,9 @@ const statusLabel: Record<string, string> = {
 };
 
 const statusColor: Record<string, string> = {
-  open: "bg-amber-100 text-amber-800",
-  in_progress: "bg-blue-100 text-blue-800",
-  resolved: "bg-emerald-100 text-emerald-800",
+  open: "bg-yellow-100 text-yellow-800",
+  in_progress: "bg-yellow-100 text-yellow-800",
+  resolved: "bg-yellow-100 text-yellow-800",
   closed: "bg-gray-200 text-gray-700",
 };
 
