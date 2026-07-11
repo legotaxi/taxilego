@@ -14,6 +14,7 @@ import {
   CreditCard,
   Phone,
   Star,
+  Wallet,
 } from "lucide-react";
 import { requestRide, getDriverInfo } from "@/lib/rides.functions";
 import { reverseGeocode } from "@/lib/maps.functions";
