@@ -74,10 +74,10 @@ export const acceptRide = createServerFn({ method: "POST" })
           : "O seu motorista está a caminho";
         const { sendPushToUser } = await import("./push.server");
         await sendPushToUser(ride.passenger_id, {
-          title: "LegoTaxi · Corrida aceite",
-          body: `${profile?.full_name ?? "Motorista"} — ${vehicleLine}`,
-          url: "/pedir",
-          tag: `ride-${data.id}`,
+          title: "Motorista Aceitou ✓",
+          body: `${profile?.full_name ?? "Motorista"} está a caminho de si. ${vehicleLine}`, url: "/pedir",
+          tag: `legotaxi-ride-${data.id}`,
+          type: "accepted",
         });
       }
     } catch (e) {
@@ -131,21 +131,23 @@ export const updateRideStatus = createServerFn({ method: "POST" })
           .maybeSingle();
         if (ride?.passenger_id) {
           const titleMap = {
-            arriving: "LegoTaxi · Motorista a chegar",
-            in_progress: "LegoTaxi · Viagem iniciada",
-            completed: "LegoTaxi · Viagem terminada",
+            arriving: "Motorista Chegou 📍",
+            in_progress: "A caminho do destino 🛣️",
+            completed: "Corrida Concluída ✓",
           } as const;
           const bodyMap = {
-            arriving: "O seu motorista está quase no ponto de recolha.",
-            in_progress: "Boa viagem! A caminho do destino.",
-            completed: `Chegou ao destino. Total: ${ride.fare_kz ?? ""} Kz`,
+            arriving: "O motorista está no local de recolha. Dirija-se ao veículo.",
+            in_progress: "Relaxe, estamos a caminho do destino!",
+            completed: `Chegou ao destino! Total: ${ride.fare_kz ?? 0} Kz`,
           } as const;
           const { sendPushToUser } = await import("./push.server");
           await sendPushToUser(ride.passenger_id, {
             title: titleMap[data.status as keyof typeof titleMap],
             body: bodyMap[data.status as keyof typeof bodyMap],
             url: "/pedir",
-            tag: `ride-${data.id}`,
+            tag: `legotaxi-ride-${data.id}`,
+            type: data.status,
+            requireInteraction: true,
           });
         }
       } catch (e) {

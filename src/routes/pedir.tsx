@@ -282,6 +282,35 @@ function PedirPage() {
     } else navigate({ to: "/" });
   };
 
+  // Registar subscrição push automaticamente quando pede corrida
+  const registerPushIfNeeded = async () => {
+    if (!user) return;
+    try {
+      const { enablePush, pushSupported, pushPermission } = await import("@/lib/push-client");
+      if (!pushSupported()) return;
+      const perm = pushPermission();
+      if (perm === "granted") {
+        // Já tem permissão — registar/re-registar subscrição
+        const sub = await enablePush();
+        if (sub) {
+          try {
+            await import("@/lib/push.functions").then((m) => m.savePushSubscription({ data: sub }));
+          } catch {}
+        }
+      } else if (perm === "default") {
+        // Pedir permissão (sem interromper o fluxo)
+        const sub = await enablePush();
+        if (sub) {
+          try {
+            await import("@/lib/push.functions").then((m) => m.savePushSubscription({ data: sub }));
+          } catch {}
+        }
+      }
+    } catch (e) {
+      console.error("registerPushIfNeeded error:", e);
+    }
+  };
+
   const submitRide = async () => {
     if (!user) {
       toast.error("Inicia sessão para pedir uma corrida");
@@ -290,6 +319,10 @@ function PedirPage() {
     }
     if (!dropoffLocation) return;
     setSubmitting(true);
+
+    // Registar push antes de pedir a corrida
+    void registerPushIfNeeded();
+
     try {
       const res = await requestRideFn({
         data: {

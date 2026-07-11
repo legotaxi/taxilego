@@ -7,6 +7,8 @@ interface PushContent {
   url?: string;
   tag?: string;
   image?: string;
+  type?: string; // tipo do evento (accepted, arriving, in_progress, completed, cancelled)
+  requireInteraction?: boolean; // manter notificação no ecrã bloqueado
 }
 
 /**
