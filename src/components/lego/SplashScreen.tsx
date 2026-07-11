@@ -43,21 +43,20 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
           )} 
         />
 
-        {/* Text Logo */}
+        {/* Logo */}
         <div className="flex flex-col items-center overflow-hidden">
-          <h1 
+          <img
+            src={legoLogo.url}
+            alt="Lego Taxi"
             className={cn(
-              "font-display text-5xl font-black tracking-tighter text-white transition-all duration-1000 ease-out",
-              stage === "initial" ? "translate-y-20 opacity-0" : "translate-y-0 opacity-100"
+              "h-40 w-auto object-contain transition-all duration-1000 ease-out",
+              stage === "initial" ? "translate-y-20 opacity-0 scale-95" : "translate-y-0 opacity-100 scale-100"
             )}
-            style={{ fontFamily: "'Big Shoulders Display', sans-serif" }}
-          >
-            LEGO <span className="text-primary">TAXI</span>
-          </h1>
-          
-          <p 
+          />
+
+          <p
             className={cn(
-              "mt-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40 transition-all duration-1000 delay-300 ease-out",
+              "mt-4 text-[10px] font-bold uppercase tracking-[0.4em] text-white/50 transition-all duration-1000 delay-300 ease-out",
               stage === "initial" ? "translate-y-10 opacity-0" : "translate-y-0 opacity-100"
             )}
           >
