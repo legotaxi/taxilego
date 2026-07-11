@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import legoLogo from "@/assets/legotaxi-logo.png.asset.json";
 
 /**
  * SplashScreen - Animação de entrada estilo Uber para o Lego Taxi
