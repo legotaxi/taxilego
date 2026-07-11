@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, Loader2, Star, Wallet, X } from "lucide-react";
+import { CheckCircle2, Loader2, Star, Wallet, X, User } from "lucide-react";
 import { toast } from "sonner";
-import { confirmRidePayment, rateDriver } from "@/lib/ride-payment.functions";
+import { confirmRidePayment, rateDriver, getRideSummary } from "@/lib/ride-payment.functions";
 
 interface RideCompletionDialogProps {
   rideId: string;
@@ -10,6 +10,7 @@ interface RideCompletionDialogProps {
   paymentMethod: string;
   role: "passenger" | "driver";
   driverName?: string;
+  passengerName?: string;
   initiallyPaid?: boolean;
   initialCashbackKz?: number;
   initialRating?: number | null;
@@ -27,7 +28,7 @@ const METHOD_LABEL: Record<string, string> = {
 
 /**
  * Dialog mostrado a ambos passageiro e motorista quando a corrida termina.
- * - Motorista: vê o preço e confirma recebimento.
+ * - Motorista: vê o preço, confirma recebimento E VÊ A CLASSIFICAÇÃO do passageiro.
  * - Passageiro: vê o preço, paga, recebe cashback 10% e classifica o motorista.
  */
 export function RideCompletionDialog({
@@ -36,6 +37,7 @@ export function RideCompletionDialog({
   paymentMethod,
   role,
   driverName,
+  passengerName,
   initiallyPaid = false,
   initialCashbackKz = 0,
   initialRating = null,
@@ -44,6 +46,7 @@ export function RideCompletionDialog({
 }: RideCompletionDialogProps) {
   const confirmPayment = useServerFn(confirmRidePayment);
   const rateFn = useServerFn(rateDriver);
+  const getSummaryFn = useServerFn(getRideSummary);
 
   const [paid, setPaid] = useState(initiallyPaid);
   const [cashback, setCashback] = useState(initialCashbackKz);
@@ -52,7 +55,25 @@ export function RideCompletionDialog({
   const [hover, setHover] = useState<number | null>(null);
   const [submittingRating, setSubmittingRating] = useState(false);
 
-  // Auto-confirm payment for driver-side as soon as dialog opens (driver always wants to register receipt)
+  // Para o motorista: carregar a classificação do passageiro
+  const [driverRating, setDriverRating] = useState<number | null>(null);
+  const [loadingRating, setLoadingRating] = useState(false);
+
+  // Carregar classificação do passageiro quando o motorista abre o dialog
+  useEffect(() => {
+    if (role === "driver" && initialRating === null) {
+      setLoadingRating(true);
+      getSummaryFn({ data: { ride_id: rideId } })
+        .then((res) => {
+          if (res.ride) {
+            setDriverRating(res.ride.driver_rating ?? null);
+          }
+        })
+        .finally(() => setLoadingRating(false));
+    }
+  }, [role, rideId, initialRating, getSummaryFn]);
+
+  // Auto-confirm payment for driver-side as soon as dialog opens
   useEffect(() => {
     if (!paid && role === "driver") {
       handlePay();
@@ -104,6 +125,19 @@ export function RideCompletionDialog({
 
   const fmt = (v: number) => `Kz ${Number(v).toLocaleString("pt-PT")}`;
 
+  // Render de estrelas para leitura (não clicável)
+  const StarDisplay = ({ value }: { value: number }) => (
+    <div className="flex items-center justify-center gap-1">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Star
+          key={s}
+          className={`h-6 w-6 ${s <= value ? "fill-primary text-primary" : "text-muted-foreground/30"}`}
+        />
+      ))}
+      <span className="ml-2 text-lg font-black">{value.toFixed(1)}</span>
+    </div>
+  );
+
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center sm:p-4">
       <div className="absolute inset-0 bg-foreground/60 backdrop-blur-sm" onClick={onClose} />
@@ -124,7 +158,7 @@ export function RideCompletionDialog({
           <h2 className="font-display text-xl font-bold">Corrida concluída</h2>
           <p className="mt-1 text-xs text-muted-foreground">
             {role === "driver"
-              ? "Receba o pagamento e prepare a próxima."
+              ? "Receba o pagamento e veja a avaliação do passageiro."
               : "Obrigado por viajar com a Lego Taxi."}
           </p>
         </div>
@@ -133,7 +167,7 @@ export function RideCompletionDialog({
         <div className="px-6">
           <div className="rounded-2xl border border-border bg-card p-5 text-center">
             <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
-              {role === "driver" ? "Valor a receber" : "Total a pagar"}
+              {role === "driver" ? "Valor recebido" : "Total a pagar"}
             </p>
             <p className="mt-1 font-display text-4xl font-black tracking-tight">
               {fmt(fareKz)}
@@ -143,6 +177,43 @@ export function RideCompletionDialog({
             </p>
           </div>
         </div>
+
+        {/* ===== MOTORISTA: CLASSIFICAÇÃO DO PASSAGEIRO ===== */}
+        {role === "driver" && (
+          <div className="px-6 pt-4">
+            <div className="rounded-2xl border border-border bg-card p-5 text-center">
+              <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                Classificação do Passageiro
+              </p>
+
+              {loadingRating ? (
+                <div className="mt-3 flex items-center justify-center gap-2 text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="text-xs">A carregar...</span>
+                </div>
+              ) : driverRating !== null && driverRating > 0 ? (
+                <>
+                  <div className="mt-3">
+                    <StarDisplay value={driverRating} />
+                  </div>
+                  <div className="mt-3 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                    <User className="h-3.5 w-3.5" />
+                    <span>
+                      {passengerName ?? "Passageiro"} classificou esta corrida com{" "}
+                      <span className="font-bold text-primary">{driverRating}</span> estrela{driverRating !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="mt-3">
+                  <p className="text-xs text-muted-foreground/60">
+                    Aguardando classificação do passageiro...
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Passenger payment block */}
         {role === "passenger" && (
