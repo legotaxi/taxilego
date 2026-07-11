@@ -12,7 +12,10 @@ import {
   Smartphone,
   Banknote as CashIcon,
   CreditCard,
+  Wallet,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { getWallet } from "@/lib/wallet.functions";
 
 interface RideRequestPanelProps {
   pickupAddress: string;
@@ -48,8 +51,14 @@ export function RideRequestPanel({
   isSubmitting = false,
   error = null,
 }: RideRequestPanelProps) {
+  const fetchWallet = useServerFn(getWallet);
   const [selectedPayment, setSelectedPayment] = useState("cash");
   const [isExpanded, setIsExpanded] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetchWallet().then(res => setWalletBalance(res.balance));
+  }, [fetchWallet]);
 
   const getCategoryColor = (cat: string): string => {
     const colors: Record<string, string> = {
@@ -163,6 +172,17 @@ export function RideRequestPanel({
           </div>
         </div>
 
+        {/* Cashback Info Banner */}
+        <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+            <Wallet className="h-5 w-5" />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Cashback Lego 🔥</p>
+            <p className="text-sm font-medium text-emerald-700">Ganhe <span className="font-bold">Kz {Math.round(fare * 0.1)}</span> de volta nesta viagem!</p>
+          </div>
+        </div>
+
         {/* Método de pagamento - Premium selection */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
@@ -184,24 +204,36 @@ export function RideRequestPanel({
             {PAYMENT_METHODS.map((method) => {
               const Icon = method.icon;
               const isSelected = selectedPayment === method.id;
+              const isWallet = method.id === "wallet";
+              const hasBalance = isWallet && walletBalance !== null && walletBalance >= fare;
+              
               return (
                 <button
                   key={method.id}
                   onClick={() => setSelectedPayment(method.id)}
+                  disabled={isWallet && walletBalance !== null && walletBalance < fare}
                   className={`w-full p-3 rounded-2xl border-2 transition-all duration-200 flex items-center gap-3 tap-highlight-none ${
                     isSelected
                       ? `border-primary bg-primary/10 shadow-soft`
                       : `border-border bg-card hover:border-border/80 hover:shadow-soft`
-                  }`}
+                  } ${isWallet && walletBalance !== null && walletBalance < fare ? "opacity-50 grayscale cursor-not-allowed" : ""}`}
                 >
                   <div className={`p-2 rounded-lg ${
                     isSelected ? "bg-primary/20" : "bg-muted"
                   }`}>
                     <Icon className={`h-5 w-5 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
                   </div>
-                  <span className={`font-semibold text-sm ${isSelected ? "text-primary" : "text-foreground"}`}>
-                    {method.label}
-                  </span>
+                  <div className="flex flex-col items-start">
+                    <span className={`font-semibold text-sm ${isSelected ? "text-primary" : "text-foreground"}`}>
+                      {method.label}
+                    </span>
+                    {isWallet && walletBalance !== null && (
+                      <span className={`text-[10px] ${walletBalance < fare ? "text-destructive font-bold" : "text-muted-foreground"}`}>
+                        Saldo: Kz {walletBalance.toLocaleString("pt-PT")} 
+                        {walletBalance < fare && " (Insuficiente)"}
+                      </span>
+                    )}
+                  </div>
                   {isSelected && <CheckCircle2 className="h-5 w-5 text-primary ml-auto" />}
                 </button>
               );

@@ -43,7 +43,7 @@ export const Route = createFileRoute("/pedir")({
 });
 
 type Category = "normal" | "xl" | "moto" | "delivery";
-type PayMethod = "cash" | "reference" | "card";
+type PayMethod = "cash" | "reference" | "card" | "wallet";
 type Step = "destination" | "offer" | "payment" | "searching" | "arriving" | "rating";
 
 const PRICING: Record<Category, { base: number; perKm: number; perMin: number; min: number }> = {
@@ -70,6 +70,7 @@ const PAY_OPTIONS: Array<{ id: PayMethod; label: string; icon: typeof Banknote }
   { id: "cash",      label: "Dinheiro",      icon: Banknote },
   { id: "reference", label: "Transferência", icon: ArrowRightLeft },
   { id: "card",      label: "TPA",           icon: CreditCard },
+  { id: "wallet",    label: "Carteira",      icon: Wallet },
 ];
 
 function computeFare(cat: Category, km: number, min: number) {
@@ -338,6 +339,12 @@ function PedirPage() {
               )}
             </button>
             <button
+              onClick={() => {
+                toast.info("Lego Cashback 🔥", {
+                  description: "Ganhe 10% de volta em cada viagem concluída para usar na sua próxima corrida!",
+                  duration: 5000,
+                });
+              }}
               className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-primary shadow-[0_8px_24px_rgba(0,0,0,0.15)] active:scale-95 transition-transform"
               aria-label="Promoções"
             >
