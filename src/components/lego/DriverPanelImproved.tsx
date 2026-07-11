@@ -63,11 +63,11 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   requested: "bg-yellow-100 text-yellow-800 border-yellow-300",
-  accepted: "bg-blue-100 text-blue-800 border-blue-300",
-  arriving: "bg-purple-100 text-purple-800 border-purple-300",
-  in_progress: "bg-green-100 text-green-800 border-green-300",
-  completed: "bg-emerald-100 text-emerald-800 border-emerald-300",
-  cancelled: "bg-red-100 text-red-800 border-red-300",
+  accepted: "bg-yellow-100 text-yellow-800 border-yellow-300",
+  arriving: "bg-yellow-100 text-yellow-800 border-yellow-300",
+  in_progress: "bg-yellow-100 text-yellow-800 border-yellow-300",
+  completed: "bg-yellow-100 text-yellow-800 border-yellow-300",
+  cancelled: "bg-yellow-100 text-yellow-800 border-yellow-300",
 };
 
 /**
@@ -93,12 +93,12 @@ export function DriverPanelImproved({
 
   const getCategoryColor = (category: string): string => {
     const colors: Record<string, string> = {
-      moto: "from-orange-500 to-orange-600",
-      normal: "from-blue-500 to-blue-600",
-      xl: "from-purple-500 to-purple-600",
+      moto: "from-yellow-500 to-yellow-600",
+      normal: "from-yellow-500 to-yellow-600",
+      xl: "from-yellow-500 to-yellow-600",
       premium: "from-yellow-500 to-yellow-600",
-      shared: "from-green-500 to-green-600",
-      delivery: "from-red-500 to-red-600",
+      shared: "from-yellow-500 to-yellow-600",
+      delivery: "from-yellow-500 to-yellow-600",
     };
     return colors[category] || "from-gray-500 to-gray-600";
   };
@@ -127,7 +127,7 @@ export function DriverPanelImproved({
   return (
     <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 overflow-y-auto pb-20">
       {/* Header com estatísticas */}
-      <div className="sticky top-0 z-20 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 shadow-lg">
+      <div className="sticky top-0 z-20 bg-gradient-to-r from-yellow-600 to-yellow-700 text-white p-4 shadow-lg">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-2xl font-bold">Painel do Motorista</h1>
           <button
@@ -170,14 +170,14 @@ export function DriverPanelImproved({
         {activeRides.length > 0 && (
           <div>
             <h2 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <Navigation className="h-5 w-5 text-green-600" />
+              <Navigation className="h-5 w-5 text-yellow-600" />
               Corridas Activas ({activeRides.length})
             </h2>
             <div className="space-y-2">
               {activeRides.map((ride) => (
                 <div
                   key={ride.id}
-                  className="bg-white rounded-xl shadow-sm border-l-4 border-green-500 overflow-hidden"
+                  className="bg-white rounded-xl shadow-sm border-l-4 border-yellow-500 overflow-hidden"
                 >
                   <div className="p-3">
                     {/* Header */}
@@ -192,17 +192,17 @@ export function DriverPanelImproved({
                           {getCategoryLabel(ride.category)}
                         </span>
                       </div>
-                      <div className="text-lg font-bold text-green-600">{ride.fare_kz} Kz</div>
+                      <div className="text-lg font-bold text-yellow-600">{ride.fare_kz} Kz</div>
                     </div>
 
                     {/* Localização */}
                     <div className="space-y-1 mb-2">
                       <div className="flex gap-2 text-sm">
-                        <MapPin className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <MapPin className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
                         <span className="text-gray-700 line-clamp-1">{ride.pickup_address}</span>
                       </div>
                       <div className="flex gap-2 text-sm">
-                        <MapPin className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                        <MapPin className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
                         <span className="text-gray-700 line-clamp-1">{ride.dropoff_address}</span>
                       </div>
                     </div>
@@ -210,15 +210,15 @@ export function DriverPanelImproved({
                     {/* Detalhes */}
                     <div className="grid grid-cols-3 gap-2 mb-2 text-xs">
                       <div className="bg-gray-50 p-2 rounded text-center">
-                        <p className="font-bold text-blue-600">{ride.distance_km?.toFixed(1) || "?"}</p>
+                        <p className="font-bold text-yellow-600">{ride.distance_km?.toFixed(1) || "?"}</p>
                         <p className="text-gray-600">km</p>
                       </div>
                       <div className="bg-gray-50 p-2 rounded text-center">
-                        <p className="font-bold text-orange-600">{ride.duration_min || "?"}</p>
+                        <p className="font-bold text-yellow-600">{ride.duration_min || "?"}</p>
                         <p className="text-gray-600">min</p>
                       </div>
                       <div className="bg-gray-50 p-2 rounded text-center">
-                        <p className="font-bold text-green-600">{ride.fare_kz}</p>
+                        <p className="font-bold text-yellow-600">{ride.fare_kz}</p>
                         <p className="text-gray-600">Kz</p>
                       </div>
                     </div>
@@ -228,13 +228,13 @@ export function DriverPanelImproved({
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           onClick={() => onUpdateStatus(ride.id, "arriving")}
-                          className="px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
+                          className="px-3 py-2 rounded-lg bg-yellow-600 text-white text-sm font-semibold hover:bg-yellow-700 transition"
                         >
                           A Chegar
                         </button>
                         <button
                           onClick={() => onUpdateStatus(ride.id, "cancelled")}
-                          className="px-3 py-2 rounded-lg bg-red-100 text-red-600 text-sm font-semibold hover:bg-red-200 transition"
+                          className="px-3 py-2 rounded-lg bg-yellow-100 text-yellow-600 text-sm font-semibold hover:bg-yellow-200 transition"
                         >
                           Cancelar
                         </button>
@@ -243,7 +243,7 @@ export function DriverPanelImproved({
                     {ride.status === "arriving" && (
                       <button
                         onClick={() => onUpdateStatus(ride.id, "in_progress")}
-                        className="w-full px-3 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition"
+                        className="w-full px-3 py-2 rounded-lg bg-yellow-600 text-white text-sm font-semibold hover:bg-yellow-700 transition"
                       >
                         Iniciar Corrida
                       </button>
@@ -251,7 +251,7 @@ export function DriverPanelImproved({
                     {ride.status === "in_progress" && (
                       <button
                         onClick={() => onUpdateStatus(ride.id, "completed")}
-                        className="w-full px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition"
+                        className="w-full px-3 py-2 rounded-lg bg-yellow-600 text-white text-sm font-semibold hover:bg-yellow-700 transition"
                       >
                         Concluir Corrida
                       </button>
@@ -289,20 +289,20 @@ export function DriverPanelImproved({
                           {getCategoryLabel(ride.category)}
                         </span>
                       </div>
-                      <div className="text-lg font-bold text-green-600">{ride.fare_kz} Kz</div>
+                      <div className="text-lg font-bold text-yellow-600">{ride.fare_kz} Kz</div>
                     </div>
 
                     {/* Localização */}
                     <div className="space-y-1 mb-2">
                       <div className="flex gap-2 text-sm">
-                        <MapPin className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <MapPin className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
                         <span className="text-gray-700 line-clamp-1">{ride.pickup_address}</span>
                       </div>
                       <div className="flex gap-2 text-sm">
                         <Navigation2 className="h-4 w-4 text-gray-400 rotate-45 flex-shrink-0 mt-0.5" />
                       </div>
                       <div className="flex gap-2 text-sm">
-                        <MapPin className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                        <MapPin className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
                         <span className="text-gray-700 line-clamp-1">{ride.dropoff_address}</span>
                       </div>
                     </div>
@@ -310,15 +310,15 @@ export function DriverPanelImproved({
                     {/* Detalhes */}
                     <div className="grid grid-cols-3 gap-2 mb-3 text-xs">
                       <div className="bg-gray-50 p-2 rounded text-center">
-                        <p className="font-bold text-blue-600">{ride.distance_km?.toFixed(1) || "?"}</p>
+                        <p className="font-bold text-yellow-600">{ride.distance_km?.toFixed(1) || "?"}</p>
                         <p className="text-gray-600">km</p>
                       </div>
                       <div className="bg-gray-50 p-2 rounded text-center">
-                        <p className="font-bold text-orange-600">{ride.duration_min || "?"}</p>
+                        <p className="font-bold text-yellow-600">{ride.duration_min || "?"}</p>
                         <p className="text-gray-600">min</p>
                       </div>
                       <div className="bg-gray-50 p-2 rounded text-center">
-                        <p className="font-bold text-green-600">{ride.fare_kz}</p>
+                        <p className="font-bold text-yellow-600">{ride.fare_kz}</p>
                         <p className="text-gray-600">Kz</p>
                       </div>
                     </div>
@@ -327,7 +327,7 @@ export function DriverPanelImproved({
                     <button
                       onClick={() => handleAcceptRide(ride.id)}
                       disabled={acceptingRideId === ride.id}
-                      className="w-full px-4 py-3 rounded-lg font-bold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="w-full px-4 py-3 rounded-lg font-bold text-white bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {acceptingRideId === ride.id ? (
                         <>

@@ -50,35 +50,35 @@ export default function AdminOverview() {
       label: "Total de Corridas",
       value: stats?.totalRides || 0,
       icon: MapPin,
-      color: "bg-blue-100 text-blue-600",
+      color: "bg-yellow-100 text-yellow-600",
       trend: "+12%",
     },
     {
       label: "Corridas Ativas",
       value: stats?.activeRides || 0,
       icon: TrendingUp,
-      color: "bg-green-100 text-green-600",
+      color: "bg-yellow-100 text-yellow-600",
       trend: "+8%",
     },
     {
       label: "Motoristas Aprovados",
       value: stats?.approvedDrivers || 0,
       icon: Users,
-      color: "bg-purple-100 text-purple-600",
+      color: "bg-yellow-100 text-yellow-600",
       trend: "+5%",
     },
     {
       label: "Total de Passageiros",
       value: stats?.totalPassengers || 0,
       icon: Users,
-      color: "bg-orange-100 text-orange-600",
+      color: "bg-yellow-100 text-yellow-600",
       trend: "+15%",
     },
     {
       label: "Receita Total",
       value: `Kz ${(stats?.totalRevenue || 0).toLocaleString("pt-PT")}`,
       icon: DollarSign,
-      color: "bg-emerald-100 text-emerald-600",
+      color: "bg-yellow-100 text-yellow-600",
       trend: "+22%",
     },
   ];
@@ -111,7 +111,7 @@ export default function AdminOverview() {
                 <div>
                   <p className="text-sm text-muted-foreground font-medium">{kpi.label}</p>
                   <p className="text-2xl font-bold mt-2">{kpi.value}</p>
-                  <p className="text-xs text-green-600 font-semibold mt-2">{kpi.trend}</p>
+                  <p className="text-xs text-yellow-600 font-semibold mt-2">{kpi.trend}</p>
                 </div>
                 <div className={`p-3 rounded-lg ${kpi.color}`}>
                   <Icon className="h-6 w-6" />
@@ -144,9 +144,9 @@ export default function AdminOverview() {
           <h2 className="text-lg font-bold mb-4">Receita por Categoria</h2>
           <div className="space-y-3">
             {[
-              { name: "MotoTáxi", value: 35, color: "bg-orange-500" },
-              { name: "Táxi Normal", value: 40, color: "bg-blue-500" },
-              { name: "Táxi XL", value: 15, color: "bg-purple-500" },
+              { name: "MotoTáxi", value: 35, color: "bg-yellow-500" },
+              { name: "Táxi Normal", value: 40, color: "bg-yellow-500" },
+              { name: "Táxi XL", value: 15, color: "bg-yellow-500" },
               { name: "Premium", value: 10, color: "bg-yellow-500" },
             ].map((cat, idx) => (
               <div key={idx}>
@@ -184,10 +184,10 @@ export default function AdminOverview() {
               <div
                 className={`h-2 w-2 rounded-full ${
                   activity.status === "success"
-                    ? "bg-green-500"
+                    ? "bg-yellow-500"
                     : activity.status === "warning"
                       ? "bg-yellow-500"
-                      : "bg-blue-500"
+                      : "bg-yellow-500"
                 }`}
               />
             </div>

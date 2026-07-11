@@ -471,7 +471,7 @@ export function MapView({
     return (
       <div className="relative h-full w-full bg-slate-100 flex items-center justify-center">
         <div className="text-center p-6 bg-white rounded-lg shadow-lg max-w-sm">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-3" />
+          <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-3" />
           <p className="text-gray-800 font-semibold mb-2">Erro ao carregar o mapa</p>
           <p className="text-gray-600 text-sm mb-4">{error}</p>
         </div>
@@ -484,7 +484,7 @@ export function MapView({
       {!ready && (
         <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-20">
           <div className="flex flex-col items-center gap-2">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-yellow-600" />
             <p className="text-sm text-gray-600">A carregar mapa…</p>
           </div>
         </div>
@@ -508,13 +508,13 @@ export function MapView({
           <div className="text-xs space-y-2">
             {showSpeed && (
               <div className="flex items-center gap-2">
-                <Zap className="h-3.5 w-3.5 text-orange-500" />
+                <Zap className="h-3.5 w-3.5 text-yellow-500" />
                 <span className="text-gray-700">Velocidade em tempo real</span>
               </div>
             )}
             {showAccuracy && (
               <div className="flex items-center gap-2">
-                <MapPin className="h-3.5 w-3.5 text-blue-500" />
+                <MapPin className="h-3.5 w-3.5 text-yellow-500" />
                 <span className="text-gray-700">Precisão GPS</span>
               </div>
             )}

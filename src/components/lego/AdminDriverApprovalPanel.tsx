@@ -243,10 +243,10 @@ export function AdminDriverApprovalPanel() {
 
   const getStatusBadge = (status: string) => {
     const styles = {
-      pending: "bg-amber-100 text-amber-800",
-      approved: "bg-green-100 text-green-800",
-      rejected: "bg-red-100 text-red-800",
-      suspended: "bg-red-100 text-red-800",
+      pending: "bg-yellow-100 text-yellow-800",
+      approved: "bg-yellow-100 text-yellow-800",
+      rejected: "bg-yellow-100 text-yellow-800",
+      suspended: "bg-yellow-100 text-yellow-800",
     };
     const labels = {
       pending: "Pendente",
@@ -357,7 +357,7 @@ export function AdminDriverApprovalPanel() {
                         approveDriver(driver.id);
                       }}
                       disabled={approving === driver.id}
-                      className="flex items-center gap-1 rounded-lg bg-green-100 px-3 py-2 text-xs font-medium text-green-800 hover:bg-green-200 transition disabled:opacity-50"
+                      className="flex items-center gap-1 rounded-lg bg-yellow-100 px-3 py-2 text-xs font-medium text-yellow-800 hover:bg-yellow-200 transition disabled:opacity-50"
                     >
                       {approving === driver.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -372,7 +372,7 @@ export function AdminDriverApprovalPanel() {
                         rejectDriver(driver.id);
                       }}
                       disabled={rejecting === driver.id}
-                      className="flex items-center gap-1 rounded-lg bg-red-100 px-3 py-2 text-xs font-medium text-red-800 hover:bg-red-200 transition disabled:opacity-50"
+                      className="flex items-center gap-1 rounded-lg bg-yellow-100 px-3 py-2 text-xs font-medium text-yellow-800 hover:bg-yellow-200 transition disabled:opacity-50"
                     >
                       {rejecting === driver.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -441,7 +441,7 @@ export function AdminDriverApprovalPanel() {
                   <Car className="h-5 w-5 text-primary" />
                   <h3 className="font-display font-bold">Veículo do Motorista</h3>
                   {existingVehicleId && (
-                    <span className="ml-auto text-xs rounded-full bg-green-100 text-green-800 px-2 py-0.5">
+                    <span className="ml-auto text-xs rounded-full bg-yellow-100 text-yellow-800 px-2 py-0.5">
                       Atribuído
                     </span>
                   )}
@@ -548,7 +548,7 @@ export function AdminDriverApprovalPanel() {
                   <button
                     onClick={() => approveDriver(selectedDriver.id)}
                     disabled={approving === selectedDriver.id}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-green-100 px-4 py-3 font-medium text-green-800 hover:bg-green-200 transition disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-yellow-100 px-4 py-3 font-medium text-yellow-800 hover:bg-yellow-200 transition disabled:opacity-50"
                   >
                     {approving === selectedDriver.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -560,7 +560,7 @@ export function AdminDriverApprovalPanel() {
                   <button
                     onClick={() => rejectDriver(selectedDriver.id)}
                     disabled={rejecting === selectedDriver.id}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-red-100 px-4 py-3 font-medium text-red-800 hover:bg-red-200 transition disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-yellow-100 px-4 py-3 font-medium text-yellow-800 hover:bg-yellow-200 transition disabled:opacity-50"
                   >
                     {rejecting === selectedDriver.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

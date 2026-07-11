@@ -212,13 +212,13 @@ function WalletPage() {
                   const isIn = t.amount > 0;
                   return (
                     <div key={t.id} className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
-                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isIn ? "bg-emerald-100 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
+                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isIn ? "bg-yellow-100 text-yellow-600" : "bg-muted text-muted-foreground"}`}>
                         {isIn ? <ArrowDownLeft className="h-5 w-5" /> : <ArrowUpRight className="h-5 w-5" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <span className="font-display text-sm font-bold truncate">{t.description}</span>
-                          <span className={`font-display text-sm font-black ${isIn ? "text-emerald-600" : "text-foreground"}`}>
+                          <span className={`font-display text-sm font-black ${isIn ? "text-yellow-600" : "text-foreground"}`}>
                             {isIn ? "+" : "-"}{formatKz(t.amount)}
                           </span>
                         </div>

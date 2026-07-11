@@ -67,7 +67,7 @@ export function SOSButton({
       <div className={`fixed bottom-24 right-4 z-40 flex flex-col gap-2 ${className}`}>
         <button
           onClick={handleSMS}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-600 text-white shadow-2xl hover:bg-orange-700 active:scale-95 transition-all"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-yellow-600 text-white shadow-2xl hover:bg-yellow-700 active:scale-95 transition-all"
           title={`Enviar SMS de emergência (${cleanNumber})`}
           aria-label="Botão SMS de emergência"
         >
@@ -75,7 +75,7 @@ export function SOSButton({
         </button>
         <button
           onClick={handleCall}
-          className="flex h-16 w-16 items-center justify-center rounded-full bg-red-600 text-white shadow-2xl hover:bg-red-700 active:scale-95 transition-all animate-pulse"
+          className="flex h-16 w-16 items-center justify-center rounded-full bg-yellow-600 text-white shadow-2xl hover:bg-yellow-700 active:scale-95 transition-all animate-pulse"
           title={`Chamar polícia (${cleanNumber}) - Emergência`}
           aria-label="Botão de emergência SOS"
         >
@@ -89,7 +89,7 @@ export function SOSButton({
     <div className={`flex items-center gap-2 ${className}`}>
       <button
         onClick={handleCall}
-        className="flex items-center justify-center gap-2 rounded-full bg-red-600 px-4 py-2 text-xs font-bold text-white active:scale-95 transition-transform hover:bg-red-700"
+        className="flex items-center justify-center gap-2 rounded-full bg-yellow-600 px-4 py-2 text-xs font-bold text-white active:scale-95 transition-transform hover:bg-yellow-700"
         title={`Chamar polícia (${cleanNumber}) - Emergência`}
         aria-label="Botão de emergência SOS"
       >
@@ -98,7 +98,7 @@ export function SOSButton({
       </button>
       <button
         onClick={handleSMS}
-        className="flex items-center justify-center gap-2 rounded-full bg-orange-600 px-4 py-2 text-xs font-bold text-white active:scale-95 transition-transform hover:bg-orange-700"
+        className="flex items-center justify-center gap-2 rounded-full bg-yellow-600 px-4 py-2 text-xs font-bold text-white active:scale-95 transition-transform hover:bg-yellow-700"
         title={`Enviar SMS de emergência (${cleanNumber})`}
         aria-label="Botão SMS de emergência"
       >

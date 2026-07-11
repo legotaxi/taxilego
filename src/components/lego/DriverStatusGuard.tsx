@@ -104,15 +104,15 @@ export function DriverStatusGuard({
         <div className="max-w-md w-full text-center">
           {driverStatus === "pending" && (
             <>
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 mx-auto">
-                <Clock className="h-8 w-8 text-amber-600" />
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100 mx-auto">
+                <Clock className="h-8 w-8 text-yellow-600" />
               </div>
               <h1 className="font-display text-2xl font-bold mb-2">Candidatura em Análise</h1>
               <p className="text-muted-foreground mb-6">
                 Obrigado por se registar como motorista! Sua candidatura está sendo analisada pela nossa equipa de administração. Você receberá uma notificação assim que for aprovado.
               </p>
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
-                <p className="text-sm text-amber-900">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-6">
+                <p className="text-sm text-yellow-900">
                   ⏱️ Tempo estimado de análise: <strong>24-48 horas</strong>
                 </p>
               </div>
@@ -121,8 +121,8 @@ export function DriverStatusGuard({
 
           {driverStatus === "rejected" && (
             <>
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 mx-auto">
-                <AlertCircle className="h-8 w-8 text-red-600" />
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100 mx-auto">
+                <AlertCircle className="h-8 w-8 text-yellow-600" />
               </div>
               <h1 className="font-display text-2xl font-bold mb-2">Candidatura Rejeitada</h1>
               <p className="text-muted-foreground mb-6">
@@ -133,8 +133,8 @@ export function DriverStatusGuard({
 
           {driverStatus === "suspended" && (
             <>
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 mx-auto">
-                <AlertCircle className="h-8 w-8 text-red-600" />
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100 mx-auto">
+                <AlertCircle className="h-8 w-8 text-yellow-600" />
               </div>
               <h1 className="font-display text-2xl font-bold mb-2">Conta Suspensa</h1>
               <p className="text-muted-foreground mb-6">

@@ -18,16 +18,16 @@ type Ticket = {
 };
 
 const statusColors: Record<string, string> = {
-  open: "bg-red-100 text-red-800",
+  open: "bg-yellow-100 text-yellow-800",
   in_progress: "bg-yellow-100 text-yellow-800",
-  resolved: "bg-green-100 text-green-800",
+  resolved: "bg-yellow-100 text-yellow-800",
   closed: "bg-gray-200 text-gray-700",
 };
 
 const priorityColors: Record<string, string> = {
-  high: "text-red-600",
+  high: "text-yellow-600",
   medium: "text-yellow-600",
-  low: "text-green-600",
+  low: "text-yellow-600",
 };
 
 const statusLabels: Record<string, string> = {
@@ -85,9 +85,9 @@ export default function AdminSupport() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard label="Tickets Abertos" value={open} icon={AlertCircle} color="bg-red-100 text-red-600" />
+        <StatCard label="Tickets Abertos" value={open} icon={AlertCircle} color="bg-yellow-100 text-yellow-600" />
         <StatCard label="Em Progresso" value={inProgress} icon={Clock} color="bg-yellow-100 text-yellow-600" />
-        <StatCard label="Resolvidos" value={resolved} icon={CheckCircle} color="bg-green-100 text-green-600" />
+        <StatCard label="Resolvidos" value={resolved} icon={CheckCircle} color="bg-yellow-100 text-yellow-600" />
       </div>
 
       <div className="rounded-2xl bg-card border border-border shadow-sm overflow-hidden">

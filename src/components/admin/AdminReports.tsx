@@ -115,7 +115,7 @@ export default function AdminReports() {
             <Row label="Motoristas Totais" value={stats.totalDrivers.toLocaleString("pt-AO")} />
             <Row label="Utilizadores" value={stats.totalUsers.toLocaleString("pt-AO")} />
           </div>
-          <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+          <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-yellow-600">
             <TrendingUp className="h-3.5 w-3.5" /> Dados ao vivo da base de dados
           </div>
         </div>
@@ -157,7 +157,7 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
   return (
     <div className="flex justify-between items-center">
       <span className="text-sm text-muted-foreground">{label}</span>
-      <span className={`font-bold ${accent ? "text-emerald-600" : ""}`}>{value}</span>
+      <span className={`font-bold ${accent ? "text-yellow-600" : ""}`}>{value}</span>
     </div>
   );
 }

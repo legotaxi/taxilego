@@ -254,7 +254,7 @@ export function DriverRegistrationForm() {
   return (
     <div className="w-full max-w-2xl mx-auto">
       {!authLoading && !user && (
-        <div className="mb-5 flex items-start gap-2 rounded-2xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+        <div className="mb-5 flex items-start gap-2 rounded-2xl border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-900">
           <AlertCircle className="h-4 w-4 mt-0.5" />
           <div>
             Precisa de <button onClick={() => navigate({ to: "/login" })} className="font-bold underline">iniciar sessão</button> antes de enviar a candidatura.
@@ -263,7 +263,7 @@ export function DriverRegistrationForm() {
       )}
 
       {isNewDriver && (
-        <div className="mb-6 flex items-start gap-2 rounded-2xl border border-blue-300 bg-blue-50 p-3 text-sm text-blue-900">
+        <div className="mb-6 flex items-start gap-2 rounded-2xl border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-900">
           <AlertCircle className="h-4 w-4 mt-0.5" />
           <div>
             Os seus dados foram pré-preenchidos. Agora envie os seus documentos para aprovação.

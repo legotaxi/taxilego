@@ -148,7 +148,7 @@ function AdminConsole() {
                 {item.icon}
                 <span className="text-sm font-medium flex-1 text-left">{item.label}</span>
                 {item.badge && (
-                  <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                  <span className="bg-yellow-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                     {item.badge}
                   </span>
                 )}

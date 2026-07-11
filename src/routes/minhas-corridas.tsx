@@ -67,11 +67,11 @@ const categoryLabel = {
 
 const statusBadge: Record<string, string> = {
   requested: "bg-yellow-100 text-yellow-800",
-  accepted: "bg-blue-100 text-blue-800",
-  arriving: "bg-purple-100 text-purple-800",
-  in_progress: "bg-green-100 text-green-800",
-  completed: "bg-emerald-100 text-emerald-800",
-  cancelled: "bg-red-100 text-red-800",
+  accepted: "bg-yellow-100 text-yellow-800",
+  arriving: "bg-yellow-100 text-yellow-800",
+  in_progress: "bg-yellow-100 text-yellow-800",
+  completed: "bg-yellow-100 text-yellow-800",
+  cancelled: "bg-yellow-100 text-yellow-800",
 };
 
 const statusLabel: Record<string, string> = {
@@ -384,15 +384,15 @@ function MyRidesPage() {
                       <div className={cn(
                         "flex items-center justify-between px-6 py-3",
                         r.status === "requested" ? "bg-yellow-500/10" : 
-                        r.status === "accepted" || r.status === "arriving" ? "bg-blue-500/10" : 
-                        "bg-emerald-500/10"
+                        r.status === "accepted" || r.status === "arriving" ? "bg-yellow-500/10" : 
+                        "bg-yellow-500/10"
                       )}>
                         <div className="flex items-center gap-2">
                           <div className={cn(
                             "h-2 w-2 rounded-full animate-pulse",
                             r.status === "requested" ? "bg-yellow-500" : 
-                            r.status === "accepted" || r.status === "arriving" ? "bg-blue-500" : 
-                            "bg-emerald-500"
+                            r.status === "accepted" || r.status === "arriving" ? "bg-yellow-500" : 
+                            "bg-yellow-500"
                           )} />
                           <span className="font-display text-[10px] font-black uppercase tracking-[0.15em] opacity-80">
                             {statusLabel[r.status] ?? r.status}
@@ -472,10 +472,10 @@ function MyRidesPage() {
                                 <div className="mt-4 border-t border-white/10 pt-4">
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-500/20 text-blue-400">
+                                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-500/20 text-yellow-400">
                                         <Navigation2Icon />
                                       </div>
-                                      <span className="text-[11px] font-black uppercase tracking-widest text-blue-400">
+                                      <span className="text-[11px] font-black uppercase tracking-widest text-yellow-400">
                                         Motorista a caminho
                                       </span>
                                     </div>
@@ -501,7 +501,7 @@ function MyRidesPage() {
                           <div className="absolute left-2.5 top-2.5 bottom-2.5 w-0.5 bg-border/30" />
                           <div className="space-y-6 pl-9">
                             <div className="relative">
-                              <div className="absolute -left-9 top-1.5 h-5 w-5 rounded-full border-[5px] border-background bg-blue-500 shadow-sm" />
+                              <div className="absolute -left-9 top-1.5 h-5 w-5 rounded-full border-[5px] border-background bg-yellow-500 shadow-sm" />
                               <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/50 leading-none mb-1.5">Recolha</p>
                               <p className="truncate text-sm font-bold text-foreground/90">{r.pickup_address}</p>
                             </div>
@@ -529,7 +529,7 @@ function MyRidesPage() {
                             {r.status === "requested" ? (
                               <button
                                 onClick={() => handleCancelRide(r.id)}
-                                className="rounded-2xl bg-red-500 px-6 py-3 text-xs font-black text-white shadow-lg shadow-red-500/20 active:scale-95 transition-all"
+                                className="rounded-2xl bg-yellow-500 px-6 py-3 text-xs font-black text-white shadow-lg shadow-yellow-500/20 active:scale-95 transition-all"
                               >
                                 CANCELAR
                               </button>
@@ -561,8 +561,8 @@ function MyRidesPage() {
                         {["accepted", "arriving", "in_progress"].includes(r.status) && (
                           <div className="mt-5 pt-5 border-t border-border/20">
                             <div className="flex items-center justify-between mb-4">
-                              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500/80">Segurança LegoTaxi</span>
-                              <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-yellow-500/80">Segurança LegoTaxi</span>
+                              <div className="h-1.5 w-1.5 rounded-full bg-yellow-500 animate-pulse" />
                             </div>
                             <SOSButton variant="inline" className="w-full gap-4" />
                           </div>
@@ -612,7 +612,7 @@ function MyRidesPage() {
                             <span className="h-1 w-1 rounded-full bg-border" />
                             <span className={cn(
                               "uppercase tracking-widest",
-                              r.status === "completed" ? "text-emerald-500" : "text-red-500"
+                              r.status === "completed" ? "text-yellow-500" : "text-yellow-500"
                             )}>
                               {statusLabel[r.status]}
                             </span>

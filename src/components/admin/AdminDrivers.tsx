@@ -69,9 +69,9 @@ export default function AdminDrivers() {
 
   const statusColors: Record<string, string> = {
     pending: "bg-yellow-100 text-yellow-800",
-    approved: "bg-green-100 text-green-800",
-    rejected: "bg-red-100 text-red-800",
-    suspended: "bg-orange-100 text-orange-800",
+    approved: "bg-yellow-100 text-yellow-800",
+    rejected: "bg-yellow-100 text-yellow-800",
+    suspended: "bg-yellow-100 text-yellow-800",
   };
 
   const statusLabels: Record<string, string> = {
@@ -142,14 +142,14 @@ export default function AdminDrivers() {
                           <>
                             <button
                               onClick={() => handleApproveDriver(driver.id)}
-                              className="p-2 rounded-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+                              className="p-2 rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors"
                               title="Aprovar"
                             >
                               <CheckCircle className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => handleRejectDriver(driver.id)}
-                              className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                              className="p-2 rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors"
                               title="Rejeitar"
                             >
                               <XCircle className="h-4 w-4" />
@@ -159,7 +159,7 @@ export default function AdminDrivers() {
                         {driver.status === "approved" && (
                           <button
                             onClick={() => handleSuspendDriver(driver.id)}
-                            className="p-2 rounded-lg bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors"
+                            className="p-2 rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors"
                             title="Suspender"
                           >
                             <Clock className="h-4 w-4" />

@@ -64,7 +64,7 @@ export default function AdminPromotions() {
                 {promotions.filter((p) => p.status === "active").length}
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-green-100 text-green-600">
+            <div className="p-3 rounded-lg bg-yellow-100 text-yellow-600">
               <Gift className="h-6 w-6" />
             </div>
           </div>
@@ -78,7 +78,7 @@ export default function AdminPromotions() {
                 {promotions.reduce((sum, p) => sum + p.usageCount, 0)}
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-blue-100 text-blue-600">
+            <div className="p-3 rounded-lg bg-yellow-100 text-yellow-600">
               <Gift className="h-6 w-6" />
             </div>
           </div>
@@ -98,7 +98,7 @@ export default function AdminPromotions() {
                   .toLocaleString("pt-PT")}
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-purple-100 text-purple-600">
+            <div className="p-3 rounded-lg bg-yellow-100 text-yellow-600">
               <Gift className="h-6 w-6" />
             </div>
           </div>
@@ -138,7 +138,7 @@ export default function AdminPromotions() {
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                         promo.status === "active"
-                          ? "bg-green-100 text-green-800"
+                          ? "bg-yellow-100 text-yellow-800"
                           : "bg-gray-100 text-gray-800"
                       }`}
                     >
@@ -147,12 +147,12 @@ export default function AdminPromotions() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <button className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
+                      <button className="p-2 rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors">
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDeletePromotion(promo.id)}
-                        className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                        className="p-2 rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
