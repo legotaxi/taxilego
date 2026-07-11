@@ -1,0 +1,7 @@
+Logo analysis:
+- Background color of logo icon: #050404 (very dark black)
+- The logo image has a dark/black rounded square background with the yellow taxi and "LegoTaxi" text
+- Current SplashScreen background: #0b0b0d (dark but slightly different from logo)
+- Needed: match SplashScreen background to the logo's actual dark color ~#050404 or pure black #000000
+- The logo appears to be the app-icon.png which shows the taxi on a dark rounded square
+- The legotaxi-logo.png is referenced in SplashScreen but hosted on lovableproject.com
