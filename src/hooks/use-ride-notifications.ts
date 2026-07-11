@@ -20,26 +20,31 @@ export interface RideNotification {
 }
 
 /**
- * Hook para gerenciar notificações de corridas em tempo real
- * Usa Supabase Realtime para atualizações instantâneas
+ * Hook para gerenciar notificações de corridas em tempo real.
+ * Usa Supabase Realtime para atualizações instantâneas.
+ *
+ * Só notifica motoristas que estão ONLINE — evita que motoristas offline
+ * recebam chamadas de corridas que não podem aceitar.
  *
  * @param onNewRide Callback quando chega novo pedido
  * @param onRideUpdate Callback em qualquer update
- * @param options.allowedCategories Lista de categorias que este motorista pode aceitar (vehicle category match).
- *                                   Se vazio/undefined recebe todas (compatibilidade).
+ * @param options.allowedCategories Lista de categorias que este motorista pode aceitar.
+ * @param options.isOnline Estado online do motorista. Se false, silenciar notificações.
  */
 export function useRideNotifications(
   onNewRide?: (ride: RideNotification) => void,
   onRideUpdate?: (ride: RideNotification) => void,
-  options?: { allowedCategories?: string[] },
+  options?: { allowedCategories?: string[]; isOnline?: boolean },
 ) {
   const [newRides, setNewRides] = useState<RideNotification[]>([]);
   const subscriptionRef = useRef<any>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const notificationCountRef = useRef(0);
   const allowedCategories = options?.allowedCategories;
+  const isOnline = options?.isOnline ?? true; // por defeito true para compatibilidade
+  const isOnlineRef = useRef(isOnline);
+  isOnlineRef.current = isOnline;
 
-  // Criar som de notificação
   const playNotificationSound = useCallback(() => {
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -108,9 +113,14 @@ export function useRideNotifications(
           filter: "status=eq.requested",
         },
         (payload) => {
+          // Silenciar notificações se motorista está OFFLINE
+          if (!isOnlineRef.current) {
+            return;
+          }
+
           const newRide = payload.new as RideNotification;
 
-          // Filtro por categoria: só notificar motoristas cujo veículo encaixa
+          // Filtro por categoria
           if (
             allowedCategories &&
             allowedCategories.length > 0 &&
@@ -148,13 +158,10 @@ export function useRideNotifications(
     };
   }, [onNewRide, onRideUpdate, playNotificationSound, vibrateDevice, showBrowserNotification, requestNotificationPermission, allowedCategories]);
 
-
-  // Limpar notificação
   const clearNotification = useCallback((rideId: string) => {
     setNewRides((prev) => prev.filter((ride) => ride.id !== rideId));
   }, []);
 
-  // Limpar todas as notificações
   const clearAllNotifications = useCallback(() => {
     setNewRides([]);
     notificationCountRef.current = 0;

@@ -38,7 +38,6 @@ export function useGeolocation(
   optionsRef.current = options;
 
   const requestLocation = useCallback(() => {
-    // Verificar se o navegador suporta geolocalização
     if (!navigator?.geolocation) {
       setState((prev) => ({
         ...prev,
@@ -89,7 +88,6 @@ export function useGeolocation(
     );
   }, []);
 
-  // Request location on mount
   useEffect(() => {
     requestLocation();
   }, [requestLocation]);
@@ -101,8 +99,10 @@ export function useGeolocation(
 }
 
 /**
- * Hook para rastrear a localização em tempo real
- * Atualiza continuamente a posição do utilizador
+ * Hook para rastrear a localização em tempo real com suporte a ativação/desativação.
+ *
+ * @param options - Opções de geolocalização
+ * @param active - Se true, o tracking é activo; se false, para o watch GPS e limpa coordenadas.
  */
 export function useGeolocationWatch(
   options: PositionOptions = {
@@ -110,13 +110,15 @@ export function useGeolocationWatch(
     timeout: 10000,
     maximumAge: 0,
   },
-): UseGeolocationState & { 
+  active: boolean = true,
+): UseGeolocationState & {
   stopTracking: () => void;
+  startTracking: () => void;
   isTracking: boolean;
   distanceTraveled: number;
 } {
   const [state, setState] = useState<UseGeolocationState>({
-    loading: true,
+    loading: false,
     error: null,
     coordinates: null,
   });
@@ -125,6 +127,7 @@ export function useGeolocationWatch(
   const [distanceTraveled, setDistanceTraveled] = useState(0);
   const watchIdRef = useRef<number | null>(null);
   const previousCoordinatesRef = useRef<GeolocationCoordinates | null>(null);
+  const activeRef = useRef(active);
 
   // Calcular distância entre dois pontos (Haversine formula)
   const calculateDistance = useCallback(
@@ -151,13 +154,12 @@ export function useGeolocationWatch(
       setIsTracking(false);
       setDistanceTraveled(0);
       previousCoordinatesRef.current = null;
+      setState((prev) => ({ ...prev, loading: false }));
     }
   }, []);
 
-  const optionsRef = useRef(options);
-  optionsRef.current = options;
-
-  useEffect(() => {
+  const startTracking = useCallback(() => {
+    if (watchIdRef.current !== null) return;
     if (!navigator?.geolocation) {
       setState((prev) => ({
         ...prev,
@@ -168,6 +170,7 @@ export function useGeolocationWatch(
     }
 
     setIsTracking(true);
+    setState((prev) => ({ ...prev, loading: true, error: null }));
     let fellBack = false;
 
     const onSuccess = (position: GeolocationPosition) => {
@@ -188,25 +191,21 @@ export function useGeolocationWatch(
           newCoordinates.latitude,
           newCoordinates.longitude,
         );
-        
-        // Filtro de ruído: ignorar movimentos menores que 2 metros se a precisão for baixa
-        // ou se o movimento for insignificante para evitar o "jitter" do GPS parado
+
         const minMovementThreshold = newCoordinates.accuracy > 20 ? 0.005 : 0.002;
-        
+
         if (distance > minMovementThreshold) {
           setDistanceTraveled((prev) => prev + distance);
           previousCoordinatesRef.current = newCoordinates;
           setState({ loading: false, error: null, coordinates: newCoordinates });
         } else if (newCoordinates.heading !== previousCoordinatesRef.current.heading) {
-          // Se apenas o heading mudou (ex: girou o telemóvel), atualizamos para manter a orientação precisa
           setState((prev) => ({
             ...prev,
             coordinates: {
               ...newCoordinates,
-              // Mantemos a lat/lng anterior para evitar saltos visuais se o movimento for ruído
               latitude: previousCoordinatesRef.current?.latitude ?? newCoordinates.latitude,
               longitude: previousCoordinatesRef.current?.longitude ?? newCoordinates.longitude,
-            }
+            },
           }));
         }
       } else {
@@ -216,7 +215,6 @@ export function useGeolocationWatch(
     };
 
     const onError = (error: GeolocationPositionError) => {
-      // Em TIMEOUT, tenta uma vez sem alta precisão (mais rápido em desktop/Wi-Fi)
       if (error.code === error.TIMEOUT && !fellBack) {
         fellBack = true;
         if (watchIdRef.current !== null) {
@@ -250,15 +248,24 @@ export function useGeolocationWatch(
       onError,
       { ...optionsRef.current, timeout: Math.max(optionsRef.current.timeout ?? 0, 20000) },
     );
+  }, [calculateDistance]);
 
-    return () => {
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+  activeRef.current = active;
+
+  useEffect(() => {
+    if (active) {
+      startTracking();
+    } else {
       stopTracking();
-    };
-  }, [stopTracking, calculateDistance]);
+    }
+  }, [active, startTracking, stopTracking]);
 
   return {
     ...state,
     stopTracking,
+    startTracking,
     isTracking,
     distanceTraveled,
   };
@@ -266,7 +273,6 @@ export function useGeolocationWatch(
 
 /**
  * Hook para obter a localização com retry automático
- * Tenta obter a localização várias vezes se falhar
  */
 export function useGeolocationWithRetry(
   options: PositionOptions = {
@@ -275,7 +281,7 @@ export function useGeolocationWithRetry(
     maximumAge: 0,
   },
   maxRetries: number = 3,
-): UseGeolocationState & { 
+): UseGeolocationState & {
   requestLocation: () => void;
   retryCount: number;
 } {
@@ -326,7 +332,6 @@ export function useGeolocationWithRetry(
           setRetryCount(retriesRef.current);
 
           if (retriesRef.current < maxRetries) {
-            // Retry após 1 segundo
             setTimeout(attemptGeolocation, 1000);
           } else {
             let errorMessage = "Erro ao obter localização";
@@ -368,9 +373,8 @@ export function useGeolocationWithRetry(
 
 /**
  * Hook para obter a localização com precisão alta
- * Otimizado para aplicações que requerem alta precisão
  */
-export function useHighAccuracyGeolocation(): UseGeolocationState & { 
+export function useHighAccuracyGeolocation(): UseGeolocationState & {
   requestLocation: () => void;
   accuracy: string;
 } {

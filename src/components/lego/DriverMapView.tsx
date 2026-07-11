@@ -14,15 +14,12 @@ interface DriverMapViewProps {
   pickupAddress?: string;
   destinationAddress?: string;
   route?: [number, number][];
-  rideStatus?: string; // "accepted", "arriving", "in_progress", etc.
+  rideStatus?: string;
   onLocationUpdate?: (location: [number, number], accuracy: number, speed: number | null) => void;
   onOnlineStatusChange?: (isOnline: boolean) => void;
   initialOnlineStatus?: boolean;
 }
 
-/**
- * DriverMapView - Mapa para motoristas com design Premium e Elegante
- */
 export function DriverMapView({
   pickupLocation = [LUBANGO_CENTER.lat, LUBANGO_CENTER.lng],
   destinationLocation = [LUBANGO_CENTER.lat + 0.01, LUBANGO_CENTER.lng + 0.01],
@@ -36,16 +33,21 @@ export function DriverMapView({
 }: DriverMapViewProps) {
   const updateLocationFn = useServerFn(updateDriverLocation);
   const toggleOnlineFn = useServerFn(toggleOnlineStatus);
+
+  const [isOnline, setIsOnline] = useState(initialOnlineStatus);
+
   const { coordinates, error, loading, isTracking, distanceTraveled, stopTracking } =
-    useGeolocationWatch({
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0,
-    });
+    useGeolocationWatch(
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      },
+      isOnline,
+    );
 
   const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
   const [updateError, setUpdateError] = useState<string | null>(null);
-  const [isOnline, setIsOnline] = useState(initialOnlineStatus);
   const [showStats, setShowStats] = useState(true);
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
   const [sessionDistance, setSessionDistance] = useState(0);
@@ -68,14 +70,12 @@ export function DriverMapView({
     return coords;
   }, [coordinates]);
 
-  // Sync location to backend
+  // Sync location to backend — only when online
   useEffect(() => {
     if (coordinates && isOnline) {
       const now = Date.now();
-      // Aumentar a frequência de atualização para 500ms se estiver em movimento ou mudando direção
-      // Isso melhora a percepção de tempo real para o passageiro
       const updateInterval = (coordinates.speed && coordinates.speed > 1) ? 500 : 2000;
-      
+
       if (now - lastUpdateTime >= updateInterval) {
         updateLocationFn({
           data: {
@@ -103,7 +103,18 @@ export function DriverMapView({
     }
   }, [coordinates, updateLocationFn, lastUpdateTime, isOnline, onLocationUpdate]);
 
-  // Helper: distância em metros entre dois pontos (Haversine)
+  // Limpar localização no backend quando fica offline
+  useEffect(() => {
+    if (!isOnline) {
+      setUpdateError(null);
+      setRouteInfo(null);
+      setDriverToPassengerRoute(null);
+      setOriginToDestinationRoute(null);
+      setRouteSteps([]);
+      setCurrentStepIndex(0);
+    }
+  }, [isOnline]);
+
   const distMeters = useCallback((a: [number, number], b: [number, number]) => {
     const R = 6371000;
     const dLat = ((b[0] - a[0]) * Math.PI) / 180;
@@ -116,13 +127,13 @@ export function DriverMapView({
     return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
   }, []);
 
-  // Throttle: só recalcular rota se o motorista mexeu >75m OU passaram >15s
   const lastRouteCalcRef = useRef<{ at: number; pos: [number, number]; status: string } | null>(null);
 
-  // Calcular rotas em tempo real (turn-by-turn realtime, com throttle)
+  // Calcular rotas em tempo real — só quando online e com corrida activa
   useEffect(() => {
     if (!pickupLocation || !destinationLocation) return;
     if (!rideStatus || !["accepted", "arriving", "in_progress"].includes(rideStatus)) return;
+    if (!isOnline) return;
 
     const target = rideStatus === "in_progress" ? destinationLocation : pickupLocation;
     const last = lastRouteCalcRef.current;
@@ -158,9 +169,8 @@ export function DriverMapView({
     return () => {
       cancelled = true;
     };
-  }, [driverLocation, pickupLocation, destinationLocation, rideStatus, distMeters]);
+  }, [driverLocation, pickupLocation, destinationLocation, rideStatus, isOnline, distMeters]);
 
-  // Auto-avança o passo de navegação conforme o motorista se aproxima do fim do passo actual
   useEffect(() => {
     if (!routeSteps.length || currentStepIndex >= routeSteps.length - 1) return;
     const step = routeSteps[currentStepIndex];
@@ -170,13 +180,9 @@ export function DriverMapView({
     if (d < 30) setCurrentStepIndex((i) => Math.min(i + 1, routeSteps.length - 1));
   }, [driverLocation, routeSteps, currentStepIndex, distMeters]);
 
-
-
-
-  // Gerenciar status online
   const handleToggleOnlineStatus = useCallback(async () => {
     const newStatus = !isOnline;
-    
+
     try {
       const res = await toggleOnlineFn({ data: { is_online: newStatus } });
       if (res.ok) {
@@ -186,11 +192,12 @@ export function DriverMapView({
         if (newStatus) {
           setSessionStartTime(Date.now());
           setSessionDistance(0);
+          toast.success("Estás agora ONLINE — Passageiros podem ver-te no mapa e enviar pedidos!");
         } else {
           stopTracking();
           setSessionStartTime(null);
+          toast.info("Estás agora OFFLINE — Não receberás pedidos de viagem.");
         }
-        toast.success(newStatus ? "Estás agora ONLINE" : "Estás agora OFFLINE");
       } else {
         toast.error("Erro ao mudar status: " + res.error);
       }
@@ -200,7 +207,6 @@ export function DriverMapView({
     }
   }, [isOnline, onOnlineStatusChange, stopTracking, toggleOnlineFn]);
 
-  // Calcular tempo de sessão
   const getSessionDuration = useCallback((): string => {
     if (!sessionStartTime) return "00:00";
     const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
@@ -209,14 +215,12 @@ export function DriverMapView({
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
   }, [sessionStartTime]);
 
-  // Atualizar distância de sessão
   useEffect(() => {
     if (isOnline && distanceTraveled > 0) {
       setSessionDistance(distanceTraveled);
     }
   }, [distanceTraveled, isOnline]);
 
-  // Formatar velocidade
   const getFormattedSpeed = useCallback((): string => {
     if (!coordinates?.speed) return "0 km/h";
     const speedKmh = coordinates.speed * 3.6;
@@ -241,11 +245,11 @@ export function DriverMapView({
         route={route}
         driverToPassengerRoute={driverToPassengerRoute || undefined}
         originToDestinationRoute={originToDestinationRoute || undefined}
-        showAccuracy={true}
-        showSpeed={true}
+        showAccuracy={isOnline}
+        showSpeed={isOnline}
         autoCenter={isOnline}
         userIconType="driver"
-        drawDirections={!route && !driverToPassengerRoute && !originToDestinationRoute}
+        drawDirections={!route && !driverToPassengerRoute && !originToDestinationRoute && isOnline}
       />
 
       {(() => {
@@ -293,23 +297,23 @@ export function DriverMapView({
                 )}
               </div>
             ) : (
-              // Online/offline toggle when not on an active trip
+              // Online/offline toggle — now truly controls GPS + visibility + ride reception
               <div className="absolute top-4 left-4 right-4 z-20 flex justify-center pointer-events-none">
                 <button
                   onClick={handleToggleOnlineStatus}
                   className={`pointer-events-auto flex items-center gap-3 rounded-full px-6 py-3 font-bold shadow-2xl transition-all ${
                     isOnline
-                      ? "bg-black text-white"
-                      : "bg-white text-gray-700 border border-gray-100"
+                      ? "bg-black text-white ring-2 ring-yellow-400 ring-offset-2"
+                      : "bg-white text-gray-700 border border-gray-200"
                   }`}
                 >
                   <span
                     className={`h-2.5 w-2.5 rounded-full ${
-                      isOnline ? "bg-primary animate-pulse" : "bg-gray-300"
+                      isOnline ? "bg-green-400 animate-pulse" : "bg-gray-300"
                     }`}
                   />
                   <span className="text-sm tracking-tight">
-                    {isOnline ? "Estás online" : "Estás offline"}
+                    {isOnline ? "Estás Online — Recebendo Pedidos" : "Estás Offline — Clique para Ativar"}
                   </span>
                 </button>
               </div>
@@ -382,7 +386,7 @@ export function DriverMapView({
         );
       })()}
 
-      {/* Route ETA pill (Uber-style) shown under the top nav bar */}
+      {/* Route ETA pill (Uber-style) */}
       {routeInfo && isOnline && ["in_progress", "accepted", "arriving"].includes(rideStatus ?? "") && (
         <div className="absolute inset-x-0 top-40 z-10 flex justify-center pointer-events-none">
           <div className="pointer-events-auto flex items-center gap-5 rounded-full bg-black px-5 py-2.5 text-white shadow-2xl">
@@ -399,7 +403,17 @@ export function DriverMapView({
         </div>
       )}
 
-      {/* Geolocation/Sync Errors - Premium Alerts */}
+      {/* Offline indicator */}
+      {!isOnline && (
+        <div className="absolute bottom-24 left-4 right-4 z-10">
+          <div className="bg-gray-800/90 backdrop-blur-sm text-white px-4 py-3 rounded-2xl shadow-xl text-center">
+            <p className="text-sm font-bold">Motorista Offline</p>
+            <p className="text-xs text-gray-300 mt-0.5">Clique no botão acima para receber pedidos</p>
+          </div>
+        </div>
+      )}
+
+      {/* Geolocation/Sync Errors */}
       {(error || updateError) && (
         <div className="absolute top-4 left-4 right-4 z-50 pointer-events-none">
           <div className="bg-white border-l-4 border-yellow-500 p-4 rounded-2xl shadow-2xl max-w-sm mx-auto pointer-events-auto flex items-start gap-4">

@@ -4,7 +4,8 @@ import { MapView } from "./MapView";
 import { useGeolocationWatch } from "../../hooks/use-geolocation";
 import { reverseGeocode } from "@/lib/maps.functions";
 import { LUBANGO_CENTER } from "@/lib/google-maps-loader";
-import { Search, Loader2, X, AlertCircle, MapPin, Navigation2 } from "lucide-react";
+import { Search, Loader2, X, AlertCircle, MapPin, Navigation2, Car } from "lucide-react";
+import type { NearbyDriver } from "./MapView";
 
 interface PassengerMapViewProps {
   onPickupLocationSelect?: (location: [number, number], address?: string) => void;
@@ -12,11 +13,13 @@ interface PassengerMapViewProps {
   pickupLocation?: [number, number];
   destinationLocation?: [number, number];
   onLocationUpdate?: (location: [number, number]) => void;
-  nearbyDrivers?: Array<[number, number]>;
+  nearbyDrivers?: Array<[number, number]> | NearbyDriver[];
 }
 
 /**
- * PassengerMapView - Mapa para passageiros com seleção de localização e rastreamento em tempo real
+ * PassengerMapView - Mapa para passageiros com seleção de localização e rastreamento em tempo real.
+ * Melhoria: mostra carros disponíveis como ícones de carro coloridos, com contagem,
+ * e traça o trajeto rosa/magenta do ponto de origem ao destino.
  */
 export function PassengerMapView({
   onPickupLocationSelect,
@@ -28,11 +31,14 @@ export function PassengerMapView({
 }: PassengerMapViewProps) {
   const reverseGeocodeFn = useServerFn(reverseGeocode);
   const { coordinates, loading, error, isTracking, distanceTraveled, stopTracking } =
-    useGeolocationWatch({
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0,
-    });
+    useGeolocationWatch(
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      },
+      true, // sempre activo para passageiro
+    );
 
   const [selectedLocation, setSelectedLocation] = useState<[number, number] | null>(null);
   const [selectionMode, setSelectionMode] = useState<"pickup" | "destination" | null>(null);
@@ -42,6 +48,7 @@ export function PassengerMapView({
   }>({});
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [geocodingError, setGeocodingError] = useState<string | null>(null);
+  const [availableCarsCount, setAvailableCarsCount] = useState(0);
 
   const userLocation: [number, number] = coordinates
     ? [coordinates.latitude, coordinates.longitude]
@@ -54,7 +61,16 @@ export function PassengerMapView({
     }
   }, [coordinates, onLocationUpdate]);
 
-  // Reverse geocoding via Google Maps (gateway)
+  // Contar carros disponíveis
+  useEffect(() => {
+    if (nearbyDrivers && nearbyDrivers.length > 0) {
+      setAvailableCarsCount(nearbyDrivers.length);
+    } else {
+      setAvailableCarsCount(0);
+    }
+  }, [nearbyDrivers]);
+
+  // Reverse geocoding via Google Maps
   const getAddressFromCoordinates = useCallback(
     async (lat: number, lng: number): Promise<string> => {
       try {
@@ -110,6 +126,9 @@ export function PassengerMapView({
     }
   }, [isTracking, stopTracking]);
 
+  // Verificar se há rota traçada (origem → destino)
+  const hasRoute = !!(pickupLocation && destinationLocation);
+
   return (
     <div className="relative h-full w-full">
       <MapView
@@ -125,7 +144,29 @@ export function PassengerMapView({
         nearbyDrivers={nearbyDrivers}
       />
 
-      {/* Selection mode indicator - Floating card */}
+      {/* Available cars counter — canto superior esquerdo */}
+      {availableCarsCount > 0 && !selectionMode && (
+        <div className="absolute left-4 top-20 z-20">
+          <div className="flex items-center gap-2 rounded-full bg-white/95 backdrop-blur-sm px-3 py-2 shadow-lg border border-gray-100">
+            <Car className="h-4 w-4 text-pink-500" />
+            <span className="text-xs font-bold text-gray-800">
+              {availableCarsCount} {availableCarsCount === 1 ? "carro" : "carros"} disponíveis
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Route info badge — quando há rota traçada */}
+      {hasRoute && !selectionMode && (
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-60 z-20">
+          <div className="flex items-center gap-2 rounded-full bg-white/95 backdrop-blur-sm px-4 py-2 shadow-lg border border-gray-100">
+            <MapPin className="h-3.5 w-3.5 text-pink-500" />
+            <span className="text-xs font-semibold text-gray-700">Trajeto origem → destino</span>
+          </div>
+        </div>
+      )}
+
+      {/* Selection mode indicator */}
       {selectionMode && (
         <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
           <div className="bg-white rounded-2xl p-6 text-center shadow-2xl max-w-sm mx-4 pointer-events-auto">
@@ -162,7 +203,7 @@ export function PassengerMapView({
         </div>
       )}
 
-      {/* Error message if geolocation fails */}
+      {/* Error message */}
       {error && (
         <div className="absolute top-4 left-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg text-sm z-20 flex items-start gap-2 max-w-xs">
           <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
@@ -181,7 +222,7 @@ export function PassengerMapView({
         </div>
       )}
 
-      {/* Tracking status indicator — pill centrada, abaixo do topo, sem sobrepor o menu */}
+      {/* Tracking status indicator */}
       {isTracking && !loading && (
         <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-[calc(max(env(safe-area-inset-top),1rem)+0.75rem)] z-20">
           <div className="flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md border border-yellow-200 px-3 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
@@ -194,7 +235,7 @@ export function PassengerMapView({
         </div>
       )}
 
-      {/* Distance traveled — canto inferior esquerdo, compacto */}
+      {/* Distance traveled */}
       {distanceTraveled > 0 && (
         <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg px-3 py-2 z-20">
           <p className="text-[10px] uppercase tracking-wider text-gray-600 font-semibold">Percorrido</p>
@@ -202,7 +243,7 @@ export function PassengerMapView({
         </div>
       )}
 
-      {/* Tracking control button — canto inferior direito, sem sobreposição */}
+      {/* Tracking control button */}
       {isTracking && (
         <button
           onClick={handleToggleTracking}

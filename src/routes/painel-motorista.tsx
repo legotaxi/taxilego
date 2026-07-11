@@ -147,7 +147,7 @@ function DriverPanelContent() {
     () => {
       load();
     },
-    { allowedCategories: driverCategories },
+    { allowedCategories: driverCategories, isOnline },
   );
 
   const load = useCallback(async () => {

@@ -2,30 +2,34 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { Navigation2, MapPin, Loader2, AlertCircle, Zap } from "lucide-react";
 import { loadGoogleMaps, LUBANGO_CENTER, HUILA_BOUNDS } from "@/lib/google-maps-loader";
 
+/** Tipo para um motorista no mapa (com categoria e nome opcional) */
+export interface NearbyDriver {
+  lat: number;
+  lng: number;
+  category?: string;
+  name?: string;
+  rating?: number;
+  vehicleName?: string;
+}
+
 interface MapViewProps {
   pickupLocation?: [number, number];
   destinationLocation?: [number, number];
   driverLocation?: [number, number];
-  /** Optional polyline path (lat,lng pairs). If absent, route is auto-drawn pickup→destination. */
   route?: [number, number][];
-  /** Rota motorista → passageiro (com cor azul) */
   driverToPassengerRoute?: [number, number][];
-  /** Rota origem → destino (com cor verde) */
   originToDestinationRoute?: [number, number][];
-  /** Motoristas disponíveis mostrados no mapa (só coordenadas). */
-  nearbyDrivers?: Array<[number, number]>;
+  nearbyDrivers?: Array<[number, number] | [number, number, string?, string?]> | NearbyDriver[];
   onLocationSelect?: (location: [number, number]) => void;
   showAccuracy?: boolean;
   showSpeed?: boolean;
   autoCenter?: boolean;
   zoom?: number;
-  /** Marker style for the live user (driver=car, passenger=person). */
   userIconType?: "driver" | "passenger";
-  /** Auto-draw route from pickup→destination using Directions service. */
   drawDirections?: boolean;
 }
 
-// Inline SVG markers (data URIs) so we don't depend on map IDs / Advanced Markers.
+// Inline SVG markers
 function svgIcon(svg: string): string {
   return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
 }
@@ -54,8 +58,8 @@ const DESTINATION_ICON = svgIcon(
   </svg>`,
 );
 
-// Path SVG para o carro (virado para o Norte) para permitir rotação nativa do Google Maps
 const CAR_PATH = "M22 2C10.95 2 2 10.95 2 22s8.95 20 20 20 20-8.95 20-20S33.05 2 22 2zm0 36c-8.82 0-16-7.18-16-16S13.18 6 22 6s16 7.18 16 16-7.18 16-16 16zm-5.5-14l1.5-5c.31-1.03 1.25-1.75 2.32-1.75h3.36c1.07 0 2.01.72 2.32 1.75l1.5 5v4c0 .55-.45 1-1 1h-1c-.55 0-1-.45-1-1v-1h-6v1c0 .55-.45 1-1 1h-1c-.55 0-1-.45-1-1v-4zm3-1.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm5 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z";
+
 const CAR_ICON = svgIcon(
   `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
     <circle cx="22" cy="22" r="20" fill="white" stroke="#16a34a" stroke-width="3"/>
@@ -89,15 +93,39 @@ const PERSON_ICON = svgIcon(
   </svg>`,
 );
 
-const NEARBY_DRIVER_ICON = svgIcon(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-    <circle cx="16" cy="16" r="14" fill="white" stroke="#ff3388" stroke-width="2"/>
-    <path d="M10 18l1-4a1.5 1.5 0 011.5-1h7a1.5 1.5 0 011.5 1l1 4v3a.8.8 0 01-.8.8h-.9a.8.8 0 01-.8-.8v-.7H12.5v.7a.8.8 0 01-.8.8h-.9a.8.8 0 01-.8-.8v-3z" fill="#ff3388"/>
-  </svg>`,
-);
+/**
+ * Ícone de carro para o passageiro — rosa/magenta com sombra e rotação
+ * Conforme a imagem do app: carros pink/rosa no mapa
+ */
+function makeCarIconForPassenger(color: string, size = 36): string {
+  return svgIcon(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <defs>
+        <filter id="cs" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.25"/>
+        </filter>
+      </defs>
+      <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 2}" fill="white" filter="url(#cs)"/>
+      <path d="M${size * 0.3} ${size * 0.54}l${size * 0.04} -${size * 0.12}a${size * 0.05} ${size * 0.05} 0 01${size * 0.05} -${size * 0.03}h${size * 0.22}a${size * 0.05} ${size * 0.05} 0 01${size * 0.05} ${size * 0.03}l${size * 0.04} ${size * 0.12}v${size * 0.08}a${size * 0.025} ${size * 0.025} 0 01-${size * 0.025} ${size * 0.025}h-${size * 0.025}a${size * 0.025} ${size * 0.025} 0 01-${size * 0.025} -${size * 0.025}v-${size * 0.02}h-${size * 0.22}v${size * 0.02}a${size * 0.025} ${size * 0.025} 0 01-${size * 0.025} ${size * 0.025}h-${size * 0.025}a${size * 0.025} ${size * 0.025} 0 01-${size * 0.025} -${size * 0.025}v-${size * 0.08}z" fill="${color}"/>
+      <circle cx="${size * 0.38}" cy="${size * 0.58}" r="${size * 0.03}" fill="white"/>
+      <circle cx="${size * 0.62}" cy="${size * 0.58}" r="${size * 0.03}" fill="white"/>
+    </svg>`,
+  );
+}
+
+/** Mapa de cores por categoria para carros no mapa do passageiro */
+const CATEGORY_COLORS: Record<string, string> = {
+  normal: "#ec4899",   // rosa
+  xl: "#3b82f6",       // azul
+  moto: "#f59e0b",     // laranja
+  delivery: "#10b981", // verde
+  premium: "#8b5cf6",  // roxo
+  shared: "#06b6d4",   // ciano
+};
 
 /**
  * MapView — mapa Google Maps com restrição à região de Huíla/Lubango.
+ * Suporta mostrar carros de motoristas com ícones coloridos por categoria.
  */
 export function MapView({
   pickupLocation,
@@ -197,7 +225,6 @@ export function MapView({
       nearbyDriversMarkersRef.current = [];
       mapRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Pickup marker
@@ -214,6 +241,7 @@ export function MapView({
         map,
         icon: { url: PICKUP_ICON, scaledSize: new google.maps.Size(40, 52), anchor: new google.maps.Point(20, 52) },
         title: "Ponto de recolha",
+        zIndex: 900,
       });
     }
   }, [pickupLocation, ready]);
@@ -232,11 +260,12 @@ export function MapView({
         map,
         icon: { url: DESTINATION_ICON, scaledSize: new google.maps.Size(36, 44), anchor: new google.maps.Point(18, 44) },
         title: "Destino",
+        zIndex: 900,
       });
     }
   }, [destinationLocation, ready]);
 
-  // Live user marker (driver or passenger)
+  // Live user marker
   useEffect(() => {
     const google = googleRef.current;
     const map = mapRef.current;
@@ -245,14 +274,11 @@ export function MapView({
     const iconUrl = userIconType === "passenger" ? PERSON_ICON : CAR_ICON;
     const size = userIconType === "passenger" ? 48 : 44;
     const anchor = size / 2;
-    
-    // Se for motorista, podemos usar o heading para rotacionar o ícone
-    // Nota: O ícone SVG original deve estar virado para o Norte (0 graus)
+
     const heading = (driverLocation as any).heading;
-    
+
     let iconOptions: any;
     if (userIconType === "driver" && heading != null) {
-      // Usar símbolo vetorial para permitir rotação
       iconOptions = {
         path: CAR_PATH,
         fillColor: "#16a34a",
@@ -283,8 +309,7 @@ export function MapView({
         zIndex: 999,
       });
     }
-    
-    // Suave animação de movimento se o mapa já estiver pronto
+
     if (autoCenter) {
       if (map.getCenter().lat() !== pos.lat || map.getCenter().lng() !== pos.lng) {
         map.panTo(pos);
@@ -302,7 +327,6 @@ export function MapView({
       accuracyCircleRef.current = null;
     }
     if (showAccuracy && driverLocation) {
-      // Usar a precisão real se disponível, caso contrário default 50m
       const radius = (driverLocation as any).accuracy || 50;
       accuracyCircleRef.current = new google.maps.Circle({
         map,
@@ -318,7 +342,7 @@ export function MapView({
     }
   }, [showAccuracy, driverLocation, ready]);
 
-  // Custom polyline route (when provided)
+  // Custom polyline route
   useEffect(() => {
     const google = googleRef.current;
     const map = mapRef.current;
@@ -362,7 +386,7 @@ export function MapView({
     }
   }, [driverToPassengerRoute, ready]);
 
-  // Rota origem → destino (verde)
+  // Rota origem → destino (rosa/magenta — estilo da imagem do app)
   useEffect(() => {
     const google = googleRef.current;
     const map = mapRef.current;
@@ -375,21 +399,20 @@ export function MapView({
       originToDestinationPolylineRef.current = new google.maps.Polyline({
         map,
         path: originToDestinationRoute.map(([lat, lng]) => ({ lat, lng })),
-        strokeColor: "#10b981",
+        strokeColor: "#ec4899", // Rosa/magenta como na imagem
         strokeOpacity: 0.85,
-        strokeWeight: 5,
+        strokeWeight: 6,
         geodesic: true,
       });
     }
   }, [originToDestinationRoute, ready]);
 
-  // Auto-draw directions: origin = driverLocation (live) when present, else pickupLocation.
+  // Auto-draw directions: pickup→destination (rosa/magenta)
   useEffect(() => {
     const google = googleRef.current;
     const map = mapRef.current;
     if (!ready || !google || !map || !drawDirections) return;
-    
-    // Se não tiver destino, limpa as direções
+
     if (!destinationLocation) {
       if (directionsRendererRef.current) {
         directionsRendererRef.current.setDirections({ routes: [] });
@@ -397,7 +420,6 @@ export function MapView({
       return;
     }
 
-    // Prefere pickup escolhido; só usa a posição live se não houver pickup
     const origin = pickupLocation ?? driverLocation;
     if (!origin) return;
 
@@ -406,11 +428,11 @@ export function MapView({
       directionsRendererRef.current = new google.maps.DirectionsRenderer({
         map,
         suppressMarkers: true,
-        preserveViewport: false, // Permitir que o mapa se ajuste à rota
-        polylineOptions: { 
-          strokeColor: "#10b981", // Verde estilo Uber/Lego para a rota principal
-          strokeOpacity: 0.8, 
-          strokeWeight: 6 
+        preserveViewport: false,
+        polylineOptions: {
+          strokeColor: "#ec4899", // Rosa/magenta — estilo da imagem
+          strokeOpacity: 0.8,
+          strokeWeight: 6,
         },
       });
     }
@@ -425,7 +447,6 @@ export function MapView({
       (result: any, status: any) => {
         if (status === "OK" && result) {
           renderer.setDirections(result);
-          // Ajustar o zoom para mostrar toda a rota se não for autoCenter (que foca no user)
           if (!autoCenter) {
             const bounds = result.routes[0].bounds;
             map.fitBounds(bounds, 80);
@@ -435,7 +456,7 @@ export function MapView({
     );
   }, [pickupLocation, destinationLocation, driverLocation, drawDirections, ready, autoCenter]);
 
-  // Nearby drivers markers (only lat/lng — no identity)
+  // Nearby drivers markers — agora com ícones de carro coloridos por categoria
   useEffect(() => {
     const google = googleRef.current;
     const map = mapRef.current;
@@ -443,18 +464,49 @@ export function MapView({
     nearbyDriversMarkersRef.current.forEach((m) => m.setMap(null));
     nearbyDriversMarkersRef.current = [];
     if (!nearbyDrivers || nearbyDrivers.length === 0) return;
-    nearbyDrivers.forEach(([lat, lng]) => {
+
+    nearbyDrivers.forEach((item) => {
+      let lat: number, lng: number, category: string | undefined, driverName: string | undefined;
+      if (Array.isArray(item)) {
+        lat = item[0];
+        lng = item[1];
+        category = item[2] as string | undefined;
+        driverName = item[3] as string | undefined;
+      } else {
+        const nd = item as NearbyDriver;
+        lat = nd.lat;
+        lng = nd.lng;
+        category = nd.category;
+        driverName = nd.name;
+      }
+
+      const cat = category as string | undefined;
+      const color = cat && CATEGORY_COLORS[cat] ? CATEGORY_COLORS[cat] : "#ec4899";
+      const iconUrl = makeCarIconForPassenger(color, 36);
+
       const marker = new google.maps.Marker({
-        position: { lat, lng },
+        position: { lat: lat as number, lng: lng as number },
         map,
         icon: {
-          url: NEARBY_DRIVER_ICON,
-          scaledSize: new google.maps.Size(32, 32),
-          anchor: new google.maps.Point(16, 16),
+          url: iconUrl,
+          scaledSize: new google.maps.Size(36, 36),
+          anchor: new google.maps.Point(18, 18),
         },
         zIndex: 500,
-        clickable: false,
+        clickable: true,
+        title: driverName ? `Motorista: ${driverName}` : "Motorista disponível",
       });
+
+      // Info window com detalhes do motorista
+      if (driverName) {
+        const infoWindow = new google.maps.InfoWindow({
+          content: `<div style="padding:8px;font-family:system-ui;font-size:13px;font-weight:600;color:#1e293b;">${driverName}</div>`,
+        });
+        marker.addListener("click", () => {
+          infoWindow.open(map, marker);
+        });
+      }
+
       nearbyDriversMarkersRef.current.push(marker);
     });
   }, [nearbyDrivers, ready]);
@@ -526,7 +578,7 @@ export function MapView({
             )}
             {originToDestinationRoute && (
               <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: "#10b981" }} />
+                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: "#ec4899" }} />
                 <span className="text-gray-700">Rota: Origem → Destino</span>
               </div>
             )}
