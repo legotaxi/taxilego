@@ -23,12 +23,12 @@ export type Database = {
           criminal_record_url: string | null
           current_lat: number | null
           current_lng: number | null
-          last_accuracy: number | null
-          last_speed: number | null
-          last_heading: number | null
-          last_location_update: string | null
           id: string
           is_online: boolean
+          last_accuracy: number | null
+          last_heading: number | null
+          last_location_update: string | null
+          last_speed: number | null
           license_number: string | null
           license_url: string | null
           photo_url: string | null
@@ -46,12 +46,12 @@ export type Database = {
           criminal_record_url?: string | null
           current_lat?: number | null
           current_lng?: number | null
-          last_accuracy?: number | null
-          last_speed?: number | null
-          last_heading?: number | null
-          last_location_update?: string | null
           id: string
           is_online?: boolean
+          last_accuracy?: number | null
+          last_heading?: number | null
+          last_location_update?: string | null
+          last_speed?: number | null
           license_number?: string | null
           license_url?: string | null
           photo_url?: string | null
@@ -69,12 +69,12 @@ export type Database = {
           criminal_record_url?: string | null
           current_lat?: number | null
           current_lng?: number | null
-          last_accuracy?: number | null
-          last_speed?: number | null
-          last_heading?: number | null
-          last_location_update?: string | null
           id?: string
           is_online?: boolean
+          last_accuracy?: number | null
+          last_heading?: number | null
+          last_location_update?: string | null
+          last_speed?: number | null
           license_number?: string | null
           license_url?: string | null
           photo_url?: string | null

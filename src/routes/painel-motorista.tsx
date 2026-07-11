@@ -34,6 +34,7 @@ import { BottomSheet } from "@/components/lego/BottomSheet";
 import { RideChat, RideChatButton } from "@/components/lego/RideChat";
 import { RideCompletionDialog } from "@/components/lego/RideCompletionDialog";
 import { MessageCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 function DriverPanel() {
   return (

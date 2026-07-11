@@ -640,18 +640,37 @@ function MyRidesPage() {
       </div>
 
       {/* Modals */}
-      {chatRideId && (
-        <RideChat rideId={chatRideId} onClose={() => setChatRideId(null)} />
-      )}
-      {completionRideId && (
-        <RideCompletionDialog
-          rideId={completionRideId}
-          onClose={() => {
-            setDismissedCompletion((prev) => new Set([...prev, completionRideId]));
-            setCompletionRideId(null);
-          }}
-        />
-      )}
+      {chatRideId && user && (() => {
+        const ride = rides?.find((r) => r.id === chatRideId);
+        const info = ride ? driverInfoMap[ride.id] : undefined;
+        const counterpartName = info?.profile?.full_name || "Motorista";
+        return (
+          <RideChat
+            rideId={chatRideId}
+            myUserId={user.id}
+            myRole="passenger"
+            counterpartName={counterpartName}
+            counterpartAvatarUrl={info?.profile?.avatar_url ?? null}
+            onClose={() => setChatRideId(null)}
+          />
+        );
+      })()}
+      {completionRideId && (() => {
+        const ride = rides?.find((r) => r.id === completionRideId);
+        if (!ride) return null;
+        return (
+          <RideCompletionDialog
+            rideId={completionRideId}
+            fareKz={Number(ride.fare_kz ?? 0)}
+            paymentMethod={ride.payment_method ?? "cash"}
+            role="passenger"
+            onClose={() => {
+              setDismissedCompletion((prev) => new Set([...prev, completionRideId]));
+              setCompletionRideId(null);
+            }}
+          />
+        );
+      })()}
     </AppShell>
   );
 }
