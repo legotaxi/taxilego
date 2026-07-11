@@ -8,6 +8,8 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { Toaster } from "sonner";
+import { useState, useEffect } from "react";
+import { SplashScreen } from "../components/lego/SplashScreen";
 
 import appCss from "../styles.css?url";
 
@@ -130,9 +132,24 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [showSplash, setShowSplash] = useState(true);
+
+  // Garantir que a splash screen só aparece na primeira carga da sessão
+  useEffect(() => {
+    const hasSeenSplash = sessionStorage.getItem("hasSeenSplash");
+    if (hasSeenSplash) {
+      setShowSplash(false);
+    }
+  }, []);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+    sessionStorage.setItem("hasSeenSplash", "true");
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
+      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
       <Outlet />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
