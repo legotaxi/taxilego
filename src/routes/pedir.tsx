@@ -15,6 +15,11 @@ import {
   Phone,
   Star,
   Wallet,
+  CheckCircle2,
+  Clock,
+  MapPin,
+  Navigation2,
+  Flag,
 } from "lucide-react";
 import { requestRide, getDriverInfo } from "@/lib/rides.functions";
 import { reverseGeocode } from "@/lib/maps.functions";
@@ -146,7 +151,10 @@ function PedirPage() {
     };
   }, [step, getNearbyDriversFn]);
 
-  // Poll ride status while active
+  // Estado anterior para detectar transições e disparar notificações
+  const prevStatusRef = useRef<string | null>(null);
+
+  // Poll ride status while active — com notificações em cada etapa (estilo Uber)
   useEffect(() => {
     if (!rideId || step === "rating") return;
     let cancelled = false;
@@ -154,7 +162,26 @@ function PedirPage() {
       try {
         const res = await getRideSummaryFn({ data: { ride_id: rideId } });
         if (cancelled || !res.ride) return;
-        setRideStatus(res.ride.status);
+        const newStatus = res.ride.status;
+        const prevStatus = prevStatusRef.current;
+
+        // Detectar transições de status e notificar o passageiro
+        if (newStatus !== prevStatus) {
+          if (newStatus === "accepted") {
+            toast.success("Motorista aceite! Está a caminho para o local de recolha.");
+          } else if (newStatus === "arriving") {
+            toast.info("Motorista Chegou ao local de recolha!", { duration: 8000 });
+          } else if (newStatus === "in_progress") {
+            toast.info("Corrida iniciada! A caminho do destino.", { duration: 6000 });
+          } else if (newStatus === "completed") {
+            toast.success("Corrida concluída! Obrigado.", { duration: 6000 });
+          } else if (newStatus === "cancelled") {
+            toast.error("Corrida cancelada");
+          }
+          prevStatusRef.current = newStatus;
+        }
+
+        setRideStatus(newStatus);
         if (res.ride.driver_id) {
           const d = await getDriverInfoFn({ data: { driver_id: res.ride.driver_id } });
           if (cancelled) return;
@@ -178,7 +205,6 @@ function PedirPage() {
         if (["accepted", "arriving", "in_progress"].includes(res.ride.status)) setStep("arriving");
         if (res.ride.status === "completed") setStep("rating");
         if (res.ride.status === "cancelled") {
-          toast.error("Corrida cancelada");
           resetFlow();
         }
       } catch {}
@@ -581,107 +607,261 @@ function PedirPage() {
           </div>
         )}
 
-        {/* ===== STEP 5: DRIVER ARRIVING / IN PROGRESS ===== */}
-        {step === "arriving" && (
-          <div className="absolute inset-x-0 bottom-0 z-30 flex flex-col rounded-t-[28px] bg-white pt-3 pb-[max(env(safe-area-inset-bottom),1.25rem)] shadow-[0_-10px_40px_rgba(0,0,0,0.15)]">
-            <div className="flex h-4 items-center justify-center">
-              <div className="h-1 w-14 rounded-full bg-neutral-300" />
-            </div>
-            <div className="px-5 pt-3">
-              <div className="text-xs font-bold uppercase tracking-wider text-primary">
-                {rideStatus === "in_progress"
-                  ? "A caminho do destino"
-                  : rideStatus === "arriving"
-                    ? "Motorista a chegar"
-                    : "Motorista a caminho"}
+        {/* ===== STEP 5: DRIVER ARRIVING / IN PROGRESS — ESTILO UBER ===== */}
+        {step === "arriving" && (() => {
+          // Etiquetas de status estilo Uber
+          const uberLabels: Record<string, { title: string; subtitle: string; color: string; icon: React.ReactNode }> = {
+            accepted: {
+              title: "Motorista Aceitou",
+              subtitle: "Está a caminho para o local de recolha",
+              color: "bg-green-500",
+              icon: <CheckCircle2 className="h-5 w-5 text-white" />,
+            },
+            arriving: {
+              title: "Motorista Chegou",
+              subtitle: "Dirija-se ao veículo para iniciar a corrida",
+              color: "bg-blue-500",
+              icon: <MapPin className="h-5 w-5 text-white" />,
+            },
+            in_progress: {
+              title: "A caminho do destino",
+              subtitle: "Relaxe, estamos a chegar!",
+              color: "bg-yellow-500",
+              icon: <Navigation2 className="h-5 w-5 text-white" />,
+            },
+            requested: {
+              title: "À procura de motorista",
+              subtitle: "Estamos a encontrar o melhor para si",
+              color: "bg-neutral-500",
+              icon: <Loader2 className="h-5 w-5 text-white animate-spin" />,
+            },
+          };
+          const currentLabel = uberLabels[rideStatus as keyof typeof uberLabels] ?? uberLabels.requested;
+
+          // Progress timeline (Uber-style)
+          const timelineSteps = [
+            { id: "requested", label: "Pedido" },
+            { id: "accepted", label: "Aceite" },
+            { id: "arriving", label: "Chegou" },
+            { id: "in_progress", label: "Em curso" },
+          ];
+          const stepIndex = timelineSteps.findIndex((s) => s.id === rideStatus);
+
+          return (
+            <div className="absolute inset-x-0 bottom-0 z-30 flex flex-col rounded-t-[28px] bg-white pt-3 pb-[max(env(safe-area-inset-bottom),1.25rem)] shadow-[0_-10px_40px_rgba(0,0,0,0.15)]">
+              <div className="flex h-4 items-center justify-center">
+                <div className="h-1 w-14 rounded-full bg-neutral-300" />
               </div>
-              <div className="flex items-center gap-3 mt-3">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white text-xl font-bold">
-                  {(driverInfo?.name ?? "M").charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[16px] font-bold text-neutral-900 truncate">
-                    {driverInfo?.name ?? "A procurar…"}
+
+              <div className="px-5 pt-3">
+                {/* Status header — estilo Uber */}
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-full ${currentLabel.color}`}>
+                    {currentLabel.icon}
                   </div>
-                  {driverInfo?.rating != null && (
-                    <div className="flex items-center gap-1 text-sm text-neutral-600">
-                      <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
-                      {driverInfo.rating.toFixed(1)}
-                    </div>
-                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[16px] font-bold text-neutral-900">{currentLabel.title}</div>
+                    <div className="text-xs text-neutral-500">{currentLabel.subtitle}</div>
+                  </div>
                 </div>
-                {driverInfo?.phone && (
-                  <a
-                    href={`tel:${driverInfo.phone}`}
-                    className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white shadow-lg active:scale-95"
+
+                {/* Timeline de progresso estilo Uber */}
+                <div className="mt-3 flex items-center gap-1.5">
+                  {timelineSteps.map((s, i) => (
+                    <div key={s.id} className="flex items-center flex-1">
+                      <div
+                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition-colors ${
+                          i <= stepIndex
+                            ? "bg-primary text-white"
+                            : "bg-neutral-100 text-neutral-400"
+                        }`}
+                      >
+                        {i <= stepIndex ? <CheckCircle2 className="h-3.5 w-3.5" /> : s.label.charAt(0)}
+                      </div>
+                      {i < timelineSteps.length - 1 && (
+                        <div
+                          className={`flex-1 h-[2px] mx-0.5 ${
+                            i < stepIndex ? "bg-primary" : "bg-neutral-100"
+                          }`}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Driver card — estilo Uber */}
+                {driverInfo && (
+                  <div className="mt-4 flex items-center gap-3 rounded-2xl bg-neutral-50 p-3">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white text-xl font-bold shrink-0">
+                      {driverInfo.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[16px] font-bold text-neutral-900 truncate">{driverInfo.name}</div>
+                      {driverInfo.rating != null && (
+                        <div className="flex items-center gap-1 text-sm text-neutral-600">
+                          <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                          {driverInfo.rating.toFixed(1)}
+                        </div>
+                      )}
+                    </div>
+                    {driverInfo.phone && (
+                      <a
+                        href={`tel:${driverInfo.phone}`}
+                        className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white shadow-lg active:scale-95 shrink-0"
+                      >
+                        <Phone className="h-5 w-5" />
+                      </a>
+                    )}
+                  </div>
+                )}
+
+                {/* Veículo */}
+                {(driverInfo?.vehicle || driverInfo?.plate) && (
+                  <div className="mt-3 flex items-center justify-between rounded-xl bg-neutral-100 px-4 py-3">
+                    <div className="flex items-center gap-2 text-neutral-800">
+                      <Car className="h-4 w-4" />
+                      <span className="text-sm font-medium">{driverInfo.vehicle ?? "Veículo"}</span>
+                    </div>
+                    {driverInfo.plate && (
+                      <span className="text-sm font-extrabold text-neutral-900">{driverInfo.plate}</span>
+                    )}
+                  </div>
+                )}
+
+                {/* Endereços */}
+                <div className="mt-4 space-y-3">
+                  <div className="flex gap-3 items-start">
+                    <div className="mt-1.5 h-2.5 w-2.5 rounded-full bg-primary shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[10px] uppercase font-bold text-neutral-500">Recolha</div>
+                      <div className="text-sm text-neutral-900 truncate">{pickupAddress}</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 items-start">
+                    <div className="mt-1.5 h-2.5 w-2.5 rounded-full bg-neutral-900 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[10px] uppercase font-bold text-neutral-500">Destino</div>
+                      <div className="text-sm text-neutral-900 truncate">{dropoffAddress}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Preço + Distância + Tempo — estilo Uber */}
+                <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-neutral-50 p-3 border border-neutral-200">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-0.5">
+                      <Navigation2 className="h-3.5 w-3.5 text-primary" />
+                      <span className="text-base font-bold text-primary">{route.distanceKm.toFixed(1)}</span>
+                    </div>
+                    <div className="text-[10px] text-neutral-500 uppercase font-bold">km</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-0.5">
+                      <Clock className="h-3.5 w-3.5 text-neutral-600" />
+                      <span className="text-base font-bold text-neutral-900">{route.durationMin}</span>
+                    </div>
+                    <div className="text-[10px] text-neutral-500 uppercase font-bold">min</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-0.5">
+                      <Banknote className="h-3.5 w-3.5 text-yellow-600" />
+                      <span className="text-base font-bold text-yellow-600">
+                        {currentFare.toLocaleString("pt-PT")}
+                      </span>
+                    </div>
+                    <div className="text-[10px] text-neutral-500 uppercase font-bold">Kz</div>
+                  </div>
+                </div>
+
+                {/* Cancelar */}
+                {rideStatus !== "in_progress" && rideStatus !== "completed" && (
+                  <button
+                    onClick={resetFlow}
+                    className="mt-4 w-full rounded-2xl border-2 border-neutral-200 py-3 font-bold text-neutral-600 hover:bg-neutral-50 transition"
                   >
-                    <Phone className="h-5 w-5" />
-                  </a>
+                    Cancelar Corrida
+                  </button>
                 )}
               </div>
-              {(driverInfo?.vehicle || driverInfo?.plate) && (
-                <div className="mt-3 flex items-center justify-between rounded-xl bg-neutral-100 px-4 py-3">
-                  <div className="flex items-center gap-2 text-neutral-800">
-                    <Car className="h-4 w-4" />
-                    <span className="text-sm font-medium">{driverInfo.vehicle ?? "Veículo"}</span>
-                  </div>
-                  {driverInfo.plate && (
-                    <span className="text-sm font-extrabold text-neutral-900">{driverInfo.plate}</span>
-                  )}
+            </div>
+          );
+        })()}
+
+        {/* ===== STEP 6: RATING — ESTILO UBER (preço antes da avaliação) ===== */}
+        {step === "rating" && (() => {
+          const off = OFFERS.find((o) => o.id === selectedCat);
+          return (
+            <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-white px-6 overflow-y-auto">
+              {/* Header — Corrida Concluída */}
+              <div className="mb-2 text-xs font-bold uppercase tracking-wider text-green-600 flex items-center gap-2">
+                <Flag className="h-4 w-4" />
+                Corrida Concluída
+              </div>
+
+              {/* Motorista avatar */}
+              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary text-white text-2xl font-bold">
+                {(driverInfo?.name ?? "M").charAt(0).toUpperCase()}
+              </div>
+              <div className="text-[18px] font-bold text-neutral-900">
+                {driverInfo?.name ?? "Motorista"}
+              </div>
+              {driverInfo?.rating != null && (
+                <div className="flex items-center gap-1 text-sm text-neutral-600 mt-0.5">
+                  <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                  {driverInfo.rating.toFixed(1)}
                 </div>
               )}
-              <div className="mt-4 space-y-2">
-                <div className="flex gap-3 items-start">
-                  <div className="mt-1.5 h-2.5 w-2.5 rounded-full bg-primary" />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[10px] uppercase font-bold text-neutral-500">Recolha</div>
-                    <div className="text-sm text-neutral-900 truncate">{pickupAddress}</div>
-                  </div>
-                </div>
-                <div className="flex gap-3 items-start">
-                  <div className="mt-1.5 h-2.5 w-2.5 rounded-full bg-neutral-900" />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[10px] uppercase font-bold text-neutral-500">Destino</div>
-                    <div className="text-sm text-neutral-900 truncate">{dropoffAddress}</div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-neutral-50 p-3">
-                <div className="text-center">
-                  <div className="text-base font-bold text-primary">{route.distanceKm.toFixed(1)}</div>
-                  <div className="text-[10px] text-neutral-600 uppercase">km</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-base font-bold text-neutral-900">{route.durationMin}</div>
-                  <div className="text-[10px] text-neutral-600 uppercase">min</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-base font-bold text-yellow-600">
-                    {currentFare.toLocaleString("pt-PT")}
-                  </div>
-                  <div className="text-[10px] text-neutral-600 uppercase">Kz</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* ===== STEP 6: RATING ===== */}
-        {step === "rating" && (
-          <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-white px-6">
-            <div className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
-              Fim da corrida
-            </div>
-            <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-primary text-white text-3xl font-bold">
-              {(driverInfo?.name ?? "M").charAt(0).toUpperCase()}
-            </div>
-            <div className="text-[18px] font-bold text-neutral-900">
-              {driverInfo?.name ?? "Motorista"}
-            </div>
-            <div className="mt-6 text-center text-[20px] font-bold uppercase tracking-wide text-neutral-900">
-              Avalie a sua corrida
-            </div>
-            <div className="mt-4 flex gap-2">
+              {/* ===== PREÇO / RESUMO — ANTES DA AVALIAÇÃO ===== */}
+              <div className="mt-6 w-full max-w-sm">
+                <div className="rounded-2xl bg-neutral-50 border border-neutral-200 p-5 text-center">
+                  <p className="text-[10px] uppercase tracking-widest text-neutral-400 font-bold">Total da Corrida</p>
+                  <p className="mt-1 font-display text-4xl font-black text-neutral-900 tracking-tight">
+                    {currentFare.toLocaleString("pt-PT")} Kz
+                  </p>
+
+                  {/* Breakdown do preço */}
+                  <div className="mt-4 space-y-2 text-xs text-neutral-600 border-t border-neutral-200 pt-3">
+                    <div className="flex justify-between">
+                      <span>Serviço</span>
+                      <span className="font-bold text-neutral-900">{off?.name ?? selectedCat}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Distância</span>
+                      <span className="font-bold text-neutral-900">{route.distanceKm.toFixed(1)} km</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Tempo estimado</span>
+                      <span className="font-bold text-neutral-900">{route.durationMin} min</span>
+                    </div>
+                    <div className="flex justify-between text-neutral-400">
+                      <span>Tarifa</span>
+                      <span>150 Kz/km + 20 Kz/min</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Bandeirada</span>
+                      <span className="font-bold text-neutral-900">{PRICING[selectedCat].base} Kz</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-neutral-900 border-t border-neutral-200 pt-2">
+                      <span>Total</span>
+                      <span>{currentFare.toLocaleString("pt-PT")} Kz</span>
+                    </div>
+                  </div>
+
+                  {/* Método de pagamento */}
+                  <div className="mt-3 flex items-center justify-center gap-2 text-xs text-neutral-500">
+                    <Banknote className="h-3.5 w-3.5" />
+                    <span>Pagamento por {PAY_OPTIONS.find((p) => p.id === payMethod)?.label ?? "Dinheiro"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* ===== AVALIAÇÃO ===== */}
+              <div className="mt-6 text-center">
+                <div className="text-[14px] font-bold uppercase tracking-wide text-neutral-700">
+                  Avalie {driverInfo?.name ?? "o motorista"}
+                </div>
+            <div className="mt-3 flex gap-2 justify-center">
               {[1, 2, 3, 4, 5].map((n) => (
                 <button
                   key={n}
@@ -704,12 +884,14 @@ function PedirPage() {
             <button
               onClick={submitRating}
               disabled={stars < 1}
-              className="mt-8 w-full max-w-xs rounded-2xl bg-primary py-4 font-bold text-[17px] uppercase tracking-wide text-white shadow-xl active:scale-[0.98] transition disabled:opacity-50"
+              className="mt-6 w-full max-w-sm rounded-2xl bg-primary py-4 font-bold text-[17px] uppercase tracking-wide text-white shadow-xl active:scale-[0.98] transition disabled:opacity-50"
             >
               Confirmar
             </button>
           </div>
-        )}
+            </div>
+          );
+        })()}
       </div>
     </AppShell>
   );
