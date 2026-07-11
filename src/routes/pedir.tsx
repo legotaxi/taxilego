@@ -48,10 +48,10 @@ type PayMethod = "cash" | "reference" | "card" | "wallet";
 type Step = "destination" | "offer" | "payment" | "searching" | "arriving" | "rating";
 
 const PRICING: Record<Category, { base: number; perKm: number; perMin: number; min: number }> = {
-  normal:   { base: 500, perKm: 150, perMin: 20, min: 600 },
-  xl:       { base: 800, perKm: 220, perMin: 20, min: 1000 },
-  moto:     { base: 300, perKm: 80,  perMin: 10, min: 400 },
-  delivery: { base: 400, perKm: 120, perMin: 12, min: 500 },
+  normal:   { base: 500,  perKm: 150, perMin: 20, min: 500  },  // LegoBaza
+  xl:       { base: 1000, perKm: 150, perMin: 20, min: 1000 },  // LegoCool
+  moto:     { base: 300,  perKm: 150, perMin: 20, min: 300  },  // LegoEntrega
+  delivery: { base: 400,  perKm: 150, perMin: 20, min: 400  },  // LegoCarga
 };
 
 const OFFERS: Array<{
@@ -76,7 +76,10 @@ const PAY_OPTIONS: Array<{ id: PayMethod; label: string; icon: typeof Banknote }
 
 function computeFare(cat: Category, km: number, min: number) {
   const p = PRICING[cat];
-  return Math.max(p.min, Math.round(p.base + p.perKm * km + p.perMin * min));
+  // Fórmula: base (bandeirada) + 150 Kz/km + 20 Kz/min
+  // O preço varia sempre com distância e tempo
+  const raw = p.base + p.perKm * km + p.perMin * min;
+  return Math.round(raw);
 }
 
 function PedirPage() {

@@ -86,20 +86,26 @@ export const getDriverInfo = createServerFn({ method: "POST" })
   });
 
 
-// Preços reais por categoria (Kz). base = bandeirada, perKm = preço por km, perMin = preço por minuto de trânsito.
+// Preços reais por categoria (Kz).
+// base = bandeirada (preço base fixo por categoria)
+// perKm = 150 Kz por quilómetro (comum a todas as categorias)
+// perMin = 20 Kz por minuto de trânsito (comum a todas as categorias)
+// min = preço base = bandeirada (o preço nunca é inferior à bandeirada)
 const CATEGORY_PRICING = {
-  moto:     { base: 300, perKm: 80,  perMin: 10, min: 400 },
-  normal:   { base: 500, perKm: 150, perMin: 20, min: 600 },
-  xl:       { base: 800, perKm: 220, perMin: 20, min: 1000 },
-  premium:  { base: 1200, perKm: 300, perMin: 25, min: 1500 },
-  shared:   { base: 300, perKm: 90,  perMin: 10, min: 400 },
-  delivery: { base: 400, perKm: 120, perMin: 12, min: 500 },
+  moto:     { base: 300, perKm: 150, perMin: 20, min: 300 },
+  normal:   { base: 500, perKm: 150, perMin: 20, min: 500 },
+  xl:       { base: 1000, perKm: 150, perMin: 20, min: 1000 },
+  premium:  { base: 1500, perKm: 150, perMin: 20, min: 1500 },
+  shared:   { base: 250, perKm: 150, perMin: 20, min: 250 },
+  delivery: { base: 400, perKm: 150, perMin: 20, min: 400 },
 } as const;
 
 function computeFare(category: keyof typeof CATEGORY_PRICING, distance_km: number, duration_min: number) {
   const p = CATEGORY_PRICING[category];
+  // Fórmula: base + (150 × km) + (20 × min)
+  // O preço varia sempre com distância e tempo — nunca é fixo
   const raw = p.base + p.perKm * distance_km + p.perMin * duration_min;
-  return Math.max(p.min, Math.round(raw));
+  return Math.round(raw);
 }
 
 export const estimateFare = createServerFn({ method: "POST" })
