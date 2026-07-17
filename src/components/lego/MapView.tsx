@@ -94,23 +94,16 @@ const PERSON_ICON = svgIcon(
 );
 
 /**
- * Ícone de carro para o passageiro — rosa/magenta com sombra e rotação
- * Conforme a imagem do app: carros pink/rosa no mapa
+ * Ícone de carro para o passageiro — super realista em vista aérea (top-down)
+ * Usa imagens PNG realistas em vez de SVG simplificado
  */
 function makeCarIconForPassenger(color: string, size = 36): string {
-  return svgIcon(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-      <defs>
-        <filter id="cs" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.25"/>
-        </filter>
-      </defs>
-      <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 2}" fill="white" filter="url(#cs)"/>
-      <path d="M${size * 0.3} ${size * 0.54}l${size * 0.04} -${size * 0.12}a${size * 0.05} ${size * 0.05} 0 01${size * 0.05} -${size * 0.03}h${size * 0.22}a${size * 0.05} ${size * 0.05} 0 01${size * 0.05} ${size * 0.03}l${size * 0.04} ${size * 0.12}v${size * 0.08}a${size * 0.025} ${size * 0.025} 0 01-${size * 0.025} ${size * 0.025}h-${size * 0.025}a${size * 0.025} ${size * 0.025} 0 01-${size * 0.025} -${size * 0.025}v-${size * 0.02}h-${size * 0.22}v${size * 0.02}a${size * 0.025} ${size * 0.025} 0 01-${size * 0.025} ${size * 0.025}h-${size * 0.025}a${size * 0.025} ${size * 0.025} 0 01-${size * 0.025} -${size * 0.025}v-${size * 0.08}z" fill="${color}"/>
-      <circle cx="${size * 0.38}" cy="${size * 0.58}" r="${size * 0.03}" fill="white"/>
-      <circle cx="${size * 0.62}" cy="${size * 0.58}" r="${size * 0.03}" fill="white"/>
-    </svg>`,
-  );
+  // Mapa de cores para selecionar a imagem de carro apropriada
+  // Usa carros brancos para cores claras, carros pretos para cores escuras
+  const isLight = color === "#ec4899" || color === "#f59e0b" || color === "#06b6d4" || color === "#10b981";
+  const carImage = isLight ? "/car-top-white.png" : "/car-top-black.png";
+  
+  return carImage;
 }
 
 /** Mapa de cores por categoria para carros no mapa do passageiro */
@@ -489,8 +482,8 @@ export function MapView({
         map,
         icon: {
           url: iconUrl,
-          scaledSize: new google.maps.Size(36, 36),
-          anchor: new google.maps.Point(18, 18),
+          scaledSize: new google.maps.Size(40, 40),
+          anchor: new google.maps.Point(20, 20),
         },
         zIndex: 500,
         clickable: true,
