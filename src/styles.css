@@ -341,3 +341,62 @@ input:focus-visible {
     padding-right: max(env(safe-area-inset-right), 1rem);
   }
 }
+
+/* =========================================================
+   Splash Screen — Animações profissionais e elegantes
+   ========================================================= */
+@keyframes splash-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes splash-scale-in {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes splash-slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes splash-glow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.splash-screen {
+  animation: splash-fade-in 0.3s ease-out;
+}
+
+.splash-logo {
+  animation: splash-scale-in 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.splash-text {
+  animation: splash-slide-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+.splash-glow {
+  animation: splash-glow 3s ease-in-out infinite;
+}
