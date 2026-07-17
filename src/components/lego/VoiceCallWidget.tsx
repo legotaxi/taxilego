@@ -66,37 +66,37 @@ export function VoiceCallWidget({
   // Tela de chamada ativa
   if (isCallActive) {
     return (
-      <div className=\"fixed inset-0 z-50 bg-gradient-to-b from-blue-600 to-blue-800 flex flex-col items-center justify-center p-4\">
+      <div className="fixed inset-0 z-50 bg-gradient-to-b from-blue-600 to-blue-800 flex flex-col items-center justify-center p-4">
         {/* Áudio remoto */}
         <audio ref={audioRef} autoPlay playsInline />
 
         {/* Avatar do utilizador remoto */}
-        <div className=\"mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/20 shadow-lg\">
-          <div className=\"text-5xl font-bold text-white\">
+        <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/20 shadow-lg">
+          <div className="text-5xl font-bold text-white">
             {remoteUserName.charAt(0).toUpperCase()}
           </div>
         </div>
 
         {/* Nome e duração */}
-        <h2 className=\"text-3xl font-bold text-white mb-2\">{remoteUserName}</h2>
-        <p className=\"text-lg text-blue-100 font-semibold\">{formatDuration(callDuration)}</p>
+        <h2 className="text-3xl font-bold text-white mb-2">{remoteUserName}</h2>
+        <p className="text-lg text-blue-100 font-semibold">{formatDuration(callDuration)}</p>
 
         {/* Controles */}
-        <div className=\"mt-12 flex gap-6\">
+        <div className="mt-12 flex gap-6">
           {/* Botão de mudo */}
           <button
             onClick={toggleMute}
             className={`flex h-16 w-16 items-center justify-center rounded-full shadow-lg transition-all active:scale-95 ${
               isMuted
-                ? \"bg-red-500 hover:bg-red-600 text-white\"
-                : \"bg-blue-500 hover:bg-blue-600 text-white\"
+                ? "bg-red-500 hover:bg-red-600 text-white"
+                : "bg-blue-500 hover:bg-blue-600 text-white"
             }`}
-            title={isMuted ? \"Desativar mudo\" : \"Ativar mudo\"}
+            title={isMuted ? "Desativar mudo" : "Ativar mudo"}
           >
             {isMuted ? (
-              <MicOff className=\"h-7 w-7\" />
+              <MicOff className="h-7 w-7" />
             ) : (
-              <Mic className=\"h-7 w-7\" />
+              <Mic className="h-7 w-7" />
             )}
           </button>
 
@@ -106,18 +106,18 @@ export function VoiceCallWidget({
               endCall();
               onCallEnd?.();
             }}
-            className=\"flex h-16 w-16 items-center justify-center rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg transition-all active:scale-95\"
-            title=\"Terminar chamada\"
+            className="flex h-16 w-16 items-center justify-center rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg transition-all active:scale-95"
+            title="Terminar chamada"
           >
-            <PhoneOff className=\"h-7 w-7\" />
+            <PhoneOff className="h-7 w-7" />
           </button>
         </div>
 
         {/* Erro */}
         {error && (
-          <div className=\"absolute bottom-6 left-4 right-4 flex items-start gap-3 rounded-lg bg-red-500/90 p-4 text-white\">
-            <AlertCircle className=\"h-5 w-5 flex-shrink-0 mt-0.5\" />
-            <p className=\"text-sm font-medium\">{error}</p>
+          <div className="absolute bottom-6 left-4 right-4 flex items-start gap-3 rounded-lg bg-red-500/90 p-4 text-white">
+            <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+            <p className="text-sm font-medium">{error}</p>
           </div>
         )}
       </div>
@@ -127,33 +127,33 @@ export function VoiceCallWidget({
   // Tela de chamada recebida
   if (showIncomingCall && isRinging) {
     return (
-      <div className=\"fixed inset-0 z-50 bg-gradient-to-b from-emerald-600 to-emerald-800 flex flex-col items-center justify-center p-4\">
+      <div className="fixed inset-0 z-50 bg-gradient-to-b from-emerald-600 to-emerald-800 flex flex-col items-center justify-center p-4">
         {/* Áudio remoto */}
         <audio ref={audioRef} autoPlay playsInline />
 
         {/* Animação de toque */}
-        <div className=\"mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/20 shadow-lg\">
-          <div className=\"animate-pulse text-5xl font-bold text-white\">
+        <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/20 shadow-lg">
+          <div className="animate-pulse text-5xl font-bold text-white">
             {remoteUserName.charAt(0).toUpperCase()}
           </div>
         </div>
 
         {/* Nome e mensagem */}
-        <h2 className=\"text-3xl font-bold text-white mb-2\">{remoteUserName}</h2>
-        <p className=\"text-lg text-emerald-100 font-semibold\">A chamar...</p>
+        <h2 className="text-3xl font-bold text-white mb-2">{remoteUserName}</h2>
+        <p className="text-lg text-emerald-100 font-semibold">A chamar...</p>
 
         {/* Controles */}
-        <div className=\"mt-12 flex gap-6\">
+        <div className="mt-12 flex gap-6">
           {/* Botão de rejeitar */}
           <button
             onClick={() => {
               rejectCall();
               setShowIncomingCall(false);
             }}
-            className=\"flex h-16 w-16 items-center justify-center rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg transition-all active:scale-95\"
-            title=\"Rejeitar chamada\"
+            className="flex h-16 w-16 items-center justify-center rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg transition-all active:scale-95"
+            title="Rejeitar chamada"
           >
-            <PhoneOff className=\"h-7 w-7\" />
+            <PhoneOff className="h-7 w-7" />
           </button>
 
           {/* Botão de aceitar */}
@@ -162,18 +162,18 @@ export function VoiceCallWidget({
               acceptCall();
               setShowIncomingCall(false);
             }}
-            className=\"flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg transition-all active:scale-95\"
-            title=\"Aceitar chamada\"
+            className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg transition-all active:scale-95"
+            title="Aceitar chamada"
           >
-            <Phone className=\"h-7 w-7\" />
+            <Phone className="h-7 w-7" />
           </button>
         </div>
 
         {/* Erro */}
         {error && (
-          <div className=\"absolute bottom-6 left-4 right-4 flex items-start gap-3 rounded-lg bg-red-500/90 p-4 text-white\">
-            <AlertCircle className=\"h-5 w-5 flex-shrink-0 mt-0.5\" />
-            <p className=\"text-sm font-medium\">{error}</p>
+          <div className="absolute bottom-6 left-4 right-4 flex items-start gap-3 rounded-lg bg-red-500/90 p-4 text-white">
+            <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+            <p className="text-sm font-medium">{error}</p>
           </div>
         )}
       </div>
@@ -183,40 +183,40 @@ export function VoiceCallWidget({
   // Tela de chamada em progresso (chamador)
   if (isRinging && !isCallActive) {
     return (
-      <div className=\"fixed inset-0 z-50 bg-gradient-to-b from-blue-600 to-blue-800 flex flex-col items-center justify-center p-4\">
+      <div className="fixed inset-0 z-50 bg-gradient-to-b from-blue-600 to-blue-800 flex flex-col items-center justify-center p-4">
         {/* Avatar do utilizador remoto */}
-        <div className=\"mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/20 shadow-lg\">
-          <div className=\"animate-pulse text-5xl font-bold text-white\">
+        <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/20 shadow-lg">
+          <div className="animate-pulse text-5xl font-bold text-white">
             {remoteUserName.charAt(0).toUpperCase()}
           </div>
         </div>
 
         {/* Nome e mensagem */}
-        <h2 className=\"text-3xl font-bold text-white mb-2\">{remoteUserName}</h2>
-        <p className=\"text-lg text-blue-100 font-semibold flex items-center gap-2\">
-          <Loader2 className=\"h-5 w-5 animate-spin\" />
+        <h2 className="text-3xl font-bold text-white mb-2">{remoteUserName}</h2>
+        <p className="text-lg text-blue-100 font-semibold flex items-center gap-2">
+          <Loader2 className="h-5 w-5 animate-spin" />
           Chamando...
         </p>
 
         {/* Botão de cancelar */}
-        <div className=\"mt-12\">
+        <div className="mt-12">
           <button
             onClick={() => {
               endCall();
               onCallEnd?.();
             }}
-            className=\"flex h-16 w-16 items-center justify-center rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg transition-all active:scale-95\"
-            title=\"Cancelar chamada\"
+            className="flex h-16 w-16 items-center justify-center rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg transition-all active:scale-95"
+            title="Cancelar chamada"
           >
-            <PhoneOff className=\"h-7 w-7\" />
+            <PhoneOff className="h-7 w-7" />
           </button>
         </div>
 
         {/* Erro */}
         {error && (
-          <div className=\"absolute bottom-6 left-4 right-4 flex items-start gap-3 rounded-lg bg-red-500/90 p-4 text-white\">
-            <AlertCircle className=\"h-5 w-5 flex-shrink-0 mt-0.5\" />
-            <p className=\"text-sm font-medium\">{error}</p>
+          <div className="absolute bottom-6 left-4 right-4 flex items-start gap-3 rounded-lg bg-red-500/90 p-4 text-white">
+            <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+            <p className="text-sm font-medium">{error}</p>
           </div>
         )}
       </div>

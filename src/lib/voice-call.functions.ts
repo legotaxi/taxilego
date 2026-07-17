@@ -55,7 +55,8 @@ export const logVoiceCall = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
 
     try {
-      const { error } = await supabase.from("voice_calls").insert({
+      // Usando any para evitar erros de tipagem se a tabela ainda não estiver no schema gerado
+      const { error } = await (supabase.from("voice_calls" as any) as any).insert({
         ride_id: data.rideId,
         caller_id: userId,
         recipient_id: data.remoteUserId,
@@ -85,8 +86,8 @@ export const getVoiceCallHistory = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
 
     try {
-      const { data, error } = await supabase
-        .from("voice_calls")
+      const { data, error } = await (supabase
+        .from("voice_calls" as any)
         .select(
           `
           id,
@@ -99,7 +100,7 @@ export const getVoiceCallHistory = createServerFn({ method: "GET" })
           caller:profiles!caller_id(full_name),
           recipient:profiles!recipient_id(full_name)
         `,
-        )
+        ) as any)
         .or(`caller_id.eq.${userId},recipient_id.eq.${userId}`)
         .order("created_at", { ascending: false })
         .limit(50);

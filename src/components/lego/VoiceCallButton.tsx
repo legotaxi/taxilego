@@ -45,12 +45,12 @@ export function VoiceCallButton({
     >
       {isLoading ? (
         <>
-          <Loader2 className=\"h-5 w-5 animate-spin\" />
+          <Loader2 className="h-5 w-5 animate-spin" />
           <span>A conectar...</span>
         </>
       ) : (
         <>
-          <Phone className=\"h-5 w-5\" />
+          <Phone className="h-5 w-5" />
           <span>Chamar</span>
         </>
       )}

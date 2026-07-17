@@ -73,7 +73,8 @@ export function RideWithVoiceCall({
 
         // Enviar sinal de chamada recebida via Realtime
         const channel = supabase.channel(`voice_call_incoming:${targetUserId}`);
-        await channel.send("broadcast", {
+        await channel.send({
+          type: "broadcast",
           event: "incoming_call",
           payload: {
             callerId: userId,
