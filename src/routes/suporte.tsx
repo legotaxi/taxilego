@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { ArrowLeft, LifeBuoy, Loader2, Send } from "lucide-react";
+import { ArrowLeft, HeadsetIcon, Loader2, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { createSupportTicket, getMyTickets } from "@/lib/support.functions";
 import { toast } from "sonner";
@@ -91,7 +91,7 @@ function SupportPage() {
     <main className="min-h-screen bg-muted/30">
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur px-4 py-3 flex items-center gap-3">
         <Link to="/carteira" className="p-2 -ml-2"><ArrowLeft className="h-5 w-5" /></Link>
-        <LifeBuoy className="h-5 w-5 text-primary" />
+        <HeadsetIcon className="h-5 w-5 text-primary" />
         <h1 className="font-display text-lg font-bold">Suporte</h1>
       </header>
 

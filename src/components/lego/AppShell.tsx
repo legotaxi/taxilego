@@ -51,7 +51,7 @@ export function AppShell({ children, showNav = true, role = "passenger" }: AppSh
 
       {/* Bottom Navigation Bar - Premium Native Style */}
       {showNav && (
-        <nav className="z-50 flex h-24 shrink-0 items-center justify-around border-t border-border/50 bg-background/80 px-2 pb-safe pt-3 backdrop-blur-2xl shadow-2xl">
+        <nav className="z-50 flex h-20 shrink-0 items-center justify-around border-t border-border/40 bg-gradient-to-t from-background via-background/95 to-background/80 px-2 pb-safe pt-2 backdrop-blur-3xl shadow-2xl">
           {tabs.map((tab) => {
             const isActive = location.pathname === tab.to;
             const Icon = tab.icon;
@@ -60,29 +60,29 @@ export function AppShell({ children, showNav = true, role = "passenger" }: AppSh
               <Link
                 key={tab.to}
                 to={tab.to}
-                className={`group relative flex flex-col items-center justify-center gap-1.5 px-4 py-2 transition-all duration-300 ease-out ${
+                className={`group relative flex flex-col items-center justify-center gap-1 px-3 py-1.5 transition-all duration-300 ease-out ${
                   isActive
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {/* Active indicator dot */}
+                {/* Active indicator line */}
                 {isActive && (
-                  <div className="absolute -top-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                  <div className="absolute -top-0.5 h-0.5 w-8 rounded-full bg-primary" />
                 )}
                 
                 <div
                   className={`rounded-2xl p-2.5 transition-all duration-300 ${
                     isActive 
-                      ? "bg-primary/15 scale-110" 
-                      : "group-hover:bg-muted/60 group-hover:scale-105"
+                      ? "bg-primary/20 scale-105" 
+                      : "group-hover:bg-muted/50 group-hover:scale-105"
                   }`}
                 >
-                  <Icon className={`h-6 w-6 transition-all duration-300 ${
+                  <Icon className={`h-5 w-5 transition-all duration-300 ${
                     isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                   }`} />
                 </div>
-                <span className={`text-[11px] font-semibold transition-colors duration-300 ${
+                <span className={`text-[10px] font-semibold transition-colors duration-300 ${
                   isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                 }`}>{tab.label}</span>
               </Link>
@@ -92,13 +92,13 @@ export function AppShell({ children, showNav = true, role = "passenger" }: AppSh
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="group relative flex flex-col items-center justify-center gap-1.5 px-4 py-2 transition-all duration-300 text-muted-foreground hover:text-destructive"
+            className="group relative flex flex-col items-center justify-center gap-1 px-3 py-1.5 transition-all duration-300 text-muted-foreground hover:text-destructive"
             title="Fazer logout"
           >
             <div className="rounded-2xl p-2.5 transition-all duration-300 group-hover:bg-destructive/10 group-hover:scale-105">
-              <LogOut className="h-6 w-6 transition-all duration-300" />
+              <LogOut className="h-5 w-5 transition-all duration-300" />
             </div>
-            <span className="text-[11px] font-semibold">Sair</span>
+            <span className="text-[10px] font-semibold">Sair</span>
           </button>
         </nav>
       )}

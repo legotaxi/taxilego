@@ -11,7 +11,7 @@ import {
   Banknote,
   Loader2,
   X,
-  LifeBuoy,
+  HeadsetIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getWallet, requestTopup, requestWithdrawal } from "@/lib/wallet.functions";
@@ -130,8 +130,8 @@ function WalletPage() {
         <header className="sticky top-0 z-10 shrink-0 border-b border-border bg-background/80 px-5 py-4 backdrop-blur-lg">
           <div className="flex items-center justify-between">
             <h1 className="font-display text-xl font-bold tracking-tight">Carteira</h1>
-            <Link to="/suporte" className="rounded-full bg-primary/10 p-2 text-primary active:scale-95" title="Suporte">
-              <LifeBuoy className="h-5 w-5" />
+            <Link to="/suporte" className="rounded-full bg-gradient-to-br from-primary/20 to-primary/10 p-2.5 text-primary active:scale-95 transition-all hover:from-primary/30 hover:to-primary/20 shadow-lg" title="Suporte">
+              <HeadsetIcon className="h-5 w-5" />
             </Link>
           </div>
         </header>
@@ -283,35 +283,35 @@ function TopupDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 sm:items-center">
-      <div className="w-full max-w-sm rounded-t-3xl sm:rounded-3xl bg-card p-6 shadow-xl">
+      <div className="w-full max-w-sm rounded-t-3xl sm:rounded-3xl bg-card p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-display text-lg font-bold">Recarregar Carteira</h3>
-          <button onClick={onClose}><X className="h-5 w-5" /></button>
+          <button onClick={onClose} className="p-1 hover:bg-muted rounded-lg transition-colors"><X className="h-5 w-5" /></button>
         </div>
-        <label className="block text-xs font-semibold mb-1">Valor (Kz)</label>
+        <label className="block text-xs font-semibold mb-2">Valor (Kz)</label>
         <input
           type="number"
           min="100"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="w-full rounded-xl border border-border px-3 py-2.5 mb-3"
+          className="w-full rounded-xl border border-border px-3 py-2.5 mb-4 focus:outline-none focus:ring-2 focus:ring-primary/50"
           placeholder="Ex: 5000"
         />
-        <label className="block text-xs font-semibold mb-1">Método</label>
+        <label className="block text-xs font-semibold mb-2">Método</label>
         <select
           value={method}
           onChange={(e) => setMethod(e.target.value as "mcx_express" | "reference" | "cash_deposit")}
-          className="w-full rounded-xl border border-border px-3 py-2.5 mb-3 bg-background"
+          className="w-full rounded-xl border border-border px-3 py-2.5 mb-4 bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
         >
           <option value="mcx_express">Multicaixa Express</option>
           <option value="reference">Referência Multicaixa</option>
           <option value="cash_deposit">Depósito bancário</option>
         </select>
-        <label className="block text-xs font-semibold mb-1">Referência / comprovativo (opcional)</label>
+        <label className="block text-xs font-semibold mb-2">Referência / comprovativo (opcional)</label>
         <input
           value={ref}
           onChange={(e) => setRef(e.target.value)}
-          className="w-full rounded-xl border border-border px-3 py-2.5 mb-4"
+          className="w-full rounded-xl border border-border px-3 py-2.5 mb-6 focus:outline-none focus:ring-2 focus:ring-primary/50"
           placeholder="Nº de referência ou comprovativo"
         />
         <button
@@ -322,11 +322,11 @@ function TopupDialog({
             setBusy(true);
             try { await onSubmit(n, method, ref || undefined); } finally { setBusy(false); }
           }}
-          className="w-full rounded-2xl bg-primary py-3 font-bold text-primary-foreground disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full rounded-2xl bg-primary py-3.5 font-bold text-primary-foreground disabled:opacity-50 flex items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-lg"
         >
           {busy && <Loader2 className="h-4 w-4 animate-spin" />} Enviar pedido
         </button>
-        <p className="mt-3 text-[11px] text-muted-foreground">
+        <p className="mt-4 text-[11px] text-muted-foreground text-center">
           O saldo será creditado após confirmação pelo nosso operador.
         </p>
       </div>
@@ -350,36 +350,36 @@ function WithdrawDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 sm:items-center">
-      <div className="w-full max-w-sm rounded-t-3xl sm:rounded-3xl bg-card p-6 shadow-xl">
+      <div className="w-full max-w-sm rounded-t-3xl sm:rounded-3xl bg-card p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-display text-lg font-bold">Transferir para banco</h3>
-          <button onClick={onClose}><X className="h-5 w-5" /></button>
+          <button onClick={onClose} className="p-1 hover:bg-muted rounded-lg transition-colors"><X className="h-5 w-5" /></button>
         </div>
-        <p className="text-xs text-muted-foreground mb-3">
-          Saldo disponível: <strong>Kz {formatKz(balance)}</strong>
+        <p className="text-xs text-muted-foreground mb-4 bg-muted/30 rounded-lg p-3">
+          Saldo disponível: <strong className="text-primary">Kz {formatKz(balance)}</strong>
         </p>
-        <label className="block text-xs font-semibold mb-1">Valor (Kz)</label>
+        <label className="block text-xs font-semibold mb-2">Valor (Kz)</label>
         <input
           type="number"
           min="500"
           max={balance}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="w-full rounded-xl border border-border px-3 py-2.5 mb-3"
+          className="w-full rounded-xl border border-border px-3 py-2.5 mb-4 focus:outline-none focus:ring-2 focus:ring-primary/50"
           placeholder="Mínimo Kz 500"
         />
-        <label className="block text-xs font-semibold mb-1">IBAN</label>
+        <label className="block text-xs font-semibold mb-2">IBAN</label>
         <input
           value={iban}
           onChange={(e) => setIban(e.target.value)}
-          className="w-full rounded-xl border border-border px-3 py-2.5 mb-3 font-mono uppercase"
+          className="w-full rounded-xl border border-border px-3 py-2.5 mb-4 font-mono uppercase focus:outline-none focus:ring-2 focus:ring-primary/50"
           placeholder="AO06 0000 0000 0000 0000 0000 0"
         />
-        <label className="block text-xs font-semibold mb-1">Titular da conta</label>
+        <label className="block text-xs font-semibold mb-2">Titular da conta</label>
         <input
           value={holder}
           onChange={(e) => setHolder(e.target.value)}
-          className="w-full rounded-xl border border-border px-3 py-2.5 mb-4"
+          className="w-full rounded-xl border border-border px-3 py-2.5 mb-6 focus:outline-none focus:ring-2 focus:ring-primary/50"
           placeholder="Nome completo"
         />
         <button
@@ -391,11 +391,11 @@ function WithdrawDialog({
             setBusy(true);
             try { await onSubmit(n, iban.trim(), holder.trim()); } finally { setBusy(false); }
           }}
-          className="w-full rounded-2xl bg-foreground py-3 font-bold text-background disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full rounded-2xl bg-foreground py-3.5 font-bold text-background disabled:opacity-50 flex items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-lg"
         >
           {busy && <Loader2 className="h-4 w-4 animate-spin" />} Solicitar saque
         </button>
-        <p className="mt-3 text-[11px] text-muted-foreground">
+        <p className="mt-4 text-[11px] text-muted-foreground text-center">
           O valor é descontado imediatamente. Em caso de rejeição é devolvido.
         </p>
       </div>
