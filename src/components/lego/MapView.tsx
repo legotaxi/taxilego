@@ -58,16 +58,37 @@ const DESTINATION_ICON = svgIcon(
   </svg>`,
 );
 
-const CAR_PATH = "M22 2C10.95 2 2 10.95 2 22s8.95 20 20 20 20-8.95 20-20S33.05 2 22 2zm0 36c-8.82 0-16-7.18-16-16S13.18 6 22 6s16 7.18 16 16-7.18 16-16 16zm-5.5-14l1.5-5c.31-1.03 1.25-1.75 2.32-1.75h3.36c1.07 0 2.01.72 2.32 1.75l1.5 5v4c0 .55-.45 1-1 1h-1c-.55 0-1-.45-1-1v-1h-6v1c0 .55-.45 1-1 1h-1c-.55 0-1-.45-1-1v-4zm3-1.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm5 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z";
+const CAR_PATH = "";
 
+// Top-down yellow taxi car icon — elegant, professional, rotatable via heading
 const CAR_ICON = svgIcon(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
-    <circle cx="22" cy="22" r="20" fill="white" stroke="#16a34a" stroke-width="3"/>
-    <path d="M14 24l1.5-5a2 2 0 012-1.5h9a2 2 0 012 1.5l1.5 5v4a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H17v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-4z" fill="#16a34a"/>
-    <circle cx="17" cy="26" r="1.5" fill="white"/>
-    <circle cx="27" cy="26" r="1.5" fill="white"/>
+  `<svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" viewBox="0 0 46 46">
+    <defs>
+      <linearGradient id="cbody" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#facc15"/>
+        <stop offset="100%" stop-color="#eab308"/>
+      </linearGradient>
+      <filter id="csh" x="-20%" y="-10%" width="140%" height="130%">
+        <feDropShadow dx="0" dy="1.5" stdDeviation="1.4" flood-color="#000" flood-opacity="0.35"/>
+      </filter>
+    </defs>
+    <g filter="url(#csh)">
+      <!-- car body (top-down, front pointing up) -->
+      <rect x="11" y="6" width="24" height="34" rx="6" fill="url(#cbody)" stroke="#111" stroke-width="1.5"/>
+      <!-- windshield (front) -->
+      <path d="M14 14 L32 14 L30 20 L16 20 Z" fill="#0f172a" opacity="0.85"/>
+      <!-- rear window -->
+      <path d="M16 32 L30 32 L32 38 L14 38 Z" fill="#0f172a" opacity="0.85"/>
+      <!-- side mirrors -->
+      <rect x="9" y="16" width="3" height="3" rx="0.8" fill="#111"/>
+      <rect x="34" y="16" width="3" height="3" rx="0.8" fill="#111"/>
+      <!-- taxi sign -->
+      <rect x="18" y="22" width="10" height="4" rx="1" fill="#111"/>
+      <text x="23" y="25.4" font-family="Arial, sans-serif" font-size="3.2" font-weight="900" fill="#facc15" text-anchor="middle">TAXI</text>
+    </g>
   </svg>`,
 );
+
 
 const PERSON_ICON = svgIcon(
   `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
