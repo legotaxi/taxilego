@@ -138,8 +138,8 @@ function PedirPage() {
     let cancelled = false;
     const load = async () => {
       try {
-        const res = await getNearbyDriversFn();
-        if (!cancelled && res.drivers) setNearbyDrivers(res.drivers);
+        const res = await getNearbyDriversFn({ data: { lat: LUBANGO_CENTER.lat, lng: LUBANGO_CENTER.lng, radius_m: 10000 } });
+        if (!cancelled && res.drivers) setNearbyDrivers(res.drivers.map((d) => [d.lat, d.lng] as [number, number]));
       } catch {}
     };
     load();
