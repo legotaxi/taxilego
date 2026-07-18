@@ -62,25 +62,31 @@ export function RideWithVoiceCall({
       if (!targetUserId) return;
 
       try {
-        // Notificar o outro utilizador
+        console.log("Iniciando chamada para:", targetUserId);
+        // Notificar o outro utilizador (Push)
         await notifyCall({
           data: {
             recipientId: targetUserId,
             callerId: userId,
-            callerName: remoteUserName,
+            callerName: "Utilizador LegoTaxi", // Nome genérico ou buscar do perfil
           },
         });
 
         // Enviar sinal de chamada recebida via Realtime
         const channel = supabase.channel(`voice_call_incoming:${targetUserId}`);
-        await channel.send({
-          type: "broadcast",
-          event: "incoming_call",
-          payload: {
-            callerId: userId,
-            callerName: remoteUserName,
-            rideId,
-          },
+        await channel.subscribe(async (status) => {
+          if (status === "SUBSCRIBED") {
+            await channel.send({
+              type: "broadcast",
+              event: "incoming_call",
+              payload: {
+                callerId: userId,
+                callerName: "Utilizador LegoTaxi",
+                rideId,
+              },
+            });
+            console.log("Sinal de chamada enviado via Realtime");
+          }
         });
 
         // Ativar widget de chamada
@@ -89,7 +95,7 @@ export function RideWithVoiceCall({
         console.error("Erro ao iniciar chamada:", err);
       }
     },
-    [userId, remoteUserName, rideId, notifyCall],
+    [userId, rideId, notifyCall],
   );
 
   // Aceitar chamada recebida

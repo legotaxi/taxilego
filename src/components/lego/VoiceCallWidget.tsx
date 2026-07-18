@@ -23,11 +23,11 @@ export function VoiceCallWidget({
   const audioRef = useRef<HTMLAudioElement>(null);
   const [showIncomingCall, setShowIncomingCall] = useState(isIncoming);
 
+  const voiceCall = useVoiceCall(userId, remoteUserId);
   const {
     isCallActive,
     isRinging,
     isMuted,
-    isAudioOn,
     callDuration,
     error,
     startCall,
@@ -36,7 +36,7 @@ export function VoiceCallWidget({
     endCall,
     toggleMute,
     getRemoteStream,
-  } = useVoiceCall(userId, remoteUserId);
+  } = voiceCall;
 
   // Reproduzir stream remoto
   useEffect(() => {
