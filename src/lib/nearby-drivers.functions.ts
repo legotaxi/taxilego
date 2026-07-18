@@ -83,7 +83,7 @@ export const getNearbyDrivers = createServerFn({ method: "POST" })
     // First pass: bounding box filter in the database (fast)
     const { data: driversData, error } = await supabaseAdmin
       .from("drivers")
-      .select("current_lat, current_lng, accuracy, speed")
+      .select("current_lat, current_lng, last_accuracy, last_speed")
       .eq("status", "approved")
       .eq("is_online", true)
       .gte("current_lat", bounds.minLat)
