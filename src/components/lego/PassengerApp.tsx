@@ -23,6 +23,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { requestRide, estimateFare } from "@/lib/rides.functions";
 import { computeRoute } from "@/lib/maps-route.functions";
 import { getNearbyDrivers } from "@/lib/nearby-drivers.functions";
+import { LUBANGO_CENTER } from "@/lib/google-maps-loader";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
