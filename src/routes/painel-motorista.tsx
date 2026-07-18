@@ -371,7 +371,7 @@ function DriverPanelContent() {
                 ) : (
                   <Navigation2 className="h-3.5 w-3.5" />
                 )}
-                A Chegar
+                Cheguei
               </button>
               <button
                 onClick={() => handleStartRide(ride.id)}
