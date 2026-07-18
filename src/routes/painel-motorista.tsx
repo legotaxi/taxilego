@@ -371,7 +371,7 @@ function DriverPanelContent() {
                 ) : (
                   <Navigation2 className="h-3.5 w-3.5" />
                 )}
-                A Chegar
+                Cheguei
               </button>
               <button
                 onClick={() => handleStartRide(ride.id)}
@@ -551,46 +551,19 @@ function DriverPanelContent() {
         </div>
 
 
-        {/* Floating Top Header */}
-        <div className="absolute inset-x-3 top-3 z-10 flex items-center justify-between gap-2">
-          <div className={cn(
-            "flex items-center gap-2.5 rounded-2xl px-3 py-2 shadow-xl backdrop-blur-md ring-1 ring-black/5 transition-all duration-500",
-            isOnline ? "bg-background/90" : "bg-neutral-900/90 text-white"
-          )}>
-            <div className="relative flex h-2.5 w-2.5">
-              <span className={cn(
-                "absolute inline-flex h-full w-full rounded-full opacity-75",
-                isOnline ? "animate-ping bg-yellow-400" : "bg-gray-500"
-              )}></span>
-              <span className={cn(
-                "relative inline-flex h-2.5 w-2.5 rounded-full",
-                isOnline ? "bg-yellow-500" : "bg-gray-400"
-              )}></span>
-            </div>
-            <div className="leading-tight">
-              <div className="text-xs font-bold tracking-tight">
-                Lego Taxi · {isOnline ? "Online" : "Offline"}
-              </div>
-              <div className={cn(
-                "text-[9px] uppercase tracking-wider",
-                isOnline ? "text-muted-foreground" : "text-white/50"
-              )}>
-                by Repair Lubatec
-              </div>
-            </div>
-          </div>
-
+        {/* Floating Top Header — compacto para não sobrepor os controlos do mapa */}
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
           <button
             onClick={load}
             disabled={loading}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-background/90 shadow-xl backdrop-blur-md ring-1 ring-black/5 active:scale-95"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-background/90 shadow-xl backdrop-blur-md ring-1 ring-black/5 active:scale-95"
+            title="Atualizar"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </button>
-
-          {/* SOS Button for Driver */}
           <SOSButton variant="floating" />
         </div>
+
 
         {/* Bottom Panel for Rides */}
         <BottomSheet title={activeRides.length > 0 ? "Corrida Ativa" : `Corridas Disponíveis (${pendingRides.length})`}>
