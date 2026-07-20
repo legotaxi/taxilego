@@ -27,6 +27,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { AppShell } from "@/components/lego/AppShell";
 import { RideChat } from "@/components/lego/RideChat";
+import { VoipCallControl } from "@/components/lego/VoipCallControl";
 import { RideCompletionDialog } from "@/components/lego/RideCompletionDialog";
 import { useEffect, useState } from "react";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
@@ -541,17 +542,13 @@ function MyRidesPage() {
                                 >
                                   <MessageCircle className="h-7 w-7" />
                                 </button>
-                                <button
-                                  onClick={() =>
-                                    handleCallDriver(
-                                      driverInfo?.profile?.phone,
-                                      driverInfo?.profile?.full_name,
-                                    )
-                                  }
-                                  className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all"
-                                >
-                                  <Phone className="h-7 w-7" />
-                                </button>
+                                {user?.id && (
+                                  <VoipCallControl
+                                    userId={user.id}
+                                    remoteUserId={r.driver_id}
+                                    remoteUserName={driverInfo?.profile?.full_name ?? "Motorista"}
+                                  />
+                                )}
                               </div>
                             )}
                           </div>
