@@ -106,6 +106,8 @@ function PedirPage() {
   const [dropoffAddress, setDropoffAddress] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [route, setRoute] = useState({ distanceKm: 0, durationMin: 0 });
+  const [routeLoading, setRouteLoading] = useState(false);
+  const [priceBreakdown, setPriceBreakdown] = useState<{ base: number; perKm: number; perMin: number; min: number } | null>(null);
   const [selectedCat, setSelectedCat] = useState<Category>("normal");
   const [payMethod, setPayMethod] = useState<PayMethod>("cash");
   const [step, setStep] = useState<Step>("destination");
@@ -234,6 +236,7 @@ function PedirPage() {
   }, [user?.email]);
 
   const computeAndSet = async (dropLoc: [number, number]) => {
+    setRouteLoading(true);
     try {
       const res = await computeRouteFn({
         data: {
@@ -244,8 +247,14 @@ function PedirPage() {
       });
       if (res.distance_km) {
         setRoute({ distanceKm: res.distance_km, durationMin: res.duration_min ?? 0 });
+        // Atualizar breakdown de preço para exibição
+        setPriceBreakdown(PRICING[selectedCat]);
       }
-    } catch {}
+    } catch (e) {
+      console.error("Erro ao calcular rota:", e);
+    } finally {
+      setRouteLoading(false);
+    }
   };
 
   const handleDropoffSelect = (loc: [number, number], addr?: string) => {
@@ -368,6 +377,16 @@ function PedirPage() {
   const currentFare = route.distanceKm
     ? computeFare(selectedCat, route.distanceKm, route.durationMin)
     : PRICING[selectedCat].min;
+
+  // Calcular breakdown detalhado do preço
+  const fareBreakdown = route.distanceKm
+    ? {
+        base: PRICING[selectedCat].base,
+        distance: PRICING[selectedCat].perKm * route.distanceKm,
+        time: PRICING[selectedCat].perMin * route.durationMin,
+        total: currentFare,
+      }
+    : null;
 
   const showTopBar = ["destination", "offer", "payment"].includes(step);
 
@@ -512,19 +531,57 @@ function PedirPage() {
                         <span className="text-xs text-neutral-500">👤 {o.seats}</span>
                       </div>
                       <div className="text-xs text-neutral-600 mt-0.5">{o.tag}</div>
+                      {route.distanceKm > 0 && (
+                        <div className="text-xs text-neutral-500 mt-1">
+                          {route.distanceKm} km · {route.durationMin} min
+                        </div>
+                      )}
                     </div>
-                    <div className="text-[17px] font-extrabold text-neutral-900 whitespace-nowrap">
-                      {fare.toLocaleString("pt-PT")}
-                      <span className="ml-0.5 text-xs font-semibold text-neutral-500">Kz</span>
+                    <div className="text-right">
+                      {routeLoading && route.distanceKm === 0 ? (
+                        <div className="flex items-center gap-1">
+                          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                          <span className="text-xs text-neutral-500">A calcular…</span>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="text-[17px] font-extrabold text-neutral-900 whitespace-nowrap">
+                            {fare.toLocaleString("pt-PT")}
+                            <span className="ml-0.5 text-xs font-semibold text-neutral-500">Kz</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </button>
                 );
               })}
             </div>
+            {/* Resumo de preço detalhado */}
+            {fareBreakdown && (
+              <div className="px-5 pt-3 pb-2 border-t border-neutral-100 text-xs text-neutral-600">
+                <div className="flex justify-between mb-1">
+                  <span>Bandeirada:</span>
+                  <span className="font-semibold">{fareBreakdown.base.toLocaleString("pt-PT")} Kz</span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span>Distância ({route.distanceKm} km):</span>
+                  <span className="font-semibold">{fareBreakdown.distance.toLocaleString("pt-PT")} Kz</span>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <span>Tempo ({route.durationMin} min):</span>
+                  <span className="font-semibold">{fareBreakdown.time.toLocaleString("pt-PT")} Kz</span>
+                </div>
+                <div className="flex justify-between text-sm font-bold text-neutral-900 border-t border-neutral-200 pt-1">
+                  <span>Total:</span>
+                  <span>{fareBreakdown.total.toLocaleString("pt-PT")} Kz</span>
+                </div>
+              </div>
+            )}
             <div className="px-5 pt-2 pb-[max(env(safe-area-inset-bottom),1rem)]">
               <button
                 onClick={() => setStep("payment")}
-                className="w-full rounded-2xl bg-primary py-4 font-bold text-[17px] text-white shadow-xl active:scale-[0.98] transition"
+                disabled={routeLoading}
+                className="w-full rounded-2xl bg-primary py-4 font-bold text-[17px] text-white shadow-xl active:scale-[0.98] transition disabled:opacity-60"
               >
                 Continuar
               </button>

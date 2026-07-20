@@ -308,10 +308,10 @@ function DriverPanelContent() {
   };
 
   const RideCard = ({ ride, isPending }: { ride: Ride; isPending: boolean }) => (
-    <div className="rounded-3xl border border-border bg-card p-5 shadow-soft">
+      <div className="rounded-3xl border border-border bg-card p-5 shadow-soft hover:shadow-md transition">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="rounded-full bg-foreground px-2.5 py-0.5 text-xs font-semibold text-background">
               {CATEGORY_LABELS[ride.category] ?? ride.category}
             </span>
@@ -320,31 +320,44 @@ function DriverPanelContent() {
             >
               {STATUS_LABELS[ride.status] || ride.status}
             </span>
-            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1 text-xs text-muted-foreground bg-blue-50 px-2.5 py-0.5 rounded-full">
               <Clock className="h-3 w-3" />
-              {ride.duration_min ?? "—"} min · {ride.distance_km ?? "—"} km
+              {ride.duration_min ?? "—"} min
+            </span>
+            <span className="flex items-center gap-1 text-xs text-muted-foreground bg-blue-50 px-2.5 py-0.5 rounded-full">
+              <MapPin className="h-3 w-3" />
+              {ride.distance_km ?? "—"} km
             </span>
           </div>
-          <div className="mt-3 space-y-2 text-sm">
+            <div className="mt-3 space-y-2 text-sm">
             <div className="flex items-start gap-2">
               <MapPin className="mt-0.5 h-4 w-4 text-primary" />
-              <span className="font-medium">{ride.pickup_address}</span>
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground mb-0.5">Recolha</div>
+                <span className="font-medium">{ride.pickup_address}</span>
+              </div>
             </div>
             <div className="flex items-start gap-2">
               <Navigation className="mt-0.5 h-4 w-4 text-foreground" />
-              <span className="font-medium">{ride.dropoff_address}</span>
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground mb-0.5">Destino</div>
+                <span className="font-medium">{ride.dropoff_address}</span>
+              </div>
             </div>
           </div>
         </div>
         <div className="text-right">
-          <div className="font-display text-2xl font-black">
-            Kz {ride.fare_kz.toLocaleString("pt-AO")}
+          <div className="rounded-lg bg-gradient-to-br from-green-50 to-green-100 px-3 py-2 mb-2">
+            <div className="text-xs text-green-700 font-semibold mb-0.5">Ganho Estimado</div>
+            <div className="font-display text-3xl font-black text-green-900">
+              {ride.fare_kz.toLocaleString("pt-AO")} Kz
+            </div>
           </div>
           {isPending && (
             <button
               onClick={() => handleAccept(ride.id)}
               disabled={busy === ride.id}
-              className="mt-3 flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background hover:opacity-90 disabled:opacity-50"
+              className="w-full mt-2 flex items-center justify-center gap-1.5 rounded-full bg-foreground px-4 py-2.5 text-sm font-semibold text-background hover:opacity-90 disabled:opacity-50 transition"
             >
               {busy === ride.id ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
