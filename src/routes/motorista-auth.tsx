@@ -130,80 +130,142 @@ function MotoristaAuthPage() {
             <span className="font-display font-bold">Lego Taxi · Motorista</span>
           </Link>
 
-          <div className="mb-6 flex rounded-full bg-muted p-1 shrink-0">
+          {/* Mode Selector with Yellow Highlight */}
+          <div className="mb-8 flex gap-2 shrink-0">
             <button
               type="button"
               onClick={() => { setMode("signin"); setSignupSuccess(false); }}
-              className={`flex-1 rounded-full py-2 text-sm font-semibold transition ${mode === "signin" ? "bg-card shadow-soft" : "text-muted-foreground"}`}
-            >Entrar</button>
+              className={`flex-1 rounded-2xl py-3 text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
+                mode === "signin" 
+                  ? "bg-gradient-primary text-primary-foreground shadow-premium scale-105" 
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              Entrar
+            </button>
             <button
               type="button"
               onClick={() => { setMode("signup"); setSignupSuccess(false); }}
-              className={`flex-1 rounded-full py-2 text-sm font-semibold transition ${mode === "signup" ? "bg-card shadow-soft" : "text-muted-foreground"}`}
-            >Candidatar-se</button>
+              className={`flex-1 rounded-2xl py-3 text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
+                mode === "signup" 
+                  ? "bg-gradient-primary text-primary-foreground shadow-premium scale-105" 
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              Candidatar-se
+            </button>
           </div>
 
-          <div className="shrink-0">
-            <span className="inline-block mb-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
+          {/* Header Section */}
+          <div className="mb-8 shrink-0 space-y-3 animate-fade-in">
+            <span className="inline-block rounded-full bg-primary/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider text-primary">
               App de Motorista
             </span>
-            <h1 className="font-display text-3xl font-bold">
+            <h1 className="font-display text-4xl font-black leading-tight">
               {mode === "signin" ? "Bem-vindo de volta" : "Torne-se motorista"}
             </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="text-base text-muted-foreground leading-relaxed">
               {mode === "signin"
-                ? "Entre na sua conta de motorista."
+                ? "Entre na sua conta de motorista e comece a ganhar."
                 : "Registe-se e envie depois os seus documentos para aprovação."}
             </p>
           </div>
 
-          <form className="mt-8 space-y-3 shrink-0" onSubmit={mode === "signin" ? handleSignIn : handleSignUp}>
+          {/* Form */}
+          <form className="space-y-4 shrink-0" onSubmit={mode === "signin" ? handleSignIn : handleSignUp}>
             {mode === "signup" && (
               <label className="block">
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Nome completo</span>
-                <div className="mt-2 flex items-center gap-2 rounded-2xl border-2 border-border bg-card px-4 py-3 focus-within:border-foreground transition-all">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <input type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="João Manuel" className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground" />
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 block">Nome completo</span>
+                <div className="flex items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3.5 focus-within:border-primary focus-within:bg-card/80 transition-all duration-300">
+                  <User className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                  <input 
+                    type="text" 
+                    required 
+                    value={fullName} 
+                    onChange={(e) => setFullName(e.target.value)} 
+                    placeholder="João Manuel" 
+                    className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground/60" 
+                  />
                 </div>
               </label>
             )}
 
             <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Número de Telefone</span>
-              <div className="mt-2 flex items-center gap-2 rounded-2xl border-2 border-border bg-card px-4 py-3 focus-within:border-foreground transition-all">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <input type="tel" required value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} placeholder="923 456 789" className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground" />
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 block">Número de Telefone</span>
+              <div className="flex items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3.5 focus-within:border-primary focus-within:bg-card/80 transition-all duration-300">
+                <Phone className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                <input 
+                  type="tel" 
+                  required 
+                  value={phone} 
+                  onChange={(e) => setPhone(formatPhone(e.target.value))} 
+                  placeholder="923 456 789" 
+                  className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground/60" 
+                />
               </div>
             </label>
 
             <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Palavra-passe</span>
-              <div className="mt-2 flex items-center gap-2 rounded-2xl border-2 border-border bg-card px-4 py-3 focus-within:border-foreground transition-all">
-                <Lock className="h-4 w-4 text-muted-foreground" />
-                <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground" />
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 block">Palavra-passe</span>
+              <div className="flex items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3.5 focus-within:border-primary focus-within:bg-card/80 transition-all duration-300">
+                <Lock className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                <input 
+                  type="password" 
+                  required 
+                  minLength={6} 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  placeholder="••••••••" 
+                  className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground/60" 
+                />
               </div>
             </label>
 
-            <button type="submit" disabled={loading} className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-foreground py-4 font-display font-bold text-background transition hover:opacity-90 active:scale-[0.98] disabled:opacity-50">
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>{mode === "signin" ? "Entrar" : "Candidatar-se"}<ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" /></>}
+            <button 
+              type="submit" 
+              disabled={loading} 
+              className="group relative w-full overflow-hidden rounded-2xl bg-gradient-primary py-4 font-display font-bold text-primary-foreground transition-all duration-300 hover:shadow-premium active:scale-[0.98] disabled:opacity-50 mt-6 flex items-center justify-center gap-2"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500" />
+              {loading ? (
+                <Loader2 className="h-5 w-5 animate-spin relative z-10" />
+              ) : (
+                <>
+                  <span className="relative z-10">{mode === "signin" ? "Entrar" : "Candidatar-se"}</span>
+                  <ArrowRight className="h-5 w-5 relative z-10 transition-transform group-hover:translate-x-1" />
+                </>
+              )}
             </button>
           </form>
 
-          <div className="mt-8 text-center text-xs text-muted-foreground shrink-0">
+          {/* Footer Links */}
+          <div className="mt-8 space-y-4 text-center text-sm text-muted-foreground shrink-0">
             <p>
               {mode === "signin" ? "Ainda não é motorista? " : "Já tem conta de motorista? "}
-              <button type="button" onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setSignupSuccess(false); setPhone(""); setPassword(""); setFullName(""); }} className="font-semibold text-foreground hover:underline">
-                {mode === "signin" ? "Candidatar-se" : "Entrar"}
+              <button 
+                type="button" 
+                onClick={() => { 
+                  setMode(mode === "signin" ? "signup" : "signin"); 
+                  setSignupSuccess(false); 
+                  setPhone(""); 
+                  setPassword(""); 
+                  setFullName(""); 
+                }} 
+                className="font-bold text-primary hover:underline transition-colors"
+              >
+                {mode === "signin" ? "Candidatar-se aqui" : "Entrar aqui"}
               </button>
             </p>
-            <p className="mt-3">
+            <p>
               É passageiro?{" "}
-              <Link to="/passageiro" className="font-semibold text-primary hover:underline">Abrir app de passageiro</Link>
+              <Link to="/passageiro" className="font-bold text-primary hover:underline transition-colors">
+                Abrir app de passageiro
+              </Link>
             </p>
           </div>
 
-          <p className="mt-8 text-center text-xs text-muted-foreground shrink-0">
-            Ao continuar, aceita os <a className="underline">Termos</a> e a <a className="underline">Política de Privacidade</a>.
+          <p className="mt-8 text-center text-xs text-muted-foreground/70 shrink-0">
+            Ao continuar, aceita os <a href="#" className="underline hover:text-muted-foreground transition-colors">Termos</a> e a <a href="#" className="underline hover:text-muted-foreground transition-colors">Política de Privacidade</a>.
           </p>
         </div>
       </section>
