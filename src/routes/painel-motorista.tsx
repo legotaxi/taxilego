@@ -34,6 +34,7 @@ import { BottomSheet } from "@/components/lego/BottomSheet";
 import { RideChat, RideChatButton } from "@/components/lego/RideChat";
 import { RideCompletionDialog } from "@/components/lego/RideCompletionDialog";
 import { MessageCircle } from "lucide-react";
+import { VoipCallControl } from "@/components/lego/VoipCallControl";
 import { cn } from "@/lib/utils";
 
 function DriverPanel() {
@@ -447,14 +448,26 @@ function DriverPanelContent() {
             </button>
           )}
           {["accepted", "arriving", "in_progress"].includes(ride.status) && (
-            <button
-              onClick={() => setChatRide(ride)}
-              className="flex items-center justify-center gap-1.5 rounded-full border border-border bg-primary/10 py-2 px-3 text-xs font-semibold text-primary hover:bg-primary/15 transition"
-              title="Conversar com o passageiro"
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-              Chat
-            </button>
+            <>
+              <button
+                onClick={() => setChatRide(ride)}
+                className="flex items-center justify-center gap-1.5 rounded-full border border-border bg-primary/10 py-2 px-3 text-xs font-semibold text-primary hover:bg-primary/15 transition"
+                title="Conversar com o passageiro"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                Chat
+              </button>
+              {user?.id && ride.passenger_id && (
+                <div className="inline-flex">
+                  <VoipCallControl
+                    userId={user.id}
+                    remoteUserId={ride.passenger_id}
+                    remoteUserName={passengerNames[ride.passenger_id] ?? "Passageiro"}
+                    className="h-9 w-9 rounded-full"
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
