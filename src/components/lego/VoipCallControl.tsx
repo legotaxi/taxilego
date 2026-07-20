@@ -3,9 +3,13 @@ import Peer, { type MediaConnection } from "peerjs";
 import { Phone, PhoneOff, Mic, MicOff, PhoneIncoming } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { supabase } from "@/integrations/supabase/client";
+import { sendCallInvite } from "@/lib/voip.functions";
 
 interface Props {
   userId: string;
+  userName?: string | null;
   remoteUserId: string | null | undefined;
   remoteUserName?: string | null;
   className?: string;
@@ -20,15 +24,19 @@ function formatDuration(sec: number) {
   return `${m}:${s}`;
 }
 
-export function VoipCallControl({ userId, remoteUserId, remoteUserName, className }: Props) {
+export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName, className }: Props) {
   const [state, setState] = useState<"idle" | "calling" | "ringing" | "in-call">("idle");
   const [muted, setMuted] = useState(false);
   const [duration, setDuration] = useState(0);
+  const [incomingCallerName, setIncomingCallerName] = useState<string | null>(null);
   const peerRef = useRef<Peer | null>(null);
+  const peerOpenRef = useRef(false);
   const callRef = useRef<MediaConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const audioElRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const ringtoneRef = useRef<HTMLAudioElement | null>(null);
+  const sendCallInviteFn = useServerFn(sendCallInvite);
 
   // Init PeerJS
   useEffect(() => {
@@ -40,33 +48,77 @@ export function VoipCallControl({ userId, remoteUserId, remoteUserName, classNam
         iceServers: [
           { urls: "stun:stun.l.google.com:19302" },
           { urls: "stun:stun1.l.google.com:19302" },
+          { urls: "stun:global.stun.twilio.com:3478" },
         ],
       },
     });
     peerRef.current = peer;
 
+    peer.on("open", () => {
+      peerOpenRef.current = true;
+    });
+
     peer.on("call", (incoming) => {
       if (disposed) return;
       callRef.current = incoming;
       setState("ringing");
+      // Ringtone
+      try {
+        const r = new Audio("data:audio/wav;base64,UklGRlwAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YTgAAAA=");
+        r.loop = true;
+        ringtoneRef.current = r;
+        r.play().catch(() => { /* ignore autoplay */ });
+      } catch { /* ignore */ }
     });
 
     peer.on("error", (err) => {
       console.warn("[voip] peer error", err);
+      const errType = (err as { type?: string }).type;
+      if (errType === "peer-unavailable") {
+        toast.error("O outro utilizador está offline");
+        cleanupRef.current?.();
+        setState("idle");
+      } else if (errType === "unavailable-id") {
+        // Peer id already taken (previous tab). Ignore.
+      }
+    });
+
+    peer.on("disconnected", () => {
+      peerOpenRef.current = false;
+      // auto-reconnect
+      try { peer.reconnect(); } catch { /* ignore */ }
     });
 
     return () => {
       disposed = true;
+      peerOpenRef.current = false;
       try { peer.destroy(); } catch { /* ignore */ }
       peerRef.current = null;
     };
   }, [userId]);
+
+  // Realtime signaling channel: recipient shows "ringing" immediately when caller broadcasts.
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase.channel(`voip:${userId}`, { config: { broadcast: { self: false } } });
+    channel
+      .on("broadcast", { event: "invite" }, ({ payload }) => {
+        if (state !== "idle") return;
+        setIncomingCallerName((payload as { name?: string })?.name || null);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [userId, state]);
 
   // Duration timer
   useEffect(() => {
     if (state === "in-call") {
       setDuration(0);
       timerRef.current = setInterval(() => setDuration((d) => d + 1), 1000);
+    }
+    if (state !== "ringing" && ringtoneRef.current) {
+      try { ringtoneRef.current.pause(); } catch { /* ignore */ }
+      ringtoneRef.current = null;
     }
     return () => {
       if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
@@ -81,8 +133,15 @@ export function VoipCallControl({ userId, remoteUserId, remoteUserName, classNam
     if (audioElRef.current) {
       audioElRef.current.srcObject = null;
     }
+    if (ringtoneRef.current) {
+      try { ringtoneRef.current.pause(); } catch { /* ignore */ }
+      ringtoneRef.current = null;
+    }
     setMuted(false);
+    setIncomingCallerName(null);
   }, []);
+  const cleanupRef = useRef(cleanup);
+  cleanupRef.current = cleanup;
 
   const attachRemote = useCallback((stream: MediaStream) => {
     if (!audioElRef.current) {
@@ -94,13 +153,47 @@ export function VoipCallControl({ userId, remoteUserId, remoteUserName, classNam
     audioElRef.current.play().catch(() => { /* ignore autoplay */ });
   }, []);
 
+  const waitForPeerOpen = useCallback(async () => {
+    if (peerOpenRef.current) return true;
+    const peer = peerRef.current;
+    if (!peer) return false;
+    return await new Promise<boolean>((resolve) => {
+      const timeout = setTimeout(() => resolve(peerOpenRef.current), 4000);
+      peer.once("open", () => { clearTimeout(timeout); resolve(true); });
+    });
+  }, []);
+
   const startCall = useCallback(async () => {
     if (!remoteUserId || !peerRef.current) {
       toast.error("Utilizador indisponível");
       return;
     }
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Broadcast invite via Supabase Realtime (wakes UI even before PeerJS resolves)
+      supabase
+        .channel(`voip:${remoteUserId}`)
+        .subscribe(async (status) => {
+          if (status === "SUBSCRIBED") {
+            await supabase.channel(`voip:${remoteUserId}`).send({
+              type: "broadcast",
+              event: "invite",
+              payload: { from: userId, name: userName || "Contacto" },
+            });
+          }
+        });
+
+      // Push notification (wakes device / background tab)
+      sendCallInviteFn({ data: { toUserId: remoteUserId, callerName: userName || undefined } }).catch(() => { /* ignore */ });
+
+      const ok = await waitForPeerOpen();
+      if (!ok) {
+        toast.error("Falha a estabelecer ligação. Tenta novamente.");
+        return;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
       localStreamRef.current = stream;
       const call = peerRef.current.call(peerIdFor(remoteUserId), stream);
       if (!call) {
@@ -121,12 +214,14 @@ export function VoipCallControl({ userId, remoteUserId, remoteUserName, classNam
       console.error("[voip] mic error", err);
       toast.error("Permissão de microfone negada");
     }
-  }, [remoteUserId, attachRemote, cleanup]);
+  }, [remoteUserId, userId, userName, attachRemote, cleanup, sendCallInviteFn, waitForPeerOpen]);
 
   const acceptCall = useCallback(async () => {
     if (!callRef.current) return;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
       localStreamRef.current = stream;
       callRef.current.answer(stream);
       callRef.current.on("stream", (remote) => {
@@ -146,8 +241,9 @@ export function VoipCallControl({ userId, remoteUserId, remoteUserName, classNam
   const rejectCall = useCallback(() => {
     try { callRef.current?.close(); } catch { /* ignore */ }
     callRef.current = null;
+    cleanup();
     setState("idle");
-  }, []);
+  }, [cleanup]);
 
   const endCall = useCallback(() => {
     cleanup();
@@ -161,7 +257,7 @@ export function VoipCallControl({ userId, remoteUserId, remoteUserName, classNam
     setMuted(!track.enabled);
   }, []);
 
-  const name = remoteUserName || "Utilizador";
+  const name = state === "ringing" ? (incomingCallerName || "Chamada recebida") : (remoteUserName || "Utilizador");
 
   return (
     <>
@@ -169,9 +265,9 @@ export function VoipCallControl({ userId, remoteUserId, remoteUserName, classNam
         type="button"
         onClick={startCall}
         disabled={!remoteUserId || state !== "idle"}
-        title={remoteUserId ? `Chamar ${name} por internet` : "Aguardando ligação"}
+        title={remoteUserId ? `Chamar ${remoteUserName || "contacto"} por internet` : "Aguardando ligação"}
         className={cn(
-          "flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50",
+          "flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-black shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50",
           className,
         )}
       >
