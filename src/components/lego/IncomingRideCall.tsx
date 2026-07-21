@@ -113,7 +113,7 @@ export function IncomingRideCall({
   return (
     <div className="fixed inset-0 z-[100] flex flex-col justify-end bg-black/40 animate-in fade-in duration-300">
       {/* Cartão inferior estilo Uber */}
-      <div className="bg-white rounded-t-3xl shadow-2xl px-5 pt-4 pb-6 animate-in slide-in-from-bottom duration-300">
+      <div className="bg-white rounded-t-3xl shadow-2xl px-5 pt-4 pb-[max(1.5rem,env(safe-area-inset-bottom)+0.5rem)] animate-in slide-in-from-bottom duration-300 mb-20">
         {/* Cabeçalho: badge categoria + Exclusivo + fechar */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

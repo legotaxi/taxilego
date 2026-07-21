@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState, useCallback } from "react";
 import {
@@ -9,10 +9,9 @@ import {
   CheckCircle2,
   PlayCircle,
   XCircle,
-  Phone,
-  AlertCircle,
   RefreshCw,
   Navigation2,
+  MessageCircle,
 } from "lucide-react";
 import { SOSButton } from "@/components/lego/SOSButton";
 import { supabase as supabaseClient } from "@/integrations/supabase/client";
@@ -22,7 +21,7 @@ import {
   acceptRide,
   updateRideStatus,
 } from "@/lib/driver.functions";
-import { getDriverInfo } from "@/lib/rides.functions";
+
 import { DriverMapView } from "@/components/lego/DriverMapView";
 import { DriverStatusGuard } from "@/components/lego/DriverStatusGuard";
 import { useAuth } from "@/hooks/use-auth";
@@ -31,11 +30,9 @@ import { IncomingRideCall } from "@/components/lego/IncomingRideCall";
 import { toast } from "sonner";
 import { AppShell } from "@/components/lego/AppShell";
 import { BottomSheet } from "@/components/lego/BottomSheet";
-import { RideChat, RideChatButton } from "@/components/lego/RideChat";
+import { RideChat } from "@/components/lego/RideChat";
 import { RideCompletionDialog } from "@/components/lego/RideCompletionDialog";
-import { MessageCircle } from "lucide-react";
 import { VoipCallControl } from "@/components/lego/VoipCallControl";
-import { cn } from "@/lib/utils";
 
 function DriverPanel() {
   return (
@@ -97,17 +94,16 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  requested: "bg-yellow-100 text-yellow-800",
-  accepted: "bg-yellow-100 text-yellow-800",
-  arriving: "bg-yellow-100 text-yellow-800",
-  in_progress: "bg-yellow-100 text-yellow-800",
-  completed: "bg-yellow-100 text-yellow-800",
-  cancelled: "bg-yellow-100 text-yellow-800",
+  requested: "bg-amber-50 text-amber-800",
+  accepted: "bg-blue-50 text-blue-800",
+  arriving: "bg-indigo-50 text-indigo-800",
+  in_progress: "bg-green-50 text-green-800",
+  completed: "bg-gray-100 text-gray-600",
+  cancelled: "bg-red-50 text-red-700",
 };
 
 function DriverPanelContent() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const fetchRides = useServerFn(getPendingRides);
   const fetchMine = useServerFn(getMyDriverRides);
   const acceptFn = useServerFn(acceptRide);
@@ -138,7 +134,7 @@ function DriverPanelContent() {
     })();
   }, [user]);
 
-  const { newRides, clearNotification } = useRideNotifications(
+  const { clearNotification } = useRideNotifications(
     (ride) => {
       setNotificationQueue((prev) => [ride, ...prev]);
       if (!currentNotification) {
@@ -309,76 +305,83 @@ function DriverPanelContent() {
   };
 
   const RideCard = ({ ride, isPending }: { ride: Ride; isPending: boolean }) => (
-      <div className="rounded-3xl border border-border bg-card p-5 shadow-soft hover:shadow-md transition">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="rounded-full bg-foreground px-2.5 py-0.5 text-xs font-semibold text-background">
-              {CATEGORY_LABELS[ride.category] ?? ride.category}
-            </span>
-            <span
-              className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_COLORS[ride.status] || "bg-gray-100 text-gray-800"}`}
-            >
-              {STATUS_LABELS[ride.status] || ride.status}
-            </span>
-            <span className="flex items-center gap-1 text-xs text-muted-foreground bg-blue-50 px-2.5 py-0.5 rounded-full">
-              <Clock className="h-3 w-3" />
-              {ride.duration_min ?? "—"} min
-            </span>
-            <span className="flex items-center gap-1 text-xs text-muted-foreground bg-blue-50 px-2.5 py-0.5 rounded-full">
-              <MapPin className="h-3 w-3" />
-              {ride.distance_km ?? "—"} km
-            </span>
-          </div>
-            <div className="mt-3 space-y-2 text-sm">
-            <div className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 text-primary" />
-              <div className="flex-1">
-                <div className="text-xs text-muted-foreground mb-0.5">Recolha</div>
-                <span className="font-medium">{ride.pickup_address}</span>
-              </div>
-            </div>
-            <div className="flex items-start gap-2">
-              <Navigation className="mt-0.5 h-4 w-4 text-foreground" />
-              <div className="flex-1">
-                <div className="text-xs text-muted-foreground mb-0.5">Destino</div>
-                <span className="font-medium">{ride.dropoff_address}</span>
-              </div>
-            </div>
+    <div className="rounded-2xl border border-border/60 bg-card p-4 shadow-sm">
+      {/* Header: categoria + status + métricas */}
+      <div className="flex items-center gap-2 flex-wrap mb-3">
+        <span className="rounded-full bg-foreground px-2.5 py-0.5 text-xs font-semibold text-background">
+          {CATEGORY_LABELS[ride.category] ?? ride.category}
+        </span>
+        <span
+          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_COLORS[ride.status] || "bg-gray-100 text-gray-800"}`}
+        >
+          {STATUS_LABELS[ride.status] || ride.status}
+        </span>
+        {ride.distance_km != null && (
+          <span className="flex items-center gap-1 text-xs text-muted-foreground bg-blue-50 px-2 py-0.5 rounded-full">
+            <MapPin className="h-3 w-3" />
+            {ride.distance_km} km
+          </span>
+        )}
+        {ride.duration_min != null && (
+          <span className="flex items-center gap-1 text-xs text-muted-foreground bg-blue-50 px-2 py-0.5 rounded-full">
+            <Clock className="h-3 w-3" />
+            {ride.duration_min} min
+          </span>
+        )}
+      </div>
+
+      {/* Recolha e Destino */}
+      <div className="space-y-2 text-sm mb-3">
+        <div className="flex items-start gap-2">
+          <MapPin className="mt-0.5 h-4 w-4 text-primary shrink-0" />
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-0.5">Recolha</div>
+            <span className="font-medium text-sm leading-tight block truncate">{ride.pickup_address}</span>
           </div>
         </div>
-        <div className="text-right">
-          <div className="rounded-lg bg-gradient-to-br from-green-50 to-green-100 px-3 py-2 mb-2">
-            <div className="text-xs text-green-700 font-semibold mb-0.5">Ganho Estimado</div>
-            <div className="font-display text-3xl font-black text-green-900">
-              {ride.fare_kz.toLocaleString("pt-AO")} Kz
-            </div>
+        <div className="flex items-start gap-2">
+          <Navigation className="mt-0.5 h-4 w-4 text-foreground shrink-0" />
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-0.5">Destino</div>
+            <span className="font-medium text-sm leading-tight block truncate">{ride.dropoff_address}</span>
           </div>
-          {isPending && (
-            <button
-              onClick={() => handleAccept(ride.id)}
-              disabled={busy === ride.id}
-              className="w-full mt-2 flex items-center justify-center gap-1.5 rounded-full bg-foreground px-4 py-2.5 text-sm font-semibold text-background hover:opacity-90 disabled:opacity-50 transition"
-            >
-              {busy === ride.id ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <CheckCircle2 className="h-4 w-4" />
-              )}
-              Aceitar
-            </button>
-          )}
         </div>
       </div>
 
+      {/* Preço e acções */}
+      <div className="flex items-center justify-between pt-3 border-t border-border/40">
+        <div className="flex flex-col">
+          <span className="text-[10px] uppercase tracking-wider text-green-700/70 font-semibold">Ganho</span>
+          <span className="text-xl font-black text-green-800">
+            {ride.fare_kz.toLocaleString("pt-AO")} <span className="text-sm font-semibold">Kz</span>
+          </span>
+        </div>
+
+        {isPending && (
+          <button
+            onClick={() => handleAccept(ride.id)}
+            disabled={busy === ride.id}
+            className="flex items-center gap-1.5 rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background hover:opacity-90 disabled:opacity-50 transition"
+          >
+            {busy === ride.id ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <CheckCircle2 className="h-4 w-4" />
+            )}
+            Aceitar
+          </button>
+        )}
+      </div>
+
+      {/* Botões de acção para corrida activa */}
       {!isPending && (
-        <div className="mt-4 flex gap-2 border-t border-border pt-3 flex-wrap">
+        <div className="mt-3 flex gap-2 pt-3 border-t border-border/40 flex-wrap">
           {ride.status === "accepted" && (
             <>
               <button
                 onClick={() => handleArriving(ride.id)}
                 disabled={busy === ride.id}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-amber-50 py-2 text-xs font-semibold text-amber-700 hover:bg-amber-100 disabled:opacity-50 transition border border-amber-200"
               >
                 {busy === ride.id ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -390,7 +393,7 @@ function DriverPanelContent() {
               <button
                 onClick={() => handleStartRide(ride.id)}
                 disabled={busy === ride.id}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-blue-50 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100 disabled:opacity-50 transition border border-blue-200"
               >
                 {busy === ride.id ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -402,10 +405,9 @@ function DriverPanelContent() {
               <button
                 onClick={() => handleCancelRide(ride.id)}
                 disabled={busy === ride.id}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
+                className="flex items-center justify-center gap-1.5 rounded-full bg-red-50 py-2 px-3 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:opacity-50 transition border border-red-200"
               >
                 <XCircle className="h-3.5 w-3.5" />
-                Cancelar
               </button>
             </>
           )}
@@ -414,7 +416,7 @@ function DriverPanelContent() {
               <button
                 onClick={() => handleStartRide(ride.id)}
                 disabled={busy === ride.id}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-blue-50 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100 disabled:opacity-50 transition border border-blue-200"
               >
                 {busy === ride.id ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -426,26 +428,27 @@ function DriverPanelContent() {
               <button
                 onClick={() => handleCancelRide(ride.id)}
                 disabled={busy === ride.id}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
+                className="flex items-center justify-center gap-1.5 rounded-full bg-red-50 py-2 px-3 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:opacity-50 transition border border-red-200"
               >
                 <XCircle className="h-3.5 w-3.5" />
-                Cancelar
               </button>
             </>
           )}
           {ride.status === "in_progress" && (
-            <button
-              onClick={() => handleCompleteRide(ride.id)}
-              disabled={busy === ride.id}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-yellow-50 py-2 text-xs font-medium text-yellow-700 hover:bg-yellow-100 disabled:opacity-50 min-w-[120px]"
-            >
-              {busy === ride.id ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <CheckCircle2 className="h-3.5 w-3.5" />
-              )}
-              Concluir Corrida
-            </button>
+            <>
+              <button
+                onClick={() => handleCompleteRide(ride.id)}
+                disabled={busy === ride.id}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-green-50 py-2 text-xs font-semibold text-green-700 hover:bg-green-100 disabled:opacity-50 transition border border-green-200"
+              >
+                {busy === ride.id ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                )}
+                Concluir Corrida
+              </button>
+            </>
           )}
           {["accepted", "arriving", "in_progress"].includes(ride.status) && (
             <>
@@ -538,7 +541,7 @@ function DriverPanelContent() {
 
   return (
     <AppShell role="driver">
-      {/* Notificação de corrida em overlay - SEM SCROLL */}
+      {/* Notificação de corrida em overlay */}
       {currentNotification && (
         <IncomingRideCall
           ride={currentNotification}
@@ -549,12 +552,10 @@ function DriverPanelContent() {
       )}
 
       <div className="relative h-full w-full">
-        {/* Full Map View */}
+        {/* Full Map View — ocupa todo o espaço disponível */}
         <div className="absolute inset-0 z-0">
           {(() => {
             const active = activeRides[0];
-            // Quando aceite/a chegar: navega motorista→ponto de recolha do passageiro
-            // Quando em curso: navega motorista→destino
             const target: [number, number] | undefined = active
               ? active.status === "in_progress"
                 ? [active.dropoff_lat || -8.8241, active.dropoff_lng || 13.2381]
@@ -576,22 +577,20 @@ function DriverPanelContent() {
           })()}
         </div>
 
-
-        {/* Floating Top Header — compacto para não sobrepor os controlos do mapa */}
-        <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+        {/* Header flutuante — canto superior direito, compacto */}
+        <div className="absolute top-3 right-3 z-50 flex items-center gap-2">
           <button
             onClick={load}
             disabled={loading}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-background/90 shadow-xl backdrop-blur-md ring-1 ring-black/5 active:scale-95"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/95 shadow-lg backdrop-blur-md ring-1 ring-black/5 active:scale-95 transition"
             title="Atualizar"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-4 w-4 text-gray-700 ${loading ? "animate-spin" : ""}`} />
           </button>
           <SOSButton variant="floating" />
         </div>
 
-
-        {/* Bottom Panel for Rides */}
+        {/* Bottom Sheet — corridas e acções */}
         <BottomSheet title={activeRides.length > 0 ? "Corrida Ativa" : `Corridas Disponíveis (${pendingRides.length})`}>
           <div className="space-y-3">
             {activeRides.length > 0 ? (

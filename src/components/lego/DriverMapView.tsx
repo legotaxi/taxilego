@@ -34,10 +34,8 @@ export function DriverMapView({
   const updateLocationFn = useServerFn(updateDriverLocation);
   const toggleOnlineFn = useServerFn(toggleOnlineStatus);
 
-  // Estado local de online — sincroniza com a prop inicial e com o pai
   const [isOnline, setIsOnline] = useState(initialOnlineStatus);
 
-  // Sincronizar com prop do pai quando mudar
   useEffect(() => {
     setIsOnline(initialOnlineStatus);
   }, [initialOnlineStatus]);
@@ -54,15 +52,9 @@ export function DriverMapView({
 
   const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
   const [updateError, setUpdateError] = useState<string | null>(null);
-  const [showStats, setShowStats] = useState(true);
+  const [showSteps, setShowSteps] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
   const [sessionDistance, setSessionDistance] = useState(0);
-  const [driverToPassengerRoute, setDriverToPassengerRoute] = useState<[number, number][] | null>(null);
-  const [originToDestinationRoute, setOriginToDestinationRoute] = useState<[number, number][] | null>(null);
-  const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
-  const [routeSteps, setRouteSteps] = useState<RouteStep[]>([]);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [showSteps, setShowSteps] = useState(false);
 
   const driverLocation: [number, number] = useMemo(() => {
     const coords: any = coordinates
@@ -134,6 +126,12 @@ export function DriverMapView({
   }, []);
 
   const lastRouteCalcRef = useRef<{ at: number; pos: [number, number]; status: string } | null>(null);
+
+  const [driverToPassengerRoute, setDriverToPassengerRoute] = useState<[number, number][] | null>(null);
+  const [originToDestinationRoute, setOriginToDestinationRoute] = useState<[number, number][] | null>(null);
+  const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
+  const [routeSteps, setRouteSteps] = useState<RouteStep[]>([]);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   // Calcular rotas em tempo real — só quando online e com corrida activa
   useEffect(() => {
@@ -213,25 +211,11 @@ export function DriverMapView({
     }
   }, [isOnline, onOnlineStatusChange, stopTracking, toggleOnlineFn]);
 
-  const getSessionDuration = useCallback((): string => {
-    if (!sessionStartTime) return "00:00";
-    const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
-    const hours = Math.floor(elapsed / 3600);
-    const minutes = Math.floor((elapsed % 3600) / 60);
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-  }, [sessionStartTime]);
-
   useEffect(() => {
     if (isOnline && distanceTraveled > 0) {
       setSessionDistance(distanceTraveled);
     }
   }, [distanceTraveled, isOnline]);
-
-  const getFormattedSpeed = useCallback((): string => {
-    if (!coordinates?.speed) return "0 km/h";
-    const speedKmh = coordinates.speed * 3.6;
-    return `${speedKmh.toFixed(1)} km/h`;
-  }, [coordinates?.speed]);
 
   const openNativeNavigation = () => {
     const dest = rideStatus === "in_progress" ? destinationLocation : pickupLocation;
@@ -242,7 +226,7 @@ export function DriverMapView({
 
   const currentStep = routeSteps[currentStepIndex];
 
-  // Verificar se há corrida activa (aceite/a chegar/em curso)
+  // Verificar se há corrida activa
   const navActive =
     isOnline && ["accepted", "arriving", "in_progress"].includes(rideStatus ?? "");
   const navAddress = rideStatus === "in_progress" ? destinationAddress : pickupAddress;
@@ -258,61 +242,58 @@ export function DriverMapView({
         route={route}
         driverToPassengerRoute={driverToPassengerRoute || undefined}
         originToDestinationRoute={originToDestinationRoute || undefined}
-        showAccuracy={isOnline}
-        showSpeed={isOnline}
+        showAccuracy={false}
+        showSpeed={false}
         autoCenter={isOnline}
         userIconType="driver"
         drawDirections={!route && !driverToPassengerRoute && !originToDestinationRoute && isOnline}
       />
 
-      {/* ===== BARRA DE NAVEGAÇÃO (quando há corrida activa) ===== */}
+      {/* ===== BARRA DE NAVEGAÇÃO TOP (quando há corrida activa) ===== */}
       {navActive ? (
-        <div className="absolute top-0 inset-x-0 z-30 pointer-events-none">
-          <div className="bg-black text-white px-5 pt-5 pb-6 rounded-b-3xl shadow-2xl pointer-events-auto">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary">
-                <Navigation2 className="h-6 w-6 text-primary-foreground fill-current" />
+        <div className="absolute top-3 inset-x-3 z-30 pointer-events-none">
+          {/* Endereço do destino/recolha */}
+          {navAddress && (
+            <div className="pointer-events-auto flex items-center gap-3 rounded-2xl bg-black/90 backdrop-blur-md px-4 py-3 text-white shadow-2xl mb-2">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary">
+                <Navigation2 className="h-5 w-5 text-primary-foreground fill-current" />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-semibold text-white/70">
-                  {currentStep ? formatDistance(currentStep.distance) : routeInfo?.distance ?? ""}
-                </div>
-                <div
-                  className="truncate text-2xl font-extrabold leading-tight"
-                  dangerouslySetInnerHTML={{
-                    __html: currentStep?.instruction || "Siga a rota indicada",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Destination / pickup address bar */}
-          {navAddress && (
-            <div className="mx-3 mt-2 flex items-center gap-3 rounded-2xl bg-neutral-900 px-4 py-3 text-white shadow-xl pointer-events-auto">
-              <MapPin className="h-5 w-5 shrink-0 text-primary" />
-              <div className="min-w-0">
-                <div className="truncate text-sm font-bold">{addrLine1}</div>
+                <div className="truncate text-base font-bold">{addrLine1}</div>
                 {addrLine2 && (
-                  <div className="truncate text-xs font-medium text-white/60">{addrLine2}</div>
+                  <div className="truncate text-xs font-medium text-white/70">{addrLine2}</div>
                 )}
+              </div>
+              {currentStep && (
+                <div className="shrink-0 text-right">
+                  <div className="text-sm font-extrabold text-white">{formatDistance(currentStep.distance)}</div>
+                  <div className="text-[10px] font-medium text-white/60">{formatDuration(currentStep.duration)}</div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ETA Pill — compacto e centralizado */}
+          {routeInfo && (
+            <div className="pointer-events-auto flex justify-center">
+              <div className="flex items-center gap-4 rounded-full bg-black/85 backdrop-blur-md px-5 py-2 text-white shadow-xl">
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-xs font-bold tracking-wide">{routeInfo.distance}</span>
+                </div>
+                <div className="h-3.5 w-px bg-white/30" />
+                <div className="flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-xs font-bold tracking-wide">{routeInfo.duration}</span>
+                </div>
               </div>
             </div>
           )}
         </div>
       ) : (
-        /* ===== BOTÃO ONLINE/OFFLINE — SEM SOBREPOSIÇÃO ===== */
-        <div className="absolute inset-0 z-[60] pointer-events-none flex flex-col items-center">
-          {/*
-            O botão está em z-[60] para ficar acima de:
-            - Header do painel (z-10)
-            - MapView (z-1)
-            - Route ETA (z-10)
-            - BottomSheet (z-40)
-            Mas abaixo do IncomingRideCall (z-[100]) e SOS (z-40)
-            Posicionado no centro superior para não sobrepor nada
-          */}
-          <div className="mt-16 pointer-events-auto">
+        /* ===== BOTÃO ONLINE/OFFLINE — Posicionado no topo central, sem sobreposição ===== */
+        <div className="absolute inset-0 z-30 pointer-events-none flex flex-col items-center">
+          <div className="mt-20 pointer-events-auto">
             <button
               onClick={handleToggleOnlineStatus}
               className={
@@ -335,7 +316,7 @@ export function DriverMapView({
             </button>
           </div>
 
-          {/* Indicador offline — posição segura, sem sobreposição */}
+          {/* Indicador offline */}
           {!isOnline && (
             <div className="mt-4 pointer-events-auto">
               <div className="bg-white/95 backdrop-blur-sm text-gray-700 px-5 py-3 rounded-2xl shadow-xl text-center border border-gray-200">
@@ -347,34 +328,14 @@ export function DriverMapView({
         </div>
       )}
 
-      {/* ===== CONTROLOS FLUTUANTES À DIREITA (estilo Uber driver) ===== */}
-      {navActive && (
-        <div className="absolute right-3 top-1/2 z-30 flex -translate-y-1/2 flex-col gap-3">
-          <button
-            onClick={openNativeNavigation}
-            title="Abrir GPS externo"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black shadow-xl ring-1 ring-black/5 active:scale-95"
-          >
-            <ExternalLink className="h-5 w-5" />
-          </button>
-          <button
-            onClick={() => setShowSteps((s) => !s)}
-            title="Ver itinerário"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black shadow-xl ring-1 ring-black/5 active:scale-95"
-          >
-            <Navigation2 className="h-5 w-5" />
-          </button>
-        </div>
-      )}
-
       {/* ===== ITINERÁRIO COMPLETO (toggle) ===== */}
       {navActive && showSteps && routeSteps.length > 0 && (
-        <div className="absolute inset-x-3 top-44 z-30 max-h-[45%] overflow-y-auto rounded-3xl bg-white shadow-2xl pointer-events-auto">
-          <div className="sticky top-0 flex items-center justify-between border-b border-gray-100 bg-white px-5 py-3">
+        <div className="absolute inset-x-3 top-32 z-30 max-h-[40%] overflow-y-auto rounded-3xl bg-white shadow-2xl pointer-events-auto">
+          <div className="sticky top-0 flex items-center justify-between border-b border-gray-100 bg-white px-5 py-3 rounded-t-3xl">
             <span className="text-sm font-bold text-gray-900">Itinerário</span>
             <button
               onClick={() => setShowSteps(false)}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500"
             >
               <X className="h-4 w-4" />
             </button>
@@ -411,32 +372,35 @@ export function DriverMapView({
         </div>
       )}
 
-      {/* ===== ETA PIL (Uber-style) ===== */}
-      {routeInfo && isOnline && ["in_progress", "accepted", "arriving"].includes(rideStatus ?? "") && (
-        <div className="absolute inset-x-0 top-48 z-20 flex justify-center pointer-events-none">
-          <div className="pointer-events-auto flex items-center gap-5 rounded-full bg-black px-5 py-2.5 text-white shadow-2xl">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span className="text-xs font-black tracking-wider">{routeInfo.distance}</span>
-            </div>
-            <div className="h-4 w-[1px] bg-white/20" />
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-primary" />
-              <span className="text-xs font-black tracking-wider">{routeInfo.duration}</span>
-            </div>
-          </div>
+      {/* ===== BOTÕES LATERAIS (só quando há corrida activa) ===== */}
+      {navActive && (
+        <div className="absolute right-3 top-1/2 z-30 flex -translate-y-1/2 flex-col gap-3">
+          <button
+            onClick={openNativeNavigation}
+            title="Abrir GPS externo"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-black/5 active:scale-95 transition"
+          >
+            <ExternalLink className="h-5 w-5 text-gray-700" />
+          </button>
+          <button
+            onClick={() => setShowSteps((s) => !s)}
+            title="Ver itinerário"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-black/5 active:scale-95 transition"
+          >
+            <Navigation2 className="h-5 w-5 text-gray-700" />
+          </button>
         </div>
       )}
 
       {/* ===== ERROS DE GEOLOCALIZAÇÃO ===== */}
       {(error || updateError) && (
-        <div className="absolute top-4 left-4 right-4 z-[70] pointer-events-none">
-          <div className="bg-white border-l-4 border-yellow-500 p-4 rounded-2xl shadow-2xl max-w-sm mx-auto pointer-events-auto flex items-start gap-4">
-            <div className="bg-yellow-50 p-2 rounded-xl">
-              <AlertCircle className="h-5 w-5 text-yellow-600" />
+        <div className="absolute top-3 left-3 right-3 z-50 pointer-events-none">
+          <div className="bg-white border-l-4 border-amber-500 p-3.5 rounded-2xl shadow-xl max-w-sm mx-auto pointer-events-auto flex items-start gap-3">
+            <div className="bg-amber-50 p-2 rounded-xl shrink-0">
+              <AlertCircle className="h-4 w-4 text-amber-600" />
             </div>
-            <div>
-              <p className="text-xs font-black text-gray-900 uppercase tracking-tight">Problema de Conexão</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-bold text-gray-900 uppercase tracking-tight">Problema de Conexão</p>
               <p className="text-[11px] font-medium text-gray-500 mt-0.5">{error || updateError}</p>
             </div>
           </div>

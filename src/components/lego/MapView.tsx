@@ -558,47 +558,8 @@ export function MapView({
 
       <div ref={containerRef} className="h-full w-full" style={{ zIndex: 1 }} />
 
-      <div className="absolute right-4 top-4 flex flex-col gap-2 z-10 sm:top-20">
-        <button
-          onClick={handleCenter}
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg transition hover:scale-105 hover:shadow-xl"
-          aria-label="Centrar"
-          title="Centrar"
-        >
-          <Navigation2 className="h-5 w-5 text-slate-700" />
-        </button>
-      </div>
-
-      {(showSpeed || showAccuracy || driverToPassengerRoute || originToDestinationRoute) && (
-        <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 z-10 max-w-xs">
-          <div className="text-xs space-y-2">
-            {showSpeed && (
-              <div className="flex items-center gap-2">
-                <Zap className="h-3.5 w-3.5 text-yellow-500" />
-                <span className="text-gray-700">Velocidade em tempo real</span>
-              </div>
-            )}
-            {showAccuracy && (
-              <div className="flex items-center gap-2">
-                <MapPin className="h-3.5 w-3.5 text-yellow-500" />
-                <span className="text-gray-700">Precisão GPS</span>
-              </div>
-            )}
-            {driverToPassengerRoute && (
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: "#3b82f6" }} />
-                <span className="text-gray-700">Rota: Motorista → Passageiro</span>
-              </div>
-            )}
-            {originToDestinationRoute && (
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: "#ec4899" }} />
-                <span className="text-gray-700">Rota: Origem → Destino</span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {/* FAB de recentrar — removido para evitar sobreposição com overlays do DriverMapView */}
+      {/* Legendas de velocidade/precisão/rotas — removidas para evitar sobreposição com DriverMapView */}
     </div>
   );
 }
