@@ -72,15 +72,11 @@ export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName
     });
 
     peer.on("error", (err) => {
-      console.warn("[voip] peer error", err);
       const errType = (err as { type?: string }).type;
-      if (errType === "peer-unavailable") {
-        toast.error("O outro utilizador está offline");
-        cleanupRef.current?.();
-        setState("idle");
-      } else if (errType === "unavailable-id") {
-        // Peer id already taken (previous tab). Ignore.
-      }
+      // peer-unavailable is expected during dial retries — handled inline in startCall.
+      if (errType === "peer-unavailable") return;
+      if (errType === "unavailable-id") return;
+      console.warn("[voip] peer error", err);
     });
 
     peer.on("disconnected", () => {
@@ -96,6 +92,7 @@ export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName
       peerRef.current = null;
     };
   }, [userId]);
+
 
   // Realtime signaling channel: recipient shows "ringing" immediately when caller broadcasts.
   useEffect(() => {
