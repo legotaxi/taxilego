@@ -125,7 +125,10 @@ export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName
   }, [state]);
 
   const cleanup = useCallback(() => {
+    dialCancelRef.current?.();
+    dialCancelRef.current = null;
     try { callRef.current?.close(); } catch { /* ignore */ }
+
     callRef.current = null;
     localStreamRef.current?.getTracks().forEach((t) => t.stop());
     localStreamRef.current = null;
