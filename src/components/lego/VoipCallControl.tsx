@@ -36,7 +36,9 @@ export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName
   const audioElRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const ringtoneRef = useRef<HTMLAudioElement | null>(null);
+  const dialCancelRef = useRef<(() => void) | null>(null);
   const sendCallInviteFn = useServerFn(sendCallInvite);
+
 
   // Init PeerJS
   useEffect(() => {
@@ -72,15 +74,11 @@ export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName
     });
 
     peer.on("error", (err) => {
-      console.warn("[voip] peer error", err);
       const errType = (err as { type?: string }).type;
-      if (errType === "peer-unavailable") {
-        toast.error("O outro utilizador está offline");
-        cleanupRef.current?.();
-        setState("idle");
-      } else if (errType === "unavailable-id") {
-        // Peer id already taken (previous tab). Ignore.
-      }
+      // peer-unavailable is expected during dial retries — handled inline in startCall.
+      if (errType === "peer-unavailable") return;
+      if (errType === "unavailable-id") return;
+      console.warn("[voip] peer error", err);
     });
 
     peer.on("disconnected", () => {
@@ -96,6 +94,7 @@ export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName
       peerRef.current = null;
     };
   }, [userId]);
+
 
   // Realtime signaling channel: recipient shows "ringing" immediately when caller broadcasts.
   useEffect(() => {
@@ -126,7 +125,10 @@ export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName
   }, [state]);
 
   const cleanup = useCallback(() => {
+    dialCancelRef.current?.();
+    dialCancelRef.current = null;
     try { callRef.current?.close(); } catch { /* ignore */ }
+
     callRef.current = null;
     localStreamRef.current?.getTracks().forEach((t) => t.stop());
     localStreamRef.current = null;
@@ -170,17 +172,17 @@ export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName
     }
     try {
       // Broadcast invite via Supabase Realtime (wakes UI even before PeerJS resolves)
-      supabase
-        .channel(`voip:${remoteUserId}`)
-        .subscribe(async (status) => {
-          if (status === "SUBSCRIBED") {
-            await supabase.channel(`voip:${remoteUserId}`).send({
-              type: "broadcast",
-              event: "invite",
-              payload: { from: userId, name: userName || "Contacto" },
-            });
-          }
-        });
+      const inviteChannel = supabase.channel(`voip:${remoteUserId}`);
+      inviteChannel.subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          await inviteChannel.send({
+            type: "broadcast",
+            event: "invite",
+            payload: { from: userId, name: userName || "Contacto" },
+          });
+          setTimeout(() => { supabase.removeChannel(inviteChannel); }, 2000);
+        }
+      });
 
       // Push notification (wakes device / background tab)
       sendCallInviteFn({ data: { toUserId: remoteUserId, callerName: userName || undefined } }).catch(() => { /* ignore */ });
@@ -195,26 +197,65 @@ export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       });
       localStreamRef.current = stream;
-      const call = peerRef.current.call(peerIdFor(remoteUserId), stream);
-      if (!call) {
-        toast.error("Não foi possível iniciar a chamada");
-        stream.getTracks().forEach((t) => t.stop());
-        return;
-      }
-      callRef.current = call;
       setState("calling");
 
-      call.on("stream", (remote) => {
-        attachRemote(remote);
-        setState("in-call");
-      });
-      call.on("close", () => { cleanup(); setState("idle"); });
-      call.on("error", () => { toast.error("Erro na chamada"); cleanup(); setState("idle"); });
+      // Retry dial: recipient's peer may not be registered yet (app opening / just accepted push)
+      const startedAt = Date.now();
+      const MAX_MS = 30000;
+      let connected = false;
+      let cancelled = false;
+
+      const attemptDial = () => {
+        if (cancelled || connected) return;
+        if (!peerRef.current || !localStreamRef.current) return;
+        const call = peerRef.current.call(peerIdFor(remoteUserId), localStreamRef.current);
+        if (!call) {
+          if (Date.now() - startedAt < MAX_MS) setTimeout(attemptDial, 1500);
+          return;
+        }
+        callRef.current = call;
+
+        call.on("stream", (remote) => {
+          connected = true;
+          attachRemote(remote);
+          setState("in-call");
+        });
+        call.on("close", () => {
+          if (connected) { cleanupRef.current?.(); setState("idle"); }
+        });
+        call.on("error", (err) => {
+          const errType = (err as { type?: string })?.type;
+          if (errType === "peer-unavailable" && !connected && Date.now() - startedAt < MAX_MS) {
+            // retry
+            try { call.close(); } catch { /* ignore */ }
+            setTimeout(attemptDial, 1500);
+            return;
+          }
+          if (!connected) {
+            toast.error("O outro utilizador não atendeu");
+            cleanupRef.current?.();
+            setState("idle");
+          }
+        });
+
+        // Fallback timeout: if no stream after MAX_MS, give up
+        setTimeout(() => {
+          if (!connected && callRef.current === call) {
+            try { call.close(); } catch { /* ignore */ }
+          }
+        }, MAX_MS);
+      };
+
+      // Store canceller so endCall can stop the retry loop
+      dialCancelRef.current = () => { cancelled = true; };
+      attemptDial();
     } catch (err) {
       console.error("[voip] mic error", err);
       toast.error("Permissão de microfone negada");
+      setState("idle");
     }
-  }, [remoteUserId, userId, userName, attachRemote, cleanup, sendCallInviteFn, waitForPeerOpen]);
+  }, [remoteUserId, userId, userName, attachRemote, sendCallInviteFn, waitForPeerOpen]);
+
 
   const acceptCall = useCallback(async () => {
     if (!callRef.current) return;
