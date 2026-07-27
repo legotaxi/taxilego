@@ -36,7 +36,9 @@ export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName
   const audioElRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const ringtoneRef = useRef<HTMLAudioElement | null>(null);
+  const dialCancelRef = useRef<(() => void) | null>(null);
   const sendCallInviteFn = useServerFn(sendCallInvite);
+
 
   // Init PeerJS
   useEffect(() => {
