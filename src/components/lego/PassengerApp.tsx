@@ -20,14 +20,14 @@ import { CashbackPromotionSheet } from "./CashbackPromotionSheet";
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { requestRide, estimateFare } from "@/lib/rides.functions";
+import { requestRide, estimateFare, CATEGORY_PRICING } from "@/lib/rides.functions";
 import { computeRoute } from "@/lib/maps-route.functions";
 import { getNearbyDrivers } from "@/lib/nearby-drivers.functions";
 import { LUBANGO_CENTER } from "@/lib/google-maps-loader";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-type Category = "moto" | "normal" | "xl" | "premium" | "shared" | "delivery";
+type Category = keyof typeof CATEGORY_PRICING;
 
 const services: {
   id: string;

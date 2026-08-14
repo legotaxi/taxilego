@@ -21,7 +21,12 @@ import {
   Navigation2,
   Flag,
 } from "lucide-react";
-import { requestRide, getDriverInfo } from "@/lib/rides.functions";
+import { 
+  requestRide, 
+  getDriverInfo, 
+  computeFare, 
+  CATEGORY_PRICING as PRICING 
+} from "@/lib/rides.functions";
 import { reverseGeocode } from "@/lib/maps.functions";
 import { computeRoute } from "@/lib/maps-route.functions";
 import { getRideSummary, rateDriver } from "@/lib/ride-payment.functions";
@@ -48,16 +53,9 @@ export const Route = createFileRoute("/pedir")({
   component: PedirPage,
 });
 
-type Category = "normal" | "xl" | "moto" | "delivery";
+type Category = keyof typeof PRICING;
 type PayMethod = "cash" | "reference" | "card" | "wallet";
 type Step = "destination" | "offer" | "payment" | "searching" | "arriving" | "rating";
-
-const PRICING: Record<Category, { base: number; perKm: number; perMin: number; min: number }> = {
-  normal:   { base: 500,  perKm: 150, perMin: 20, min: 500  },  // LegoBaza
-  xl:       { base: 1000, perKm: 150, perMin: 20, min: 1000 },  // LegoCool
-  moto:     { base: 300,  perKm: 150, perMin: 20, min: 300  },  // LegoEntrega
-  delivery: { base: 400,  perKm: 150, perMin: 20, min: 400  },  // LegoCarga
-};
 
 const OFFERS: Array<{
   id: Category;
@@ -79,13 +77,7 @@ const PAY_OPTIONS: Array<{ id: PayMethod; label: string; icon: typeof Banknote }
   { id: "wallet",    label: "Carteira",      icon: Wallet },
 ];
 
-function computeFare(cat: Category, km: number, min: number) {
-  const p = PRICING[cat];
-  // Fórmula: base (bandeirada) + 150 Kz/km + 20 Kz/min
-  // O preço varia sempre com distância e tempo
-  const raw = p.base + p.perKm * km + p.perMin * min;
-  return Math.round(raw);
-}
+// A função computeFare agora é importada do lib/rides.functions para garantir unificação total.
 
 function PedirPage() {
   const { user, loading: authLoading } = useAuth();

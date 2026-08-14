@@ -169,9 +169,13 @@ export function RideCompletionDialog({
             <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
               {role === "driver" ? "Valor recebido" : "Total a pagar"}
             </p>
-            <p className="mt-1 font-display text-4xl font-black tracking-tight">
+            <p className="mt-1 font-display text-4xl font-black tracking-tight text-primary">
               {fmt(fareKz)}
             </p>
+            <div className="mt-2 flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-green-600">
+              <div className="h-1.5 w-1.5 rounded-full bg-green-600 animate-pulse" />
+              Preço Garantido LegoTaxi
+            </div>
             <p className="mt-1 text-[11px] text-muted-foreground">
               Pagamento por <span className="font-semibold">{METHOD_LABEL[paymentMethod] ?? paymentMethod}</span>
             </p>
@@ -259,7 +263,7 @@ export function RideCompletionDialog({
                 </span>
               ) : paid ? (
                 <span className="font-semibold text-primary">
-                  Pagamento registado · Kz {Number(fareKz * 0.9).toLocaleString("pt-PT")} creditados (90%)
+                  Pagamento registado · Kz {Number(fareKz * 0.9).toLocaleString("pt-AO")} creditados (90%)
                 </span>
               ) : (
                 <button onClick={handlePay} className="font-semibold text-primary underline">
