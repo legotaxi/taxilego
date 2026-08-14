@@ -86,21 +86,21 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  requested: "À espera",
-  accepted: "Aceite",
-  arriving: "A chegar",
-  in_progress: "Em curso",
-  completed: "Concluída",
-  cancelled: "Cancelada",
+  requested: "À Procura de Motorista",
+  accepted: "Motorista Encontrado",
+  arriving: "Motorista a Chegar",
+  in_progress: "Viagem em Curso",
+  completed: "Viagem Concluída",
+  cancelled: "Viagem Cancelada",
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  requested: "bg-amber-50 text-amber-800",
-  accepted: "bg-blue-50 text-blue-800",
-  arriving: "bg-indigo-50 text-indigo-800",
-  in_progress: "bg-green-50 text-green-800",
-  completed: "bg-gray-100 text-gray-600",
-  cancelled: "bg-red-50 text-red-700",
+  requested: "bg-yellow-100 text-yellow-800",
+  accepted: "bg-blue-100 text-blue-800",
+  arriving: "bg-indigo-100 text-indigo-800",
+  in_progress: "bg-green-100 text-green-800",
+  completed: "bg-gray-100 text-gray-800",
+  cancelled: "bg-red-100 text-red-800",
 };
 
 function DriverPanelContent() {

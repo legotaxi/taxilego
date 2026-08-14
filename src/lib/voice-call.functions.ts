@@ -5,34 +5,37 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 /**
  * Notificar utilizador sobre chamada de voz recebida
  */
-export const notifyIncomingCall = createServerFn({ method: "POST" })
+/**
+ * Envia notificação push ao destinatário para acordar o dispositivo e alertar sobre a chamada VoIP.
+ * Esta é a função unificada de convite de chamada.
+ */
+export const sendCallInvite = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
     z
       .object({
-        recipientId: z.string().uuid(),
-        callerId: z.string().uuid(),
-        callerName: z.string(),
+        toUserId: z.string().uuid(),
+        callerName: z.string().max(120).optional(),
       })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { supabase } = context;
-
+    const { userId } = context;
+    const { sendPushToUser } = await import("./push.server");
+    
     try {
-      // Enviar notificação push ao utilizador
-      const { sendPushToUser } = await import("./push.server");
-      await sendPushToUser(data.recipientId, {
-        title: "LegoTaxi · Chamada de voz",
-        body: `${data.callerName} está a chamar...`,
-        url: "/pedir",
-        tag: `voice-call-${data.callerId}`,
+      await sendPushToUser(data.toUserId, {
+        title: "Chamada recebida",
+        body: `${data.callerName || "Alguém"} está a chamar-te`,
+        tag: `voip-${userId}`,
+        type: "voip_incoming",
+        requireInteraction: true,
+        url: "/minhas-corridas",
       });
-
-      return { ok: true, error: null };
+      return { ok: true };
     } catch (err) {
-      console.error("Erro ao notificar chamada de voz:", err);
-      return { ok: false, error: "Erro ao enviar notificação" };
+      console.error("Erro ao enviar convite de chamada:", err);
+      return { ok: false, error: "Falha ao enviar notificação" };
     }
   });
 

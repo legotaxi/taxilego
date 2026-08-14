@@ -5,8 +5,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { sendCallInvite } from "@/lib/voip.functions";
-import { logVoiceCall } from "@/lib/voice-call.functions";
+import { sendCallInvite, logVoiceCall } from "@/lib/voice-call.functions";
 
 interface Props {
   userId: string;

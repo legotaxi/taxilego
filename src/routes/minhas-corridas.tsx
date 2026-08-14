@@ -68,29 +68,29 @@ const categoryLabel = {
 
 const statusBadge: Record<string, string> = {
   requested: "bg-yellow-100 text-yellow-800",
-  accepted: "bg-yellow-100 text-yellow-800",
-  arriving: "bg-yellow-100 text-yellow-800",
-  in_progress: "bg-yellow-100 text-yellow-800",
-  completed: "bg-yellow-100 text-yellow-800",
-  cancelled: "bg-yellow-100 text-yellow-800",
+  accepted: "bg-blue-100 text-blue-800",
+  arriving: "bg-indigo-100 text-indigo-800",
+  in_progress: "bg-green-100 text-green-800",
+  completed: "bg-gray-100 text-gray-800",
+  cancelled: "bg-red-100 text-red-800",
 };
 
 const statusLabel: Record<string, string> = {
-  requested: "À espera",
-  accepted: "Motorista a caminho",
-  arriving: "A chegar",
-  in_progress: "Em curso",
-  completed: "Concluída",
-  cancelled: "Cancelada",
+  requested: "À Procura de Motorista",
+  accepted: "Motorista Encontrado",
+  arriving: "Motorista a Chegar",
+  in_progress: "Viagem em Curso",
+  completed: "Viagem Concluída",
+  cancelled: "Viagem Cancelada",
 };
 
 const statusDescription: Record<string, string> = {
-  requested: "Procurando motorista…",
-  accepted: "Motorista aceite a corrida",
-  arriving: "Motorista a chegar ao local de partida",
-  in_progress: "Corrida em curso",
-  completed: "Corrida concluída com sucesso",
-  cancelled: "Corrida foi cancelada",
+  requested: "Estamos a localizar o motorista mais próximo…",
+  accepted: "O motorista aceitou e está a preparar-se",
+  arriving: "O motorista está quase no local de recolha",
+  in_progress: "Viagem em curso · Siga pelo mapa",
+  completed: "Viagem concluída com sucesso",
+  cancelled: "Esta viagem foi cancelada",
 };
 
 type DriverInfo = {
