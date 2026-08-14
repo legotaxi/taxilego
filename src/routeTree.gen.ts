@@ -9,109 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SuporteRouteImport } from './routes/suporte'
-import { Route as SobreRouteImport } from './routes/sobre'
-import { Route as ServicosRouteImport } from './routes/servicos'
-import { Route as PhoneAuthRouteImport } from './routes/phone-auth'
-import { Route as PedirRouteImport } from './routes/pedir'
-import { Route as PassageiroAuthRouteImport } from './routes/passageiro-auth'
-import { Route as PassageiroRouteImport } from './routes/passageiro'
-import { Route as PainelMotoristaRouteImport } from './routes/painel-motorista'
-import { Route as MotoristasRegistoRouteImport } from './routes/motoristas-registo'
-import { Route as MotoristasRouteImport } from './routes/motoristas'
-import { Route as MotoristaAuthRouteImport } from './routes/motorista-auth'
-import { Route as MotoristaRouteImport } from './routes/motorista'
-import { Route as MinhasCorridasRouteImport } from './routes/minhas-corridas'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as CorridaRouteImport } from './routes/corrida'
-import { Route as CarteiraRouteImport } from './routes/carteira'
-import { Route as AdminConsoleRouteImport } from './routes/admin-console'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AdminConsoleRouteImport } from './routes/admin-console'
+import { Route as CarteiraRouteImport } from './routes/carteira'
+import { Route as CorridaRouteImport } from './routes/corrida'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MinhasCorridasRouteImport } from './routes/minhas-corridas'
+import { Route as MotoristaRouteImport } from './routes/motorista'
+import { Route as MotoristaAuthRouteImport } from './routes/motorista-auth'
+import { Route as MotoristasRouteImport } from './routes/motoristas'
+import { Route as MotoristasRegistoRouteImport } from './routes/motoristas-registo'
+import { Route as PainelMotoristaRouteImport } from './routes/painel-motorista'
+import { Route as PassageiroRouteImport } from './routes/passageiro'
+import { Route as PassageiroAuthRouteImport } from './routes/passageiro-auth'
+import { Route as PedirRouteImport } from './routes/pedir'
+import { Route as PhoneAuthRouteImport } from './routes/phone-auth'
+import { Route as ServicosRouteImport } from './routes/servicos'
+import { Route as SobreRouteImport } from './routes/sobre'
+import { Route as SuporteRouteImport } from './routes/suporte'
 
-const SuporteRoute = SuporteRouteImport.update({
-  id: '/suporte',
-  path: '/suporte',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SobreRoute = SobreRouteImport.update({
-  id: '/sobre',
-  path: '/sobre',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServicosRoute = ServicosRouteImport.update({
-  id: '/servicos',
-  path: '/servicos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PhoneAuthRoute = PhoneAuthRouteImport.update({
-  id: '/phone-auth',
-  path: '/phone-auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PedirRoute = PedirRouteImport.update({
-  id: '/pedir',
-  path: '/pedir',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PassageiroAuthRoute = PassageiroAuthRouteImport.update({
-  id: '/passageiro-auth',
-  path: '/passageiro-auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PassageiroRoute = PassageiroRouteImport.update({
-  id: '/passageiro',
-  path: '/passageiro',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PainelMotoristaRoute = PainelMotoristaRouteImport.update({
-  id: '/painel-motorista',
-  path: '/painel-motorista',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MotoristasRegistoRoute = MotoristasRegistoRouteImport.update({
-  id: '/motoristas-registo',
-  path: '/motoristas-registo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MotoristasRoute = MotoristasRouteImport.update({
-  id: '/motoristas',
-  path: '/motoristas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MotoristaAuthRoute = MotoristaAuthRouteImport.update({
-  id: '/motorista-auth',
-  path: '/motorista-auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MotoristaRoute = MotoristaRouteImport.update({
-  id: '/motorista',
-  path: '/motorista',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MinhasCorridasRoute = MinhasCorridasRouteImport.update({
-  id: '/minhas-corridas',
-  path: '/minhas-corridas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CorridaRoute = CorridaRouteImport.update({
-  id: '/corrida',
-  path: '/corrida',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CarteiraRoute = CarteiraRouteImport.update({
-  id: '/carteira',
-  path: '/carteira',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminConsoleRoute = AdminConsoleRouteImport.update({
-  id: '/admin-console',
-  path: '/admin-console',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -119,9 +39,89 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminConsoleRoute = AdminConsoleRouteImport.update({
+  id: '/admin-console',
+  path: '/admin-console',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CarteiraRoute = CarteiraRouteImport.update({
+  id: '/carteira',
+  path: '/carteira',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CorridaRoute = CorridaRouteImport.update({
+  id: '/corrida',
+  path: '/corrida',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinhasCorridasRoute = MinhasCorridasRouteImport.update({
+  id: '/minhas-corridas',
+  path: '/minhas-corridas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotoristaRoute = MotoristaRouteImport.update({
+  id: '/motorista',
+  path: '/motorista',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotoristaAuthRoute = MotoristaAuthRouteImport.update({
+  id: '/motorista-auth',
+  path: '/motorista-auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotoristasRoute = MotoristasRouteImport.update({
+  id: '/motoristas',
+  path: '/motoristas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotoristasRegistoRoute = MotoristasRegistoRouteImport.update({
+  id: '/motoristas-registo',
+  path: '/motoristas-registo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PainelMotoristaRoute = PainelMotoristaRouteImport.update({
+  id: '/painel-motorista',
+  path: '/painel-motorista',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PassageiroRoute = PassageiroRouteImport.update({
+  id: '/passageiro',
+  path: '/passageiro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PassageiroAuthRoute = PassageiroAuthRouteImport.update({
+  id: '/passageiro-auth',
+  path: '/passageiro-auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PedirRoute = PedirRouteImport.update({
+  id: '/pedir',
+  path: '/pedir',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhoneAuthRoute = PhoneAuthRouteImport.update({
+  id: '/phone-auth',
+  path: '/phone-auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosRoute = ServicosRouteImport.update({
+  id: '/servicos',
+  path: '/servicos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuporteRoute = SuporteRouteImport.update({
+  id: '/suporte',
+  path: '/suporte',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -279,123 +279,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/suporte': {
-      id: '/suporte'
-      path: '/suporte'
-      fullPath: '/suporte'
-      preLoaderRoute: typeof SuporteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sobre': {
-      id: '/sobre'
-      path: '/sobre'
-      fullPath: '/sobre'
-      preLoaderRoute: typeof SobreRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/servicos': {
-      id: '/servicos'
-      path: '/servicos'
-      fullPath: '/servicos'
-      preLoaderRoute: typeof ServicosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/phone-auth': {
-      id: '/phone-auth'
-      path: '/phone-auth'
-      fullPath: '/phone-auth'
-      preLoaderRoute: typeof PhoneAuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pedir': {
-      id: '/pedir'
-      path: '/pedir'
-      fullPath: '/pedir'
-      preLoaderRoute: typeof PedirRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/passageiro-auth': {
-      id: '/passageiro-auth'
-      path: '/passageiro-auth'
-      fullPath: '/passageiro-auth'
-      preLoaderRoute: typeof PassageiroAuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/passageiro': {
-      id: '/passageiro'
-      path: '/passageiro'
-      fullPath: '/passageiro'
-      preLoaderRoute: typeof PassageiroRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/painel-motorista': {
-      id: '/painel-motorista'
-      path: '/painel-motorista'
-      fullPath: '/painel-motorista'
-      preLoaderRoute: typeof PainelMotoristaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/motoristas-registo': {
-      id: '/motoristas-registo'
-      path: '/motoristas-registo'
-      fullPath: '/motoristas-registo'
-      preLoaderRoute: typeof MotoristasRegistoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/motoristas': {
-      id: '/motoristas'
-      path: '/motoristas'
-      fullPath: '/motoristas'
-      preLoaderRoute: typeof MotoristasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/motorista-auth': {
-      id: '/motorista-auth'
-      path: '/motorista-auth'
-      fullPath: '/motorista-auth'
-      preLoaderRoute: typeof MotoristaAuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/motorista': {
-      id: '/motorista'
-      path: '/motorista'
-      fullPath: '/motorista'
-      preLoaderRoute: typeof MotoristaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/minhas-corridas': {
-      id: '/minhas-corridas'
-      path: '/minhas-corridas'
-      fullPath: '/minhas-corridas'
-      preLoaderRoute: typeof MinhasCorridasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/corrida': {
-      id: '/corrida'
-      path: '/corrida'
-      fullPath: '/corrida'
-      preLoaderRoute: typeof CorridaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/carteira': {
-      id: '/carteira'
-      path: '/carteira'
-      fullPath: '/carteira'
-      preLoaderRoute: typeof CarteiraRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-console': {
-      id: '/admin-console'
-      path: '/admin-console'
-      fullPath: '/admin-console'
-      preLoaderRoute: typeof AdminConsoleRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -405,11 +293,123 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admin-console': {
+      id: '/admin-console'
+      path: '/admin-console'
+      fullPath: '/admin-console'
+      preLoaderRoute: typeof AdminConsoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/carteira': {
+      id: '/carteira'
+      path: '/carteira'
+      fullPath: '/carteira'
+      preLoaderRoute: typeof CarteiraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/corrida': {
+      id: '/corrida'
+      path: '/corrida'
+      fullPath: '/corrida'
+      preLoaderRoute: typeof CorridaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minhas-corridas': {
+      id: '/minhas-corridas'
+      path: '/minhas-corridas'
+      fullPath: '/minhas-corridas'
+      preLoaderRoute: typeof MinhasCorridasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/motorista': {
+      id: '/motorista'
+      path: '/motorista'
+      fullPath: '/motorista'
+      preLoaderRoute: typeof MotoristaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/motorista-auth': {
+      id: '/motorista-auth'
+      path: '/motorista-auth'
+      fullPath: '/motorista-auth'
+      preLoaderRoute: typeof MotoristaAuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/motoristas': {
+      id: '/motoristas'
+      path: '/motoristas'
+      fullPath: '/motoristas'
+      preLoaderRoute: typeof MotoristasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/motoristas-registo': {
+      id: '/motoristas-registo'
+      path: '/motoristas-registo'
+      fullPath: '/motoristas-registo'
+      preLoaderRoute: typeof MotoristasRegistoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/painel-motorista': {
+      id: '/painel-motorista'
+      path: '/painel-motorista'
+      fullPath: '/painel-motorista'
+      preLoaderRoute: typeof PainelMotoristaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/passageiro': {
+      id: '/passageiro'
+      path: '/passageiro'
+      fullPath: '/passageiro'
+      preLoaderRoute: typeof PassageiroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/passageiro-auth': {
+      id: '/passageiro-auth'
+      path: '/passageiro-auth'
+      fullPath: '/passageiro-auth'
+      preLoaderRoute: typeof PassageiroAuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pedir': {
+      id: '/pedir'
+      path: '/pedir'
+      fullPath: '/pedir'
+      preLoaderRoute: typeof PedirRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/phone-auth': {
+      id: '/phone-auth'
+      path: '/phone-auth'
+      fullPath: '/phone-auth'
+      preLoaderRoute: typeof PhoneAuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos': {
+      id: '/servicos'
+      path: '/servicos'
+      fullPath: '/servicos'
+      preLoaderRoute: typeof ServicosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suporte': {
+      id: '/suporte'
+      path: '/suporte'
+      fullPath: '/suporte'
+      preLoaderRoute: typeof SuporteRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
