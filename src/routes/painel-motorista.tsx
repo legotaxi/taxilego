@@ -33,6 +33,7 @@ import { BottomSheet } from "@/components/lego/BottomSheet";
 import { RideChat } from "@/components/lego/RideChat";
 import { RideCompletionDialog } from "@/components/lego/RideCompletionDialog";
 import { VoipCallControl } from "@/components/lego/VoipCallControl";
+import { NotificationPrompt } from "@/components/lego/NotificationPrompt";
 
 function DriverPanel() {
   return (
@@ -466,6 +467,7 @@ function DriverPanelContent() {
                     userId={user.id}
                     remoteUserId={ride.passenger_id}
                     remoteUserName={passengerNames[ride.passenger_id] ?? "Passageiro"}
+                    rideId={ride.id}
                     className="h-9 w-9 rounded-full"
                   />
                 </div>
@@ -593,6 +595,7 @@ function DriverPanelContent() {
         {/* Bottom Sheet — corridas e acções */}
         <BottomSheet title={activeRides.length > 0 ? "Corrida Ativa" : `Corridas Disponíveis (${pendingRides.length})`}>
           <div className="space-y-3">
+            <NotificationPrompt />
             {activeRides.length > 0 ? (
               activeRides.map((r) => <RideCard key={r.id} ride={r} isPending={false} />)
             ) : loading ? (
@@ -623,6 +626,7 @@ function DriverPanelContent() {
           counterpartName={
             (chatRide.passenger_id && passengerNames[chatRide.passenger_id]) || "Passageiro"
           }
+          remoteUserId={chatRide.passenger_id || null}
           onClose={() => setChatRide(null)}
         />
       )}

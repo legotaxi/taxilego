@@ -547,6 +547,7 @@ function MyRidesPage() {
                                     userId={user.id}
                                     remoteUserId={r.driver_id}
                                     remoteUserName={driverInfo?.profile?.full_name ?? "Motorista"}
+                                    rideId={r.id}
                                   />
                                 )}
                               </div>
@@ -639,7 +640,8 @@ function MyRidesPage() {
       {/* Modals */}
       {chatRideId && user && (() => {
         const ride = rides?.find((r) => r.id === chatRideId);
-        const info = ride ? driverInfoMap[ride.id] : undefined;
+        const driverId = ride?.driver_id;
+        const info = driverId ? driverInfoMap[driverId] : undefined;
         const counterpartName = info?.profile?.full_name || "Motorista";
         return (
           <RideChat
@@ -648,6 +650,8 @@ function MyRidesPage() {
             myRole="passenger"
             counterpartName={counterpartName}
             counterpartAvatarUrl={info?.profile?.avatar_url ?? null}
+            remoteUserId={driverId || null}
+            onCall={info?.profile?.phone ? () => handleCallDriver(info.profile?.phone, counterpartName) : undefined}
             onClose={() => setChatRideId(null)}
           />
         );

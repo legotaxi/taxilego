@@ -6,12 +6,14 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { sendCallInvite } from "@/lib/voip.functions";
+import { logVoiceCall } from "@/lib/voice-call.functions";
 
 interface Props {
   userId: string;
   userName?: string | null;
   remoteUserId: string | null | undefined;
   remoteUserName?: string | null;
+  rideId?: string;
   className?: string;
 }
 
@@ -24,7 +26,7 @@ function formatDuration(sec: number) {
   return `${m}:${s}`;
 }
 
-export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName, className }: Props) {
+export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName, rideId, className }: Props) {
   const [state, setState] = useState<"idle" | "calling" | "ringing" | "in-call">("idle");
   const [muted, setMuted] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -286,10 +288,27 @@ export function VoipCallControl({ userId, userName, remoteUserId, remoteUserName
     setState("idle");
   }, [cleanup]);
 
-  const endCall = useCallback(() => {
+  const endCall = useCallback(async () => {
+    const finalDuration = duration;
     cleanup();
     setState("idle");
-  }, [cleanup]);
+    
+    // Log call if it was active
+    if (finalDuration > 0 && rideId && remoteUserId) {
+      try {
+        await logVoiceCall({ 
+          data: { 
+            ride_id: rideId, 
+            recipient_id: remoteUserId, 
+            duration_seconds: finalDuration,
+            status: 'completed'
+          } 
+        });
+      } catch (e) {
+        console.error("[voip] log error", e);
+      }
+    }
+  }, [cleanup, duration, rideId, remoteUserId]);
 
   const toggleMute = useCallback(() => {
     const track = localStreamRef.current?.getAudioTracks()[0];

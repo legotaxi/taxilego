@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Send, Phone, ArrowLeft, Info, Loader2, MessageCircle } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
+import { VoipCallControl } from "./VoipCallControl";
 import { supabase } from "@/integrations/supabase/client";
 import {
   getRideMessages,
@@ -26,6 +27,7 @@ interface RideChatProps {
   myRole: Role;
   counterpartName: string;
   counterpartAvatarUrl?: string | null;
+  remoteUserId: string | null;
   onCall?: () => void;
   onClose: () => void;
 }
@@ -40,6 +42,7 @@ export function RideChat({
   myRole,
   counterpartName,
   counterpartAvatarUrl,
+  remoteUserId,
   onCall,
   onClose,
 }: RideChatProps) {
@@ -168,14 +171,14 @@ export function RideChat({
           <p className="flex-1 min-w-0 truncate text-[17px] font-semibold text-neutral-900">
             {counterpartName}
           </p>
-          {onCall && (
-            <button
-              onClick={onCall}
-              className="rounded-full p-1.5 text-neutral-800 active:scale-95 transition"
-              aria-label="Ligar"
-            >
-              <Phone className="h-[22px] w-[22px]" />
-            </button>
+          {myUserId && remoteUserId && (
+            <VoipCallControl
+              userId={myUserId}
+              remoteUserId={remoteUserId}
+              remoteUserName={counterpartName}
+              rideId={rideId}
+              className="h-9 w-9 bg-transparent text-neutral-800 shadow-none hover:bg-neutral-100"
+            />
           )}
           <button
             className="rounded-full p-1.5 text-neutral-800 active:scale-95 transition"
