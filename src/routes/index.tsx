@@ -128,8 +128,14 @@ function Landing() {
         </div>
       </div>
 
-      <footer className="absolute bottom-6 z-10 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
-        © 2026 Lego Mobility · 🇦🇴 Luanda, Angola
+      <footer className="absolute bottom-5 z-10 flex flex-col items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+        <nav className="flex flex-wrap justify-center gap-3">
+          <a href="/privacidade" className="hover:text-primary">Privacidade</a>
+          <a href="/termos" className="hover:text-primary">Termos</a>
+          <a href="/ajuda" className="hover:text-primary">Apoio</a>
+          <a href="/eliminar-conta" className="hover:text-primary">Eliminar conta</a>
+        </nav>
+        <span>© 2026 Lego Mobility · 🇦🇴 Luanda, Angola</span>
       </footer>
     </main>
   );

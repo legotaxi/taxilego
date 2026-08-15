@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import logo from "@/assets/legotaxi-logo.png";
+import logoAsset from "@/assets/legotaxi-logo.png.asset.json";
 
 export function SplashScreen({ onComplete }: { onComplete: () => void }) {
   useEffect(() => {
@@ -10,7 +10,7 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
   return (
     <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-foreground">
       <img
-        src={logo}
+        src={logoAsset.url}
         alt="Lego Taxi"
         className="h-28 w-28 animate-pulse object-contain"
       />

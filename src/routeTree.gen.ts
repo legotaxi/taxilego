@@ -12,8 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminConsoleRouteImport } from './routes/admin-console'
+import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as CarteiraRouteImport } from './routes/carteira'
 import { Route as CorridaRouteImport } from './routes/corrida'
+import { Route as EliminarContaRouteImport } from './routes/eliminar-conta'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MinhasCorridasRouteImport } from './routes/minhas-corridas'
 import { Route as MotoristaRouteImport } from './routes/motorista'
@@ -25,9 +27,11 @@ import { Route as PassageiroRouteImport } from './routes/passageiro'
 import { Route as PassageiroAuthRouteImport } from './routes/passageiro-auth'
 import { Route as PedirRouteImport } from './routes/pedir'
 import { Route as PhoneAuthRouteImport } from './routes/phone-auth'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as ServicosRouteImport } from './routes/servicos'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SuporteRouteImport } from './routes/suporte'
+import { Route as TermosRouteImport } from './routes/termos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -44,6 +48,11 @@ const AdminConsoleRoute = AdminConsoleRouteImport.update({
   path: '/admin-console',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AjudaRoute = AjudaRouteImport.update({
+  id: '/ajuda',
+  path: '/ajuda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CarteiraRoute = CarteiraRouteImport.update({
   id: '/carteira',
   path: '/carteira',
@@ -52,6 +61,11 @@ const CarteiraRoute = CarteiraRouteImport.update({
 const CorridaRoute = CorridaRouteImport.update({
   id: '/corrida',
   path: '/corrida',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EliminarContaRoute = EliminarContaRouteImport.update({
+  id: '/eliminar-conta',
+  path: '/eliminar-conta',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -109,6 +123,11 @@ const PhoneAuthRoute = PhoneAuthRouteImport.update({
   path: '/phone-auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicosRoute = ServicosRouteImport.update({
   id: '/servicos',
   path: '/servicos',
@@ -124,13 +143,20 @@ const SuporteRoute = SuporteRouteImport.update({
   path: '/suporte',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/admin-console': typeof AdminConsoleRoute
+  '/ajuda': typeof AjudaRoute
   '/carteira': typeof CarteiraRoute
   '/corrida': typeof CorridaRoute
+  '/eliminar-conta': typeof EliminarContaRoute
   '/login': typeof LoginRoute
   '/minhas-corridas': typeof MinhasCorridasRoute
   '/motorista': typeof MotoristaRoute
@@ -142,16 +168,20 @@ export interface FileRoutesByFullPath {
   '/passageiro-auth': typeof PassageiroAuthRoute
   '/pedir': typeof PedirRoute
   '/phone-auth': typeof PhoneAuthRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/servicos': typeof ServicosRoute
   '/sobre': typeof SobreRoute
   '/suporte': typeof SuporteRoute
+  '/termos': typeof TermosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/admin-console': typeof AdminConsoleRoute
+  '/ajuda': typeof AjudaRoute
   '/carteira': typeof CarteiraRoute
   '/corrida': typeof CorridaRoute
+  '/eliminar-conta': typeof EliminarContaRoute
   '/login': typeof LoginRoute
   '/minhas-corridas': typeof MinhasCorridasRoute
   '/motorista': typeof MotoristaRoute
@@ -163,17 +193,21 @@ export interface FileRoutesByTo {
   '/passageiro-auth': typeof PassageiroAuthRoute
   '/pedir': typeof PedirRoute
   '/phone-auth': typeof PhoneAuthRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/servicos': typeof ServicosRoute
   '/sobre': typeof SobreRoute
   '/suporte': typeof SuporteRoute
+  '/termos': typeof TermosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/admin-console': typeof AdminConsoleRoute
+  '/ajuda': typeof AjudaRoute
   '/carteira': typeof CarteiraRoute
   '/corrida': typeof CorridaRoute
+  '/eliminar-conta': typeof EliminarContaRoute
   '/login': typeof LoginRoute
   '/minhas-corridas': typeof MinhasCorridasRoute
   '/motorista': typeof MotoristaRoute
@@ -185,9 +219,11 @@ export interface FileRoutesById {
   '/passageiro-auth': typeof PassageiroAuthRoute
   '/pedir': typeof PedirRoute
   '/phone-auth': typeof PhoneAuthRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/servicos': typeof ServicosRoute
   '/sobre': typeof SobreRoute
   '/suporte': typeof SuporteRoute
+  '/termos': typeof TermosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -195,8 +231,10 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/admin-console'
+    | '/ajuda'
     | '/carteira'
     | '/corrida'
+    | '/eliminar-conta'
     | '/login'
     | '/minhas-corridas'
     | '/motorista'
@@ -208,16 +246,20 @@ export interface FileRouteTypes {
     | '/passageiro-auth'
     | '/pedir'
     | '/phone-auth'
+    | '/privacidade'
     | '/servicos'
     | '/sobre'
     | '/suporte'
+    | '/termos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
     | '/admin-console'
+    | '/ajuda'
     | '/carteira'
     | '/corrida'
+    | '/eliminar-conta'
     | '/login'
     | '/minhas-corridas'
     | '/motorista'
@@ -229,16 +271,20 @@ export interface FileRouteTypes {
     | '/passageiro-auth'
     | '/pedir'
     | '/phone-auth'
+    | '/privacidade'
     | '/servicos'
     | '/sobre'
     | '/suporte'
+    | '/termos'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/admin-console'
+    | '/ajuda'
     | '/carteira'
     | '/corrida'
+    | '/eliminar-conta'
     | '/login'
     | '/minhas-corridas'
     | '/motorista'
@@ -250,17 +296,21 @@ export interface FileRouteTypes {
     | '/passageiro-auth'
     | '/pedir'
     | '/phone-auth'
+    | '/privacidade'
     | '/servicos'
     | '/sobre'
     | '/suporte'
+    | '/termos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   AdminConsoleRoute: typeof AdminConsoleRoute
+  AjudaRoute: typeof AjudaRoute
   CarteiraRoute: typeof CarteiraRoute
   CorridaRoute: typeof CorridaRoute
+  EliminarContaRoute: typeof EliminarContaRoute
   LoginRoute: typeof LoginRoute
   MinhasCorridasRoute: typeof MinhasCorridasRoute
   MotoristaRoute: typeof MotoristaRoute
@@ -272,9 +322,11 @@ export interface RootRouteChildren {
   PassageiroAuthRoute: typeof PassageiroAuthRoute
   PedirRoute: typeof PedirRoute
   PhoneAuthRoute: typeof PhoneAuthRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
   ServicosRoute: typeof ServicosRoute
   SobreRoute: typeof SobreRoute
   SuporteRoute: typeof SuporteRoute
+  TermosRoute: typeof TermosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -300,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminConsoleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ajuda': {
+      id: '/ajuda'
+      path: '/ajuda'
+      fullPath: '/ajuda'
+      preLoaderRoute: typeof AjudaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/carteira': {
       id: '/carteira'
       path: '/carteira'
@@ -312,6 +371,13 @@ declare module '@tanstack/react-router' {
       path: '/corrida'
       fullPath: '/corrida'
       preLoaderRoute: typeof CorridaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eliminar-conta': {
+      id: '/eliminar-conta'
+      path: '/eliminar-conta'
+      fullPath: '/eliminar-conta'
+      preLoaderRoute: typeof EliminarContaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -391,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PhoneAuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/servicos': {
       id: '/servicos'
       path: '/servicos'
@@ -412,6 +485,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuporteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -419,8 +499,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   AdminConsoleRoute: AdminConsoleRoute,
+  AjudaRoute: AjudaRoute,
   CarteiraRoute: CarteiraRoute,
   CorridaRoute: CorridaRoute,
+  EliminarContaRoute: EliminarContaRoute,
   LoginRoute: LoginRoute,
   MinhasCorridasRoute: MinhasCorridasRoute,
   MotoristaRoute: MotoristaRoute,
@@ -432,9 +514,11 @@ const rootRouteChildren: RootRouteChildren = {
   PassageiroAuthRoute: PassageiroAuthRoute,
   PedirRoute: PedirRoute,
   PhoneAuthRoute: PhoneAuthRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
   ServicosRoute: ServicosRoute,
   SobreRoute: SobreRoute,
   SuporteRoute: SuporteRoute,
+  TermosRoute: TermosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
