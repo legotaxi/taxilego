@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import logo from "@/assets/legotaxi-logo.png";
+import logoAsset from "@/assets/legotaxi-logo.png.asset.json";
 
 export function SplashScreen({ onComplete }: { onComplete: () => void }) {
   useEffect(() => {
