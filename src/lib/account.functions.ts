@@ -35,7 +35,7 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
       }
 
       // 3. Driver-specific data
-      await supabaseAdmin.from("vehicles").delete().eq("driver_id", userId);
+      await supabaseAdmin.from("vehicles").delete().eq("owner_id", userId);
       await supabaseAdmin.from("drivers").delete().eq("id", userId);
 
       // 4. Roles + profile
