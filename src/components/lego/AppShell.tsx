@@ -23,11 +23,13 @@ export function AppShell({ children, showNav = true, role = "passenger" }: AppSh
     { label: "Pedir", icon: MapPin, to: "/pedir" },
     { label: "Atividade", icon: History, to: "/minhas-corridas" },
     { label: "Carteira", icon: Wallet, to: "/carteira" },
+    { label: "Conta", icon: User, to: "/conta" },
   ];
 
   const driverTabs = [
     { label: "Painel", icon: Car, to: "/painel-motorista" },
     { label: "Ganhos", icon: Wallet, to: "/carteira" },
+    { label: "Conta", icon: User, to: "/conta" },
   ];
 
   const tabs = role === "driver" ? driverTabs : passengerTabs;
