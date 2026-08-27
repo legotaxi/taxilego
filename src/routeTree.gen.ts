@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminConsoleRouteImport } from './routes/admin-console'
 import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as CarteiraRouteImport } from './routes/carteira'
+import { Route as ContaRouteImport } from './routes/conta'
 import { Route as CorridaRouteImport } from './routes/corrida'
 import { Route as EliminarContaRouteImport } from './routes/eliminar-conta'
 import { Route as LoginRouteImport } from './routes/login'
@@ -56,6 +57,11 @@ const AjudaRoute = AjudaRouteImport.update({
 const CarteiraRoute = CarteiraRouteImport.update({
   id: '/carteira',
   path: '/carteira',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContaRoute = ContaRouteImport.update({
+  id: '/conta',
+  path: '/conta',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CorridaRoute = CorridaRouteImport.update({
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/admin-console': typeof AdminConsoleRoute
   '/ajuda': typeof AjudaRoute
   '/carteira': typeof CarteiraRoute
+  '/conta': typeof ContaRoute
   '/corrida': typeof CorridaRoute
   '/eliminar-conta': typeof EliminarContaRoute
   '/login': typeof LoginRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/admin-console': typeof AdminConsoleRoute
   '/ajuda': typeof AjudaRoute
   '/carteira': typeof CarteiraRoute
+  '/conta': typeof ContaRoute
   '/corrida': typeof CorridaRoute
   '/eliminar-conta': typeof EliminarContaRoute
   '/login': typeof LoginRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/admin-console': typeof AdminConsoleRoute
   '/ajuda': typeof AjudaRoute
   '/carteira': typeof CarteiraRoute
+  '/conta': typeof ContaRoute
   '/corrida': typeof CorridaRoute
   '/eliminar-conta': typeof EliminarContaRoute
   '/login': typeof LoginRoute
@@ -233,6 +242,7 @@ export interface FileRouteTypes {
     | '/admin-console'
     | '/ajuda'
     | '/carteira'
+    | '/conta'
     | '/corrida'
     | '/eliminar-conta'
     | '/login'
@@ -258,6 +268,7 @@ export interface FileRouteTypes {
     | '/admin-console'
     | '/ajuda'
     | '/carteira'
+    | '/conta'
     | '/corrida'
     | '/eliminar-conta'
     | '/login'
@@ -283,6 +294,7 @@ export interface FileRouteTypes {
     | '/admin-console'
     | '/ajuda'
     | '/carteira'
+    | '/conta'
     | '/corrida'
     | '/eliminar-conta'
     | '/login'
@@ -309,6 +321,7 @@ export interface RootRouteChildren {
   AdminConsoleRoute: typeof AdminConsoleRoute
   AjudaRoute: typeof AjudaRoute
   CarteiraRoute: typeof CarteiraRoute
+  ContaRoute: typeof ContaRoute
   CorridaRoute: typeof CorridaRoute
   EliminarContaRoute: typeof EliminarContaRoute
   LoginRoute: typeof LoginRoute
@@ -364,6 +377,13 @@ declare module '@tanstack/react-router' {
       path: '/carteira'
       fullPath: '/carteira'
       preLoaderRoute: typeof CarteiraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conta': {
+      id: '/conta'
+      path: '/conta'
+      fullPath: '/conta'
+      preLoaderRoute: typeof ContaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/corrida': {
@@ -501,6 +521,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConsoleRoute: AdminConsoleRoute,
   AjudaRoute: AjudaRoute,
   CarteiraRoute: CarteiraRoute,
+  ContaRoute: ContaRoute,
   CorridaRoute: CorridaRoute,
   EliminarContaRoute: EliminarContaRoute,
   LoginRoute: LoginRoute,

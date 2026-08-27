@@ -1,4 +1,4 @@
-import { MapPin, History, Wallet, LogOut, Car } from "lucide-react";
+import { MapPin, History, Wallet, LogOut, Car, User } from "lucide-react";
 import { ReactNode } from "react";
 import { useLocation, Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
