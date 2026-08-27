@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/motorista-auth")({
   head: () => ({
     meta: [
-      { title: "Motorista · Entrar ou Candidatar-se · Lego Taxi" },
+      { title: "Motorista · Entrar ou Criar conta · Lego Taxi" },
       {
         name: "description",
         content: "Aceda ao app de motorista Lego Taxi ou candidate-se para conduzir em Angola.",
@@ -87,8 +87,8 @@ function MotoristaAuthPage() {
             <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-success/10">
               <CheckCircle className="h-8 w-8 text-success" />
             </div>
-            <h1 className="font-display text-3xl font-bold mb-2">Candidatura Enviada!</h1>
-            <p className="text-muted-foreground mb-6">Envie os seus documentos para aprovação.</p>
+            <h1 className="font-display text-3xl font-bold mb-2">Conta criada!</h1>
+            <p className="text-muted-foreground mb-6">Envie os documentos exigidos por lei para começar a conduzir.</p>
             <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
               A redirecionar...
@@ -115,7 +115,7 @@ function MotoristaAuthPage() {
             Conduza com a <span className="text-primary">maior frota</span> de Angola.
           </h2>
           <p className="max-w-md text-background/80">
-            Comissões justas, pagamento semanal e suporte dedicado a motoristas.
+            Aberto a qualquer motorista elegível em Angola. Sem convite, sem empresa — basta carta de condução válida e documentos em dia.
           </p>
         </div>
         <div className="relative z-10 text-xs text-background/60">© 2026 Lego Mobility, Lda · 🇦🇴</div>
@@ -152,7 +152,7 @@ function MotoristaAuthPage() {
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >
-              Candidatar-se
+              Criar conta
             </button>
           </div>
 
@@ -167,7 +167,7 @@ function MotoristaAuthPage() {
             <p className="text-base text-muted-foreground leading-relaxed">
               {mode === "signin"
                 ? "Entre na sua conta de motorista e comece a ganhar."
-                : "Registe-se e envie depois os seus documentos para aprovação."}
+                : "Registo aberto a qualquer motorista elegível em Angola — sem convite nem empresa. Basta enviar os documentos exigidos por lei."}
             </p>
           </div>
 
@@ -231,7 +231,7 @@ function MotoristaAuthPage() {
                 <Loader2 className="h-5 w-5 animate-spin relative z-10" />
               ) : (
                 <>
-                  <span className="relative z-10">{mode === "signin" ? "Entrar" : "Candidatar-se"}</span>
+                  <span className="relative z-10">{mode === "signin" ? "Entrar" : "Criar conta"}</span>
                   <ArrowRight className="h-5 w-5 relative z-10 transition-transform group-hover:translate-x-1" />
                 </>
               )}
@@ -253,7 +253,7 @@ function MotoristaAuthPage() {
                 }} 
                 className="font-bold text-primary hover:underline transition-colors"
               >
-                {mode === "signin" ? "Candidatar-se aqui" : "Entrar aqui"}
+                {mode === "signin" ? "Criar conta aqui" : "Entrar aqui"}
               </button>
             </p>
             <p>

@@ -109,7 +109,7 @@ export function DriverStatusGuard({
               </div>
               <h1 className="font-display text-2xl font-bold mb-2">Candidatura em Análise</h1>
               <p className="text-muted-foreground mb-6">
-                Obrigado por se registar como motorista! Sua candidatura está sendo analisada pela nossa equipa de administração. Você receberá uma notificação assim que for aprovado.
+                Obrigado por se registar como motorista! Estamos apenas a verificar os documentos exigidos por lei (carta de condução, BI e registo criminal). Recebe uma notificação assim que a verificação terminar.
               </p>
               <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-6">
                 <p className="text-sm text-yellow-900">
@@ -126,7 +126,7 @@ export function DriverStatusGuard({
               </div>
               <h1 className="font-display text-2xl font-bold mb-2">Candidatura Rejeitada</h1>
               <p className="text-muted-foreground mb-6">
-                Infelizmente, sua candidatura não foi aprovada. Se tiver dúvidas, entre em contacto com o nosso suporte.
+                Infelizmente, os documentos enviados não cumprem os requisitos legais de verificação. Se tiver dúvidas, entre em contacto com o nosso suporte.
               </p>
             </>
           )}

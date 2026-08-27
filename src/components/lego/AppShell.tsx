@@ -1,4 +1,4 @@
-import { MapPin, History, Wallet, LogOut, Car } from "lucide-react";
+import { MapPin, History, Wallet, LogOut, Car, User } from "lucide-react";
 import { ReactNode } from "react";
 import { useLocation, Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
@@ -23,11 +23,13 @@ export function AppShell({ children, showNav = true, role = "passenger" }: AppSh
     { label: "Pedir", icon: MapPin, to: "/pedir" },
     { label: "Atividade", icon: History, to: "/minhas-corridas" },
     { label: "Carteira", icon: Wallet, to: "/carteira" },
+    { label: "Conta", icon: User, to: "/conta" },
   ];
 
   const driverTabs = [
     { label: "Painel", icon: Car, to: "/painel-motorista" },
     { label: "Ganhos", icon: Wallet, to: "/carteira" },
+    { label: "Conta", icon: User, to: "/conta" },
   ];
 
   const tabs = role === "driver" ? driverTabs : passengerTabs;
@@ -60,7 +62,7 @@ export function AppShell({ children, showNav = true, role = "passenger" }: AppSh
               <Link
                 key={tab.to}
                 to={tab.to}
-                className={`group relative flex flex-col items-center justify-center gap-1 px-3 py-1.5 transition-all duration-300 ease-out ${
+                className={`group relative flex flex-col items-center justify-center gap-1 px-2 py-1.5 transition-all duration-300 ease-out ${
                   isActive
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -72,7 +74,7 @@ export function AppShell({ children, showNav = true, role = "passenger" }: AppSh
                 )}
                 
                 <div
-                  className={`rounded-2xl p-2.5 transition-all duration-300 ${
+                  className={`rounded-2xl p-2 transition-all duration-300 ${
                     isActive 
                       ? "bg-primary/20 scale-105" 
                       : "group-hover:bg-muted/50 group-hover:scale-105"
@@ -92,10 +94,10 @@ export function AppShell({ children, showNav = true, role = "passenger" }: AppSh
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="group relative flex flex-col items-center justify-center gap-1 px-3 py-1.5 transition-all duration-300 text-muted-foreground hover:text-destructive"
+            className="group relative flex flex-col items-center justify-center gap-1 px-2 py-1.5 transition-all duration-300 text-muted-foreground hover:text-destructive"
             title="Fazer logout"
           >
-            <div className="rounded-2xl p-2.5 transition-all duration-300 group-hover:bg-destructive/10 group-hover:scale-105">
+            <div className="rounded-2xl p-2 transition-all duration-300 group-hover:bg-destructive/10 group-hover:scale-105">
               <LogOut className="h-5 w-5 transition-all duration-300" />
             </div>
             <span className="text-[10px] font-semibold">Sair</span>
