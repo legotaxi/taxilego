@@ -56,9 +56,10 @@ function DriverRegistrationPage() {
           Envie os seus <span className="text-primary">documentos</span>
         </h1>
         <p className="mt-2 text-sm text-muted-foreground max-w-xl">
-          Para começar a conduzir, precisamos validar os seus dados. Depois de enviar, a sua
-          candidatura ficará <strong>Em Análise</strong> e receberá uma notificação assim que for
-          aprovada (até 48h).
+          Para começar a conduzir, precisamos validar os seus dados. Depois de enviar, o seu
+          registo fica <strong>Em Verificação</strong> e recebe uma notificação assim que os
+          documentos forem validados (até 48h). O registo está aberto a qualquer motorista
+          elegível — não é necessário convite nem vínculo a uma empresa.
         </p>
 
         <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
