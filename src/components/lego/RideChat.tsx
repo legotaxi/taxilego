@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Send, Phone, ArrowLeft, Info, Loader2, MessageCircle } from "lucide-react";
+import { Send, Phone, ArrowLeft, Info, Loader2, MessageCircle, Flag, Ban, X } from "lucide-react";
+import { toast } from "sonner";
+import { reportUser, blockUser } from "@/lib/moderation.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { VoipCallControl } from "./VoipCallControl";
 import { supabase } from "@/integrations/supabase/client";
@@ -55,6 +57,17 @@ export function RideChat({
   const fetchMessages = useServerFn(getRideMessages);
   const sendMessage = useServerFn(sendRideMessage);
   const markRead = useServerFn(markRideMessagesRead);
+
+  // Moderação (Guideline 1.2 — denunciar / bloquear)
+  const runReport = useServerFn(reportUser);
+  const runBlock = useServerFn(blockUser);
+  const [safetyOpen, setSafetyOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] =
+    useState<"abuso" | "assedio" | "fraude" | "seguranca" | "spam" | "outro">("abuso");
+  const [reportDetails, setReportDetails] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [blocked, setBlocked] = useState(false);
 
   // Initial load + mark read
   useEffect(() => {
@@ -138,6 +151,48 @@ export function RideChat({
   }, [text, sending, rideId, myUserId, myRole, sendMessage]);
 
   const initial = (counterpartName || "?").charAt(0).toUpperCase();
+
+  const handleReport = async () => {
+    if (!remoteUserId || submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await runReport({
+        data: {
+          reported_id: remoteUserId,
+          ride_id: rideId,
+          reason: reportReason,
+          details: reportDetails.trim() || undefined,
+        },
+      });
+      if (res?.ok) {
+        toast.success("Denúncia enviada. A nossa equipa analisa em até 24 horas.");
+        setReportOpen(false);
+        setSafetyOpen(false);
+        setReportDetails("");
+      } else {
+        toast.error(res?.error || "Não foi possível enviar a denúncia");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleBlock = async () => {
+    if (!remoteUserId || submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await runBlock({ data: { blocked_id: remoteUserId } });
+      if (res?.ok) {
+        setBlocked(true);
+        setSafetyOpen(false);
+        toast.success(`${counterpartName} foi bloqueado. Não voltará a ser emparelhado consigo.`);
+      } else {
+        toast.error(res?.error || "Não foi possível bloquear");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const fmtTime = (iso: string) =>
     new Date(iso)
