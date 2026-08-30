@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Send, Phone, ArrowLeft, Info, Loader2, MessageCircle } from "lucide-react";
+import { Send, Phone, ArrowLeft, Info, Loader2, MessageCircle, Flag, Ban, X } from "lucide-react";
+import { toast } from "sonner";
+import { reportUser, blockUser } from "@/lib/moderation.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { VoipCallControl } from "./VoipCallControl";
 import { supabase } from "@/integrations/supabase/client";
