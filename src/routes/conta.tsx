@@ -81,7 +81,7 @@ function AccountPage() {
     setError(null);
     setDeleting(true);
     try {
-      const result = await runDelete({ data: undefined as never });
+      const result = await runDelete({});
       if (!result?.ok) {
         setError(result?.error || "Não foi possível eliminar a conta. Tente novamente.");
         toast.error(result?.error || "Erro ao eliminar conta");
