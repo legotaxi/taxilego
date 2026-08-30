@@ -58,6 +58,17 @@ export function RideChat({
   const sendMessage = useServerFn(sendRideMessage);
   const markRead = useServerFn(markRideMessagesRead);
 
+  // Moderação (Guideline 1.2 — denunciar / bloquear)
+  const runReport = useServerFn(reportUser);
+  const runBlock = useServerFn(blockUser);
+  const [safetyOpen, setSafetyOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] =
+    useState<"abuso" | "assedio" | "fraude" | "seguranca" | "spam" | "outro">("abuso");
+  const [reportDetails, setReportDetails] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+
   // Initial load + mark read
   useEffect(() => {
     let active = true;
