@@ -152,6 +152,48 @@ export function RideChat({
 
   const initial = (counterpartName || "?").charAt(0).toUpperCase();
 
+  const handleReport = async () => {
+    if (!remoteUserId || submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await runReport({
+        data: {
+          reported_id: remoteUserId,
+          ride_id: rideId,
+          reason: reportReason,
+          details: reportDetails.trim() || undefined,
+        },
+      });
+      if (res?.ok) {
+        toast.success("Denúncia enviada. A nossa equipa analisa em até 24 horas.");
+        setReportOpen(false);
+        setSafetyOpen(false);
+        setReportDetails("");
+      } else {
+        toast.error(res?.error || "Não foi possível enviar a denúncia");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleBlock = async () => {
+    if (!remoteUserId || submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await runBlock({ data: { blocked_id: remoteUserId } });
+      if (res?.ok) {
+        setBlocked(true);
+        setSafetyOpen(false);
+        toast.success(`${counterpartName} foi bloqueado. Não voltará a ser emparelhado consigo.`);
+      } else {
+        toast.error(res?.error || "Não foi possível bloquear");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const fmtTime = (iso: string) =>
     new Date(iso)
       .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })
