@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useRef, useMemo, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -20,6 +20,13 @@ import {
   MapPin,
   Navigation2,
   Flag,
+  X,
+  User as UserIcon,
+  Trash2,
+  FileText,
+  ShieldCheck,
+  LifeBuoy,
+  LogOut,
 } from "lucide-react";
 import { 
   requestRide, 
@@ -80,7 +87,9 @@ const PAY_OPTIONS: Array<{ id: PayMethod; label: string; icon: typeof Banknote }
 // A função computeFare agora é importada do lib/rides.functions para garantir unificação total.
 
 function PedirPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [recenterSignal, setRecenterSignal] = useState(0);
   const navigate = useNavigate();
   const requestRideFn = useServerFn(requestRide);
   const reverseGeocodeFn = useServerFn(reverseGeocode);
@@ -395,6 +404,7 @@ function PedirPage() {
             nearbyDrivers={
               step === "arriving" && driverLocation ? [driverLocation] : nearbyDrivers
             }
+            recenterSignal={recenterSignal}
           />
         </div>
 
@@ -402,9 +412,9 @@ function PedirPage() {
         {showTopBar && (
           <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between px-5 pt-[max(env(safe-area-inset-top),1rem)]">
             <button
-              onClick={handleBack}
+              onClick={() => (step === "destination" ? setMenuOpen(true) : handleBack())}
               className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-primary shadow-[0_8px_24px_rgba(0,0,0,0.15)] active:scale-95 transition-transform"
-              aria-label="Voltar"
+              aria-label={step === "destination" ? "Definições" : "Voltar"}
             >
               {step === "destination" ? (
                 <Menu className="h-6 w-6" strokeWidth={3} />
@@ -442,6 +452,7 @@ function PedirPage() {
         {/* Recenter FAB (only on map-visible steps) */}
         {showTopBar && (
           <button
+            onClick={() => setRecenterSignal((n) => n + 1)}
             className="absolute right-5 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-white text-primary shadow-[0_8px_24px_rgba(0,0,0,0.18)] active:scale-95 transition-transform"
             style={{
               bottom:
