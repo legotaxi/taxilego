@@ -10,6 +10,9 @@ import {
   AlertTriangle,
   LogOut,
   CheckCircle2,
+  FileText,
+  LifeBuoy,
+
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteMyAccount } from "@/lib/account.functions";
@@ -150,6 +153,37 @@ function AccountPage() {
               Terminar sessão
             </button>
           </section>
+
+          {/* Legal e privacidade */}
+          <section className="mb-4 rounded-2xl border border-border bg-card p-5">
+            <h2 className="mb-3 font-display text-base font-black tracking-tight">
+              Privacidade e legal
+            </h2>
+            <div className="space-y-2">
+              <Link
+                to="/privacidade"
+                className="flex items-center gap-3 rounded-xl border border-border p-3.5 text-sm font-semibold"
+              >
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                Política de privacidade
+              </Link>
+              <Link
+                to="/termos"
+                className="flex items-center gap-3 rounded-xl border border-border p-3.5 text-sm font-semibold"
+              >
+                <FileText className="h-4 w-4 text-primary" />
+                Termos de utilização
+              </Link>
+              <Link
+                to="/suporte"
+                className="flex items-center gap-3 rounded-xl border border-border p-3.5 text-sm font-semibold"
+              >
+                <LifeBuoy className="h-4 w-4 text-primary" />
+                Apoio ao cliente
+              </Link>
+            </div>
+          </section>
+
 
           {/* Eliminar conta */}
           <section

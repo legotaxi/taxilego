@@ -222,7 +222,7 @@ function PassageiroAuthPage() {
           </div>
 
           <p className="mt-8 text-center text-xs text-muted-foreground shrink-0">
-            Ao continuar, aceita os <a className="underline">Termos</a> e a <a className="underline">Política de Privacidade</a>.
+            Ao continuar, aceita os <Link to="/termos" className="underline hover:text-foreground">Termos</Link> e a <Link to="/privacidade" className="underline hover:text-foreground">Política de Privacidade</Link>. Tolerância zero a conteúdos ou comportamentos abusivos.
           </p>
         </div>
       </section>

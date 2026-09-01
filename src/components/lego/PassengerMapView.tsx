@@ -14,6 +14,7 @@ interface PassengerMapViewProps {
   destinationLocation?: [number, number];
   onLocationUpdate?: (location: [number, number]) => void;
   nearbyDrivers?: Array<[number, number]> | NearbyDriver[];
+  recenterSignal?: number;
 }
 
 /**
@@ -28,6 +29,7 @@ export function PassengerMapView({
   destinationLocation = [LUBANGO_CENTER.lat + 0.01, LUBANGO_CENTER.lng + 0.01],
   onLocationUpdate,
   nearbyDrivers,
+  recenterSignal,
 }: PassengerMapViewProps) {
   const reverseGeocodeFn = useServerFn(reverseGeocode);
   const { coordinates, loading, error, isTracking, distanceTraveled, stopTracking } =
@@ -142,6 +144,7 @@ export function PassengerMapView({
         userIconType="passenger"
         drawDirections={true}
         nearbyDrivers={nearbyDrivers}
+        recenterSignal={recenterSignal}
       />
 
       {/* Available cars counter — canto superior esquerdo */}

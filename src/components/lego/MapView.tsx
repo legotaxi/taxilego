@@ -27,6 +27,7 @@ interface MapViewProps {
   zoom?: number;
   userIconType?: "driver" | "passenger";
   drawDirections?: boolean;
+  recenterSignal?: number;
 }
 
 // Inline SVG markers
@@ -156,6 +157,7 @@ export function MapView({
   zoom = 14,
   userIconType = "driver",
   drawDirections = false,
+  recenterSignal = 0,
 }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
@@ -532,6 +534,11 @@ export function MapView({
     else if (pickupLocation) map.panTo({ lat: pickupLocation[0], lng: pickupLocation[1] });
     map.setZoom(zoom);
   }, [driverLocation, pickupLocation, zoom]);
+
+  // Recentrar quando o utilizador toca no botão "A minha localização"
+  useEffect(() => {
+    if (recenterSignal > 0) handleCenter();
+  }, [recenterSignal, handleCenter]);
 
   if (error) {
     return (
