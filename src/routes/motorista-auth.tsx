@@ -265,7 +265,7 @@ function MotoristaAuthPage() {
           </div>
 
           <p className="mt-8 text-center text-xs text-muted-foreground/70 shrink-0">
-            Ao continuar, aceita os <a href="#" className="underline hover:text-muted-foreground transition-colors">Termos</a> e a <a href="#" className="underline hover:text-muted-foreground transition-colors">Política de Privacidade</a>.
+            Ao continuar, aceita os <Link to="/termos" className="underline hover:text-foreground">Termos</Link> e a <Link to="/privacidade" className="underline hover:text-foreground">Política de Privacidade</Link>. Tolerância zero a conteúdos ou comportamentos abusivos.
           </p>
         </div>
       </section>
