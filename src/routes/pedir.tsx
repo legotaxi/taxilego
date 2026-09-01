@@ -437,6 +437,96 @@ function PedirPage() {
           </div>
         )}
 
+        {/* ===== SETTINGS / DEFINIÇÕES ===== */}
+        {menuOpen && (
+          <div className="absolute inset-0 z-50 flex">
+            <button
+              type="button"
+              aria-label="Fechar definições"
+              onClick={() => setMenuOpen(false)}
+              className="absolute inset-0 bg-black/50"
+            />
+            <div className="relative z-10 flex h-full w-[86%] max-w-sm flex-col overflow-y-auto bg-card p-5 pt-[max(env(safe-area-inset-top),1.25rem)] shadow-2xl">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="font-display text-xl font-black tracking-tight">Definições</h2>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(false)}
+                  aria-label="Fechar"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-muted"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <nav className="space-y-2">
+                <Link
+                  to="/conta"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-xl border border-border p-4 text-sm font-semibold active:scale-[0.99]"
+                >
+                  <UserIcon className="h-5 w-5 text-primary" />A minha conta
+                </Link>
+                <Link
+                  to="/carteira"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-xl border border-border p-4 text-sm font-semibold active:scale-[0.99]"
+                >
+                  <Wallet className="h-5 w-5 text-primary" />Carteira Lego
+                </Link>
+                <Link
+                  to="/minhas-corridas"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-xl border border-border p-4 text-sm font-semibold active:scale-[0.99]"
+                >
+                  <Clock className="h-5 w-5 text-primary" />Histórico de corridas
+                </Link>
+                <Link
+                  to="/suporte"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-xl border border-border p-4 text-sm font-semibold active:scale-[0.99]"
+                >
+                  <LifeBuoy className="h-5 w-5 text-primary" />Apoio ao cliente
+                </Link>
+                <Link
+                  to="/termos"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-xl border border-border p-4 text-sm font-semibold active:scale-[0.99]"
+                >
+                  <FileText className="h-5 w-5 text-primary" />Termos de utilização
+                </Link>
+                <Link
+                  to="/privacidade"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-xl border border-border p-4 text-sm font-semibold active:scale-[0.99]"
+                >
+                  <ShieldCheck className="h-5 w-5 text-primary" />Política de privacidade
+                </Link>
+                <Link
+                  to="/conta"
+                  hash="eliminar-conta"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-xl border-2 border-destructive/40 bg-destructive/5 p-4 text-sm font-bold text-destructive active:scale-[0.99]"
+                >
+                  <Trash2 className="h-5 w-5" />Excluir minha conta
+                </Link>
+              </nav>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  setMenuOpen(false);
+                  await signOut();
+                  navigate({ to: "/login" });
+                }}
+                className="mt-6 flex items-center justify-center gap-2 rounded-xl border-2 border-border py-3 text-sm font-bold"
+              >
+                <LogOut className="h-4 w-4" />Terminar sessão
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Route badge on map (offer/payment) */}
         {(step === "offer" || step === "payment") && route.durationMin > 0 && (
           <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 items-stretch overflow-hidden rounded-lg shadow-lg">
