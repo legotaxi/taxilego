@@ -10,6 +10,9 @@ import {
   AlertTriangle,
   LogOut,
   CheckCircle2,
+  FileText,
+  LifeBuoy,
+
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteMyAccount } from "@/lib/account.functions";
