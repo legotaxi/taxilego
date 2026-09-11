@@ -99,41 +99,26 @@ function LoginPage() {
     "gomesshekinah@gmail.com",
   ];
 
-  const handleGoogleLogin = async () => {
+  const socialLogin = async (provider: "google" | "apple") => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: window.location.origin,
-        },
+      sessionStorage.setItem("legoAuthIntent", "passenger");
+      localStorage.setItem("legoAuthIntent", "passenger");
+      const result = await lovable.auth.signInWithOAuth(provider, {
+        redirect_uri: `${window.location.origin}/auth-callback`,
       });
-      if (error) throw error;
+      if (result.redirected) return;
+      if (result.error) throw result.error;
+      window.location.href = "/auth-callback";
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Erro ao conectar com Google";
+      const message = err instanceof Error ? err.message : "Erro ao iniciar sessão";
       toast.error(message);
-    } finally {
       setLoading(false);
     }
   };
 
-  const handleAppleLogin = async () => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "apple",
-        options: {
-          redirectTo: window.location.origin,
-        },
-      });
-      if (error) throw error;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Erro ao conectar com Apple";
-      toast.error(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleGoogleLogin = () => socialLogin("google");
+  const handleAppleLogin = () => socialLogin("apple");
 
   return (
     <main className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden bg-black px-6 text-center">
