@@ -5,6 +5,7 @@ import { usePhoneAuth } from "@/hooks/use-phone-auth";
 import { toast } from "sonner";
 import driverBg from "@/assets/driver-bg.mp4.asset.json";
 import { supabase } from "@/integrations/supabase/client";
+import { AppleSignInButton } from "@/components/lego/AppleSignInButton";
 
 export const Route = createFileRoute("/motorista-auth")({
   head: () => ({
@@ -237,6 +238,15 @@ function MotoristaAuthPage() {
               )}
             </button>
           </form>
+
+          <div className="mt-6 shrink-0">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">ou</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <AppleSignInButton intent="driver" />
+          </div>
 
           {/* Footer Links */}
           <div className="mt-8 space-y-4 text-center text-sm text-muted-foreground shrink-0">
