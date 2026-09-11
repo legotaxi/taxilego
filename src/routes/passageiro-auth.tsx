@@ -5,6 +5,7 @@ import { usePhoneAuth } from "@/hooks/use-phone-auth";
 import { toast } from "sonner";
 import heroBg from "@/assets/hero-bg.mp4.asset.json";
 import { supabase } from "@/integrations/supabase/client";
+import { AppleSignInButton } from "@/components/lego/AppleSignInButton";
 
 export const Route = createFileRoute("/passageiro-auth")({
   head: () => ({
@@ -207,6 +208,15 @@ function PassageiroAuthPage() {
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>{mode === "signin" ? "Entrar" : "Criar conta"}<ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" /></>}
             </button>
           </form>
+
+          <div className="mt-6 shrink-0">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">ou</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <AppleSignInButton intent="passenger" />
+          </div>
 
           <div className="mt-8 text-center text-xs text-muted-foreground shrink-0">
             <p>
