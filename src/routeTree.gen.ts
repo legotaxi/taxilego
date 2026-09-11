@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminConsoleRouteImport } from './routes/admin-console'
 import { Route as AjudaRouteImport } from './routes/ajuda'
+import { Route as AuthCallbackRouteImport } from './routes/auth-callback'
 import { Route as CarteiraRouteImport } from './routes/carteira'
 import { Route as ContaRouteImport } from './routes/conta'
 import { Route as CorridaRouteImport } from './routes/corrida'
@@ -52,6 +53,11 @@ const AdminConsoleRoute = AdminConsoleRouteImport.update({
 const AjudaRoute = AjudaRouteImport.update({
   id: '/ajuda',
   path: '/ajuda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth-callback',
+  path: '/auth-callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CarteiraRoute = CarteiraRouteImport.update({
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/admin-console': typeof AdminConsoleRoute
   '/ajuda': typeof AjudaRoute
+  '/auth-callback': typeof AuthCallbackRoute
   '/carteira': typeof CarteiraRoute
   '/conta': typeof ContaRoute
   '/corrida': typeof CorridaRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/admin-console': typeof AdminConsoleRoute
   '/ajuda': typeof AjudaRoute
+  '/auth-callback': typeof AuthCallbackRoute
   '/carteira': typeof CarteiraRoute
   '/conta': typeof ContaRoute
   '/corrida': typeof CorridaRoute
@@ -213,6 +221,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/admin-console': typeof AdminConsoleRoute
   '/ajuda': typeof AjudaRoute
+  '/auth-callback': typeof AuthCallbackRoute
   '/carteira': typeof CarteiraRoute
   '/conta': typeof ContaRoute
   '/corrida': typeof CorridaRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-console'
     | '/ajuda'
+    | '/auth-callback'
     | '/carteira'
     | '/conta'
     | '/corrida'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-console'
     | '/ajuda'
+    | '/auth-callback'
     | '/carteira'
     | '/conta'
     | '/corrida'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-console'
     | '/ajuda'
+    | '/auth-callback'
     | '/carteira'
     | '/conta'
     | '/corrida'
@@ -320,6 +332,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AdminConsoleRoute: typeof AdminConsoleRoute
   AjudaRoute: typeof AjudaRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   CarteiraRoute: typeof CarteiraRoute
   ContaRoute: typeof ContaRoute
   CorridaRoute: typeof CorridaRoute
@@ -370,6 +383,13 @@ declare module '@tanstack/react-router' {
       path: '/ajuda'
       fullPath: '/ajuda'
       preLoaderRoute: typeof AjudaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth-callback': {
+      id: '/auth-callback'
+      path: '/auth-callback'
+      fullPath: '/auth-callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/carteira': {
@@ -520,6 +540,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AdminConsoleRoute: AdminConsoleRoute,
   AjudaRoute: AjudaRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   CarteiraRoute: CarteiraRoute,
   ContaRoute: ContaRoute,
   CorridaRoute: CorridaRoute,
