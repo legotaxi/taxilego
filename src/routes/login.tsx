@@ -1,10 +1,11 @@
-import { ArrowRight, Apple, Chrome, Mail, Lock, Loader2 } from "lucide-react";
+import { ArrowRight, Chrome, Mail, Lock, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import driverBg from "@/assets/driver-bg.mp4.asset.json";
+import { AppleSignInButton } from "@/components/lego/AppleSignInButton";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -99,17 +100,19 @@ function LoginPage() {
     "gomesshekinah@gmail.com",
   ];
 
-  const socialLogin = async (provider: "google" | "apple") => {
+  const socialLogin = async () => {
     try {
       setLoading(true);
       sessionStorage.setItem("legoAuthIntent", "passenger");
       localStorage.setItem("legoAuthIntent", "passenger");
-      const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: `${window.location.origin}/auth-callback`,
+      const callback = new URL("/auth-callback", window.location.origin);
+      callback.searchParams.set("intent", "passenger");
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: callback.toString(),
       });
       if (result.redirected) return;
       if (result.error) throw result.error;
-      window.location.href = "/auth-callback";
+      window.location.assign(callback.toString());
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro ao iniciar sessão";
       toast.error(message);
@@ -117,8 +120,7 @@ function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = () => socialLogin("google");
-  const handleAppleLogin = () => socialLogin("apple");
+  const handleGoogleLogin = () => socialLogin();
 
   return (
     <main className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden bg-black px-6 text-center">
@@ -253,14 +255,7 @@ function LoginPage() {
               <Chrome className="h-5 w-5" />
               Google
             </button>
-            <button
-              onClick={handleAppleLogin}
-              disabled={loading}
-              className="w-full py-3 rounded-lg bg-white/5 border border-white/10 text-white font-semibold transition-all hover:bg-white/10 disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              <Apple className="h-5 w-5" />
-              Apple
-            </button>
+            <AppleSignInButton intent="passenger" disabled={loading} />
           </div>
         </div>
 

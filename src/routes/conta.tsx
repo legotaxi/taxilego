@@ -19,6 +19,7 @@ import { deleteMyAccount } from "@/lib/account.functions";
 import { AppShell } from "@/components/lego/AppShell";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/conta")({
   head: () => ({
@@ -117,6 +118,20 @@ function AccountPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               Dados do perfil e definições da conta.
             </p>
+            <Button
+              type="button"
+              variant="destructive"
+              className="mt-4 h-11 rounded-lg"
+              onClick={() => {
+                setConfirmOpen(true);
+                requestAnimationFrame(() =>
+                  document.getElementById("eliminar-conta")?.scrollIntoView({ behavior: "smooth", block: "center" }),
+                );
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+              Excluir minha conta
+            </Button>
           </header>
 
           {/* Perfil */}

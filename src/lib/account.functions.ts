@@ -15,41 +15,34 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     try {
-      // 1. Personal content and communications
-      await supabaseAdmin.from("ride_messages").delete().eq("sender_id", userId);
-      await supabaseAdmin.from("push_subscriptions").delete().eq("user_id", userId);
-      await supabaseAdmin.from("support_tickets").delete().eq("user_id", userId);
-      await supabaseAdmin.from("wallet_topup_requests").delete().eq("user_id", userId);
-      await supabaseAdmin.from("wallet_withdrawal_requests").delete().eq("user_id", userId);
-      await supabaseAdmin.from("transactions").delete().eq("user_id", userId);
+      const { data: driver, error: driverLookupError } = await supabaseAdmin
+        .from("drivers")
+        .select("bi_url, license_url, criminal_record_url, photo_url")
+        .eq("id", userId)
+        .maybeSingle();
+      if (driverLookupError) throw driverLookupError;
 
-      // 2. Rides (messages of those rides go first to satisfy FKs)
-      const { data: rides } = await supabaseAdmin
-        .from("rides")
-        .select("id")
-        .or(`passenger_id.eq.${userId},driver_id.eq.${userId}`);
-      const rideIds = (rides ?? []).map((r) => r.id);
-      if (rideIds.length > 0) {
-        await supabaseAdmin.from("ride_messages").delete().in("ride_id", rideIds);
-        await supabaseAdmin.from("rides").delete().in("id", rideIds);
+      const documentPaths = [driver?.bi_url, driver?.license_url, driver?.criminal_record_url, driver?.photo_url]
+        .filter((path): path is string => typeof path === "string" && path.length > 0);
+      if (documentPaths.length > 0) {
+        const { error: storageError } = await supabaseAdmin.storage.from("driver-docs").remove(documentPaths);
+        if (storageError) throw storageError;
       }
 
-      // 3. Driver-specific data
-      await supabaseAdmin.from("vehicles").delete().eq("owner_id", userId);
-      await supabaseAdmin.from("drivers").delete().eq("id", userId);
+      // Driver-linked rides use ON DELETE SET NULL, so remove them explicitly.
+      const { error: ridesError } = await supabaseAdmin
+        .from("rides")
+        .delete()
+        .or(`passenger_id.eq.${userId},driver_id.eq.${userId}`);
+      if (ridesError) throw ridesError;
 
-      // 4. Roles + profile
-      await supabaseAdmin.from("user_roles").delete().eq("user_id", userId);
-      await supabaseAdmin.from("profiles").delete().eq("id", userId);
-
-      // 5. Auth identity (irreversible)
+      // The remaining account-owned rows cascade from auth.users on deletion.
       const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
-      if (error) return { ok: false, error: error.message };
+      if (error) throw error;
 
       return { ok: true };
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Erro ao eliminar conta";
       console.error("[deleteMyAccount]", err);
-      return { ok: false, error: message };
+      return { ok: false, error: "Não foi possível concluir a eliminação. Tente novamente." };
     }
   });

@@ -24,10 +24,15 @@ export const Route = createFileRoute("/motoristas-registo")({
     // (the DriverStatusGuard will show pending/approved/rejected states).
     const { data: driver } = await supabase
       .from("drivers")
-      .select("id")
+      .select("id, status, bi_url, license_url, criminal_record_url, photo_url")
       .eq("id", data.session.user.id)
       .maybeSingle();
-    if (driver) throw redirect({ to: "/painel-motorista" });
+    const documentsComplete = Boolean(
+      driver?.bi_url && driver.license_url && driver.criminal_record_url && driver.photo_url,
+    );
+    if (driver && (driver.status !== "pending" || documentsComplete)) {
+      throw redirect({ to: "/painel-motorista" });
+    }
   },
   component: DriverRegistrationPage,
 });
