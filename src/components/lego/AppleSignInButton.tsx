@@ -3,10 +3,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
-
-export type AuthIntent = "passenger" | "driver";
-
-export const AUTH_INTENT_KEY = "legoAuthIntent";
+import { AUTH_INTENT_KEY, type AuthIntent } from "@/lib/apple-auth";
 
 type Props = {
   intent: AuthIntent;

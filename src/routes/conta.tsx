@@ -20,6 +20,7 @@ import { AppShell } from "@/components/lego/AppShell";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { hasAppleIdentity } from "@/lib/apple-auth";
 
 export const Route = createFileRoute("/conta")({
   head: () => ({
@@ -61,6 +62,7 @@ function AccountPage() {
   const [deleting, setDeleting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [appleRevokeUrl, setAppleRevokeUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -93,8 +95,14 @@ function AccountPage() {
       }
       setDone(true);
       toast.success("Conta eliminada permanentemente");
+      if (hasAppleIdentity(user?.app_metadata)) {
+        const origin = window.location.origin;
+        const redirectUri = `${origin}/login`;
+        setAppleRevokeUrl(
+          `${origin}/~oauth/apple/revoke?redirect_uri=${encodeURIComponent(redirectUri)}`,
+        );
+      }
       await signOut();
-      setTimeout(() => navigate({ to: "/login" }), 1200);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro inesperado";
       setError(message);
@@ -216,9 +224,26 @@ function AccountPage() {
             </p>
 
             {done ? (
-              <div className="flex items-center gap-2 rounded-xl bg-card p-4 text-sm font-semibold text-primary">
-                <CheckCircle2 className="h-4 w-4" />
-                Conta eliminada. A redireccionar para o login…
+              <div className="space-y-3 rounded-xl bg-card p-4 text-sm font-semibold text-primary">
+                <p className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Conta eliminada permanentemente.
+                </p>
+                {appleRevokeUrl && (
+                  <div className="space-y-2 border-t border-border pt-3">
+                    <p className="text-sm font-medium text-foreground">
+                      Para concluir a remoção do acesso Apple, desligue também a sua autorização Apple.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="h-11 w-full rounded-lg"
+                      onClick={() => window.open(appleRevokeUrl, "_blank", "noopener,noreferrer")}
+                    >
+                      Desligar Apple ID
+                    </Button>
+                  </div>
+                )}
               </div>
             ) : !confirmOpen ? (
               <button

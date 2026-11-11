@@ -12,6 +12,10 @@ export const Route = createFileRoute("/login")({
     meta: [
       { title: "Entrar · Lego Taxi" },
       { name: "description", content: "Aceda à sua conta Lego Taxi." },
+      { property: "og:title", content: "Entrar · Lego Taxi" },
+      { property: "og:description", content: "Aceda à sua conta Lego Taxi." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: LoginPage,

@@ -15,6 +15,21 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     try {
+      const { data: profile, error: profileLookupError } = await supabaseAdmin
+        .from("profiles")
+        .select("phone")
+        .eq("id", userId)
+        .maybeSingle();
+      if (profileLookupError) throw profileLookupError;
+
+      if (profile?.phone) {
+        const { error: otpCleanupError } = await supabaseAdmin
+          .from("phone_otps")
+          .delete()
+          .eq("phone", profile.phone);
+        if (otpCleanupError) throw otpCleanupError;
+      }
+
       const { data: driver, error: driverLookupError } = await supabaseAdmin
         .from("drivers")
         .select("bi_url, license_url, criminal_record_url, photo_url")

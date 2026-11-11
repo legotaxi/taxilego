@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { AUTH_INTENT_KEY, type AuthIntent } from "@/components/lego/AppleSignInButton";
+import { AUTH_INTENT_KEY, type AuthIntent } from "@/lib/apple-auth";
 import { ensureDriverIdentity } from "@/lib/driver-auth.functions";
 import { Button } from "@/components/ui/button";
 
@@ -116,7 +116,7 @@ function AuthCallbackPage() {
     return () => {
       cancelled = true;
     };
-  }, [navigate]);
+  }, [navigate, prepareDriver]);
 
   return (
     <main className="grid min-h-dvh place-items-center bg-background px-6 text-center">
