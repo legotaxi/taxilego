@@ -2,6 +2,7 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ArrowLeft, FileCheck, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { DriverRegistrationForm } from "@/components/lego/DriverRegistrationForm";
+import { needsDriverRegistration } from "@/lib/apple-auth";
 
 export const Route = createFileRoute("/motoristas-registo")({
   head: () => ({
@@ -27,10 +28,7 @@ export const Route = createFileRoute("/motoristas-registo")({
       .select("id, status, bi_url, license_url, criminal_record_url, photo_url")
       .eq("id", data.session.user.id)
       .maybeSingle();
-    const documentsComplete = Boolean(
-      driver?.bi_url && driver.license_url && driver.criminal_record_url && driver.photo_url,
-    );
-    if (driver && (driver.status !== "pending" || documentsComplete)) {
+    if (!needsDriverRegistration(driver)) {
       throw redirect({ to: "/painel-motorista" });
     }
   },

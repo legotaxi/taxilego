@@ -110,7 +110,6 @@ function LoginPage() {
       sessionStorage.setItem("legoAuthIntent", "passenger");
       localStorage.setItem("legoAuthIntent", "passenger");
       const callback = new URL("/auth-callback", window.location.origin);
-      callback.searchParams.set("intent", "passenger");
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: callback.toString(),
       });
@@ -254,10 +253,10 @@ function LoginPage() {
             <button
               onClick={handleGoogleLogin}
               disabled={loading}
-              className="w-full py-3 rounded-lg bg-white/5 border border-white/10 text-white font-semibold transition-all hover:bg-white/10 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="h-14 w-full rounded-lg bg-white/5 border border-white/10 text-white font-semibold transition-all hover:bg-white/10 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               <Chrome className="h-5 w-5" />
-              Google
+              Continue with Google
             </button>
             <AppleSignInButton intent="passenger" disabled={loading} />
           </div>

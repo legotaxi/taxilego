@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { AUTH_INTENT_KEY, type AuthIntent } from "@/lib/apple-auth";
+import { AUTH_INTENT_KEY, needsDriverRegistration, resolveAuthIntent, type AuthIntent } from "@/lib/apple-auth";
 import { ensureDriverIdentity } from "@/lib/driver-auth.functions";
 import { Button } from "@/components/ui/button";
 
@@ -37,12 +37,6 @@ function AuthCallbackPage() {
     const finish = async () => {
       try {
         const query = new URLSearchParams(window.location.search);
-        const providerError = query.get("error") || new URLSearchParams(window.location.hash.slice(1)).get("error");
-        if (providerError) {
-          setError("A Apple não concluiu o acesso. Volte e tente novamente.");
-          return;
-        }
-
         const queryIntent = query.get("intent");
         let storedIntent: string | null = null;
         try {
@@ -52,9 +46,17 @@ function AuthCallbackPage() {
         } catch {
           // The explicit same-origin callback query remains available.
         }
-        const requestedIntent = queryIntent || storedIntent;
-        const authIntent: AuthIntent = requestedIntent === "driver" ? "driver" : "passenger";
+        const authIntent: AuthIntent = resolveAuthIntent(queryIntent, storedIntent);
         setIntent(authIntent);
+
+        const hashParams = new URLSearchParams(window.location.hash.slice(1));
+        const providerError =
+          query.get("error") || query.get("error_code") || query.get("error_description") ||
+          hashParams.get("error") || hashParams.get("error_code") || hashParams.get("error_description");
+        if (providerError) {
+          setError("A Apple não concluiu o acesso. Volte e tente novamente.");
+          return;
+        }
 
         let userId: string | null = null;
         for (let i = 0; i < 80 && !cancelled; i++) {
@@ -95,10 +97,7 @@ function AuthCallbackPage() {
             .maybeSingle();
           if (driverError) throw new Error("Não foi possível verificar o cadastro de motorista.");
 
-          const documentsComplete = Boolean(
-            driver?.bi_url && driver.license_url && driver.criminal_record_url && driver.photo_url,
-          );
-          if (!driver || (driver.status === "pending" && !documentsComplete)) {
+          if (needsDriverRegistration(driver)) {
             return navigate({ to: "/motoristas-registo" });
           }
           return navigate({ to: "/painel-motorista" });

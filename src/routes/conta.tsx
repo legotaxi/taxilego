@@ -102,7 +102,11 @@ function AccountPage() {
           `${origin}/~oauth/apple/revoke?redirect_uri=${encodeURIComponent(redirectUri)}`,
         );
       }
-      await signOut();
+      try {
+        await signOut();
+      } catch (signOutError) {
+        console.warn("[deleteMyAccount] Local sign-out did not finish after account deletion", signOutError);
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro inesperado";
       setError(message);

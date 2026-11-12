@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
+import appleSignInLogo from "@/assets/apple-sign-in-white.svg";
 import { AUTH_INTENT_KEY, type AuthIntent } from "@/lib/apple-auth";
 
 type Props = {
@@ -25,7 +26,6 @@ export function AppleSignInButton({ intent, disabled = false, className = "" }: 
         // The callback URL carries the app intent if browser storage is unavailable.
       }
       const callback = new URL("/auth-callback", window.location.origin);
-      callback.searchParams.set("intent", intent);
       const result = await lovable.auth.signInWithOAuth("apple", {
         redirect_uri: callback.toString(),
       });
@@ -45,12 +45,15 @@ export function AppleSignInButton({ intent, disabled = false, className = "" }: 
       onClick={handleClick}
       disabled={loading || disabled}
       aria-label="Continue with Apple"
-      className={`h-12 min-h-12 w-full rounded-lg bg-foreground font-sans text-xl font-medium text-background hover:opacity-90 ${className}`}
+      className={`h-14 min-h-14 w-full rounded-lg bg-foreground font-sans text-2xl font-medium text-background hover:opacity-90 ${className}`}
     >
       {loading ? (
         <Loader2 className="h-5 w-5 animate-spin" />
       ) : (
-        "Continue with Apple"
+        <>
+          <img src={appleSignInLogo} alt="" aria-hidden="true" className="h-11 w-[31px] shrink-0" />
+          <span>Continue with Apple</span>
+        </>
       )}
     </Button>
   );
