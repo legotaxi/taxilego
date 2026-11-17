@@ -110,6 +110,7 @@ function LoginPage() {
       sessionStorage.setItem("legoAuthIntent", "passenger");
       localStorage.setItem("legoAuthIntent", "passenger");
       const callback = new URL("/auth-callback", window.location.origin);
+      callback.searchParams.set("intent", "passenger");
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: callback.toString(),
       });

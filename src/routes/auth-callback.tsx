@@ -41,8 +41,6 @@ function AuthCallbackPage() {
         let storedIntent: string | null = null;
         try {
           storedIntent = sessionStorage.getItem(AUTH_INTENT_KEY) || localStorage.getItem(AUTH_INTENT_KEY);
-          sessionStorage.removeItem(AUTH_INTENT_KEY);
-          localStorage.removeItem(AUTH_INTENT_KEY);
         } catch {
           // The explicit same-origin callback query remains available.
         }
@@ -72,6 +70,12 @@ function AuthCallbackPage() {
         if (!userId) {
           setError("Não conseguimos concluir o acesso. Volte e tente novamente.");
           return;
+        }
+        try {
+          sessionStorage.removeItem(AUTH_INTENT_KEY);
+          localStorage.removeItem(AUTH_INTENT_KEY);
+        } catch {
+          // No cleanup needed if browser storage is unavailable.
         }
 
         const { data: roles, error: rolesError } = await supabase

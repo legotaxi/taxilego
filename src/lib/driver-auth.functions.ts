@@ -19,5 +19,14 @@ export const ensureDriverIdentity = createServerFn({ method: "POST" })
       return { ok: false, error: "Não foi possível preparar a conta de motorista. Tente novamente." };
     }
 
+    const { error: driverError } = await supabaseAdmin.from("drivers").upsert(
+      { id: userId, status: "pending" },
+      { onConflict: "id", ignoreDuplicates: true },
+    );
+    if (driverError) {
+      console.error("[ensureDriverIdentity] Could not create the driver's application record", driverError);
+      return { ok: false, error: "Não foi possível iniciar o cadastro de motorista. Tente novamente." };
+    }
+
     return { ok: true };
   });

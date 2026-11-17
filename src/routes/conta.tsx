@@ -70,11 +70,11 @@ function AccountPage() {
     (async () => {
       const [{ data: p }, { data: r }] = await Promise.all([
         supabase.from("profiles").select("full_name, phone").eq("id", user.id).maybeSingle(),
-        supabase.from("user_roles").select("role").eq("user_id", user.id).limit(1).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", user.id),
       ]);
       if (!active) return;
       setProfile((p as Profile) ?? null);
-      setRole((r?.role as string) ?? "passenger");
+      setRole((r ?? []).some((entry) => entry.role === "driver") ? "driver" : "passenger");
     })();
     return () => {
       active = false;
